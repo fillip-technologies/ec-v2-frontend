@@ -5,19 +5,23 @@ import Image from "next/image";
 import Link from "next/link";
 import { INTERNSHIP_DATA } from "@/config/internshipTopics";
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  className?: string;
+}
+
+export const Footer: React.FC<FooterProps> = ({ className = "mt-16" }) => {
   const levels = ["Beginner", "Intermediate", "Advanced"];
 
   const mainLinks = [
     { label: "Home", href: "/" },
-    { label: "College Tie-ups", href: "#college-tieup" },
-    { label: "Company Branding", href: "#college-tieup" },
-    { label: "About Us", href: "#about" },
-    { label: "Login", href: "#" },
+    { label: "College Tie-ups", href: "/college-tieup" },
+    { label: "Company Branding", href: "/company-branding" },
+    { label: "About Us", href: "/about" },
+    { label: "Login", href: "/login" },
   ];
 
   return (
-    <footer className="mt-16 bg-[#12052E] text-white">
+    <footer className={`bg-[#12052E] text-white ${className}`}>
       <div className="container-main py-14 sm:py-16">
         <div className="grid gap-10 lg:grid-cols-[1.05fr_2.1fr_0.9fr]">
           {/* Column 1: Brand & Contact Info */}

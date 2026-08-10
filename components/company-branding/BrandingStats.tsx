@@ -1,0 +1,28 @@
+"use client";
+
+import React from "react";
+
+export const BrandingStats: React.FC = () => {
+  const stats = [
+    { value: "10k+", label: "reachable student and early-career profiles" },
+    { value: "12+", label: "domain-based audience communities" },
+    { value: "30+", label: "campaign-ready learning and career tracks" },
+    { value: "4-layer", label: "LMS, webinar, community, and campus distribution" },
+  ];
+
+  return (
+    <section className="border-y border-[#E2D9FF] bg-white py-8">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="grid gap-px overflow-hidden rounded-2xl border border-[#E2D9FF] bg-[#E2D9FF] shadow-[0_18px_54px_rgba(22,8,64,0.06)] sm:grid-cols-2 lg:grid-cols-4">
+          {stats.map((stat, idx) => (
+            <div key={idx} className="group bg-white p-6 transition duration-300 hover:bg-[#EEF5FF]">
+              <span className="mb-5 block h-1 w-10 rounded-full bg-[#7C5CFC]/70 transition duration-300 group-hover:w-16" />
+              <p className="text-3xl font-black tracking-tight text-[#160840]">{stat.value}</p>
+              <p className="mt-2 text-sm leading-6 text-[#6B7280]">{stat.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};

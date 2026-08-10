@@ -74,13 +74,10 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ mobile = false, onSelect }) 
   }
 
   return (
-    <div
-      className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-    >
+    <div className="relative">
       <button
         type="button"
+        onClick={() => setOpen(!open)}
         className={`nav-link cursor-pointer ${open ? "nav-link-active" : ""}`}
       >
         Internships
@@ -92,7 +89,10 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ mobile = false, onSelect }) 
       </button>
 
       {open && (
-        <div className="dropdown-panel fixed left-1/2 top-24 z-50 w-[min(1120px,calc(100vw-2rem))] -translate-x-1/2 overflow-hidden p-0 shadow-2xl">
+        <>
+          {/* Backdrop to close menu on outside click */}
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div className="dropdown-panel fixed left-1/2 top-24 z-50 w-[min(1120px,calc(100vw-2rem))] -translate-x-1/2 overflow-hidden p-0 shadow-2xl">
           <div className="grid max-h-[calc(100vh-7rem)] grid-cols-[250px_1fr] overflow-hidden">
             {/* Left Aside Sidebar */}
             <aside className="border-r border-[#E2D9FF] bg-gradient-to-b from-[#EEF5FF] to-white p-5">
@@ -210,6 +210,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ mobile = false, onSelect }) 
             </div>
           </div>
         </div>
+        </>
       )}
     </div>
   );

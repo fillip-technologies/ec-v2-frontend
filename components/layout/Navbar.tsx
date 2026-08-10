@@ -44,17 +44,20 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
           <MegaMenu />
 
           {/* College Tie-ups */}
-          <a href="#college-tieup" className="nav-link">
+          <Link href="/college-tieup" className="nav-link">
             College Tie-ups
-          </a>
+          </Link>
 
           {/* For Enterprises & Employers */}
-          <div
-            className="relative"
-            onMouseEnter={() => setEnterpriseOpen(true)}
-            onMouseLeave={() => setEnterpriseOpen(false)}
-          >
-            <button type="button" className="nav-link cursor-pointer">
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => {
+                setEnterpriseOpen(!enterpriseOpen);
+                setMoreOpen(false);
+              }}
+              className="nav-link cursor-pointer"
+            >
               For Enterprises & Employers
               <ChevronDown
                 className={`h-4 w-4 transition duration-200 ${
@@ -64,53 +67,59 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
             </button>
 
             {enterpriseOpen && (
-              <div className="dropdown-panel absolute left-0 top-full mt-3 w-[340px] p-3 shadow-2xl">
-                <a
-                  href="#college-tieup"
-                  onClick={() => setEnterpriseOpen(false)}
-                  className="group flex items-start gap-4 rounded-[14px] p-4 transition hover:bg-[#EEF5FF]"
-                >
-                  <span className="grid h-12 w-12 place-items-center rounded-[14px] bg-[#7C5CFC] text-white shadow-sm">
-                    <LayoutGrid className="h-5 w-5" />
-                  </span>
-                  <span>
-                    <span className="block text-sm font-bold text-[#160840]">
-                      Company For Branding
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setEnterpriseOpen(false)} />
+                <div className="dropdown-panel absolute left-0 top-full z-50 mt-3 w-[340px] p-3 shadow-2xl">
+                  <Link
+                    href="/company-branding"
+                    onClick={() => setEnterpriseOpen(false)}
+                    className="group flex items-start gap-4 rounded-[14px] p-4 transition hover:bg-[#EEF5FF]"
+                  >
+                    <span className="grid h-12 w-12 place-items-center rounded-[14px] bg-[#7C5CFC] text-white shadow-sm">
+                      <LayoutGrid className="h-5 w-5" />
                     </span>
-                    <span className="mt-1 block text-caption">
-                      Promote your brand among students and colleges through campaigns.
+                    <span>
+                      <span className="block text-sm font-bold text-[#160840]">
+                        Company For Branding
+                      </span>
+                      <span className="mt-1 block text-caption">
+                        Promote your brand among students and colleges through campaigns.
+                      </span>
                     </span>
-                  </span>
-                </a>
+                  </Link>
 
-                <a
-                  href="#college-tieup"
-                  onClick={() => setEnterpriseOpen(false)}
-                  className="group mt-2 flex items-start gap-4 rounded-[14px] p-4 transition hover:bg-[#EEF5FF]"
-                >
-                  <span className="grid h-12 w-12 place-items-center rounded-[14px] bg-[#7C5CFC]/15 text-[#7C5CFC]">
-                    <Megaphone className="h-5 w-5" />
-                  </span>
-                  <span>
-                    <span className="block text-sm font-bold text-[#160840]">
-                      For Selling Services & Products
+                  <a
+                    href="#college-tieup"
+                    onClick={() => setEnterpriseOpen(false)}
+                    className="group mt-2 flex items-start gap-4 rounded-[14px] p-4 transition hover:bg-[#EEF5FF]"
+                  >
+                    <span className="grid h-12 w-12 place-items-center rounded-[14px] bg-[#7C5CFC]/15 text-[#7C5CFC]">
+                      <Megaphone className="h-5 w-5" />
                     </span>
-                    <span className="mt-1 block text-caption">
-                      Reach verified students, colleges, and young professionals.
+                    <span>
+                      <span className="block text-sm font-bold text-[#160840]">
+                        For Selling Services & Products
+                      </span>
+                      <span className="mt-1 block text-caption">
+                        Reach verified students, colleges, and young professionals.
+                      </span>
                     </span>
-                  </span>
-                </a>
-              </div>
+                  </a>
+                </div>
+              </>
             )}
           </div>
 
           {/* More Menu Dropdown */}
-          <div
-            className="relative"
-            onMouseEnter={() => setMoreOpen(true)}
-            onMouseLeave={() => setMoreOpen(false)}
-          >
-            <button type="button" className="nav-link cursor-pointer">
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => {
+                setMoreOpen(!moreOpen);
+                setEnterpriseOpen(false);
+              }}
+              className="nav-link cursor-pointer"
+            >
               More
               <ChevronDown
                 className={`h-4 w-4 transition duration-200 ${
@@ -120,39 +129,35 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
             </button>
 
             {moreOpen && (
-              <div className="dropdown-panel absolute right-0 top-full mt-3 w-[260px] p-3 shadow-2xl">
-                <a
-                  href="#how-it-works"
-                  onClick={() => setMoreOpen(false)}
-                  className="block rounded-[14px] px-4 py-3 text-sm font-semibold text-[#3D2090] transition hover:bg-[#EEF5FF] hover:text-[#7C5CFC]"
-                >
-                  AI Tools
-                </a>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMoreOpen(false);
-                    onOpenEnquiry?.();
-                  }}
-                  className="mt-1 w-full text-left block rounded-[14px] px-4 py-3 text-sm font-semibold text-[#3D2090] transition hover:bg-[#EEF5FF] hover:text-[#7C5CFC] cursor-pointer"
-                >
-                  Refer & Earn
-                </button>
-                <a
-                  href="#faq"
-                  onClick={() => setMoreOpen(false)}
-                  className="mt-1 block rounded-[14px] px-4 py-3 text-sm font-semibold text-[#3D2090] transition hover:bg-[#EEF5FF] hover:text-[#7C5CFC]"
-                >
-                  Blog
-                </a>
-                <a
-                  href="#about"
-                  onClick={() => setMoreOpen(false)}
-                  className="mt-1 block rounded-[14px] px-4 py-3 text-sm font-semibold text-[#3D2090] transition hover:bg-[#EEF5FF] hover:text-[#7C5CFC]"
-                >
-                  About Us
-                </a>
-              </div>
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setMoreOpen(false)} />
+                <div className="dropdown-panel absolute right-0 top-full z-50 mt-3 w-[260px] p-3 shadow-2xl">
+                  <a
+                    href="#how-it-works"
+                    onClick={() => setMoreOpen(false)}
+                    className="block rounded-[14px] px-4 py-3 text-sm font-semibold text-[#3D2090] transition hover:bg-[#EEF5FF] hover:text-[#7C5CFC]"
+                  >
+                    AI Tools
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMoreOpen(false);
+                      onOpenEnquiry?.();
+                    }}
+                    className="mt-1 w-full text-left block rounded-[14px] px-4 py-3 text-sm font-semibold text-[#3D2090] transition hover:bg-[#EEF5FF] hover:text-[#7C5CFC] cursor-pointer"
+                  >
+                    Refer & Earn
+                  </button>
+                  <Link
+                    href="/about"
+                    onClick={() => setMoreOpen(false)}
+                    className="mt-1 block rounded-[14px] px-4 py-3 text-sm font-semibold text-[#3D2090] transition hover:bg-[#EEF5FF] hover:text-[#7C5CFC]"
+                  >
+                    About Us
+                  </Link>
+                </div>
+              </>
             )}
           </div>
         </nav>
@@ -173,13 +178,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
           </button>
 
           {/* Login Button */}
-          <button
-            type="button"
-            onClick={onOpenEnquiry}
+          <Link
+            href="/login"
             className="btn-primary hidden lg:inline-flex"
           >
             Login
-          </button>
+          </Link>
 
           {/* Mobile Drawer Toggle */}
           <button
@@ -331,16 +335,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
               )}
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                setMobileOpen(false);
-                onOpenEnquiry?.();
-              }}
+            <Link
+              href="/login"
+              onClick={() => setMobileOpen(false)}
               className="block w-full rounded-[14px] bg-[#7C5CFC] px-5 py-4 text-center text-sm font-bold text-white cursor-pointer"
             >
               Login
-            </button>
+            </Link>
           </nav>
         </div>
       )}
