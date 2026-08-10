@@ -1,26 +1,537 @@
+@import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,800,900&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-sans: 'Satoshi', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  /* Brand palette ported directly from Laravel configuration */
+  --color-brand: #7C5CFC;
+  --color-brandLight: #A78BFA;
+  --color-brandDark: #160840;
+  --color-brandSoft: rgba(124, 92, 252, 0.15);
+
+  --color-primary: #7C5CFC;
+  --color-primaryLight: #A78BFA;
+  --color-primarySoft: rgba(124, 92, 252, 0.15);
+
+  --color-secondary: #F5C842;
+  --color-secondaryLight: #A78BFA;
+  --color-secondaryDark: #160840;
+  --color-secondarySoft: rgba(245, 200, 66, 0.18);
+
+  --color-accent: #ffffff;
+  --color-accentLight: #FAF7FF;
+  --color-accentSoft: rgba(184, 222, 255, 0.35);
+
+  --color-auroraLeft: #DDD0FF;
+  --color-auroraMid: #B8DEFF;
+  --color-auroraRight: #FFD0E8;
+
+  --color-bgMain: #F5F0FF;
+  --color-bgSoft: #EEF5FF;
+  --color-bgWhite: #ffffff;
+  --color-bgDark: #F5F0FF;
+  --color-bgDarkSoft: #ffffff;
+  --color-bgIndigo: #EEF5FF;
+
+  --color-surface: #FAF7FF;
+  --color-surfaceDark: #12052E;
+
+  --color-cardBg: rgba(255, 255, 255, 0.60);
+  --color-cardBorder: rgba(255, 255, 255, 0.85);
+
+  --color-glass: #ffffff;
+  --color-glassBorder: #E2D9FF;
+
+  --color-textPrimary: #160840;
+  --color-textSecondary: #3D2090;
+  --color-textMuted: #8B7FBF;
+
+  --color-borderLight: #E2D9FF;
+
+  --color-glowPurple: rgba(124, 92, 252, 0.20);
+  --color-glowBlue: rgba(184, 222, 255, 0.35);
+  --color-glowPink: rgba(255, 208, 232, 0.35);
+
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+
+  --radius-card: 24px;
+  --radius-control: 14px;
+  --shadow-card: 0 18px 48px rgba(22, 8, 64, 0.08);
+  --shadow-glass: 0 24px 70px rgba(22, 8, 64, 0.10);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scrollbar-width: thin;
+    scrollbar-color: #c4b5fd #FAFBFF;
+  }
+  body {
+    background-color: #FAFBFF;
+    color: #160840;
+    font-family: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+  h1, h2, h3 {
+    letter-spacing: -0.02em;
+    color: #160840;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Custom Sleek Purple Scrollbar matching Laravel */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #FAFBFF;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #c4b5fd;
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #7C5CFC;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Custom Laravel Utility Classes */
+.container-main {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-main {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-main {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+.btn-primary {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background-color: #7C5CFC;
+  padding-left: 1.75rem;
+  padding-right: 1.75rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #ffffff;
+  box-shadow: 0 14px 34px rgba(124, 92, 252, 0.24);
+  transition-property: all;
+  transition-duration: 300ms;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  background-color: #6a49f3;
+}
+
+/* Exact Nav Shell & Nav Link floating styles from Laravel app.blade.php */
+.nav-shell {
+  border: 1px solid rgba(226, 217, 255, 0.75);
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 18px 48px rgba(22, 8, 64, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  padding: 0.75rem 1.125rem;
+  color: #3D2090;
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+}
+
+.nav-link:hover,
+.nav-link-active {
+  background-color: #7C5CFC !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 24px rgba(124, 92, 252, 0.16);
+}
+
+.dropdown-panel {
+  border: 1px solid rgba(226, 217, 255, 0.75);
+  border-radius: 24px;
+  background-color: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 24px 70px rgba(22, 8, 64, 0.12);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.text-caption {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  color: #8B7FBF;
+}
+
+.text-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+
+/* Project Art Canvas Styling from modules.blade.php */
+.ec-project-art {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.38), transparent 24%),
+    radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.24), transparent 26%),
+    linear-gradient(135deg, var(--project-from), var(--project-via) 48%, var(--project-to));
+}
+
+.ec-project-art::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.13) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.13) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(to bottom, black, transparent 88%);
+  opacity: 0.7;
+  transition: transform 500ms ease;
+}
+
+.ec-project-art::after {
+  content: "";
+  position: absolute;
+  inset: auto -18% -42% 18%;
+  height: 68%;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  filter: blur(34px);
+  transform: rotate(-10deg);
+}
+
+.group:hover .ec-project-art::before {
+  transform: translate3d(18px, 18px, 0);
+}
+
+/* How It Works Pipeline Styling from how-work.blade.php */
+.ec-pipeline-section {
+  background:
+    radial-gradient(circle at 12% 0%, rgba(109, 93, 246, 0.12), transparent 28%),
+    radial-gradient(circle at 76% 28%, rgba(34, 201, 151, 0.1), transparent 30%),
+    linear-gradient(135deg, #ffffff 0%, #fbfaff 48%, #f7fbff 100%);
+}
+
+.ec-pipeline-grid {
+  background-image:
+    linear-gradient(rgba(109, 93, 246, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(109, 93, 246, 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+  animation: ecPipelineGrid 18s linear infinite;
+}
+
+.ec-pipeline-card {
+  min-height: 188px;
+  border-color: #ECEBFF;
+  background: linear-gradient(180deg, #ffffff, #fbfaff);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 22px 55px rgba(15, 10, 42, 0.08);
+}
+
+.ec-pipeline-heading-card {
+  border: 1px solid #ECEBFF;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 18px 48px rgba(15, 10, 42, 0.07);
+}
+
+.ec-pipeline-heading-icon {
+  border: 1px solid rgba(109, 93, 246, 0.24);
+  background: rgba(109, 93, 246, 0.1);
+  color: #6D5DF6;
+}
+
+.ec-pipeline-label,
+.ec-pipeline-status {
+  color: #22c997;
+}
+
+.ec-pipeline-copy {
+  color: #6B7280;
+}
+
+.ec-pipeline-status {
+  border: 1px solid rgba(34, 201, 151, 0.2);
+  background: rgba(34, 201, 151, 0.1);
+  box-shadow: 0 0 28px rgba(34, 201, 151, 0.12);
+}
+
+.ec-pipeline-status-dot {
+  background: #22c997;
+  box-shadow: 0 0 14px rgba(34, 201, 151, 0.9);
+}
+
+.ec-pipeline-ambient-orange {
+  background: rgba(109, 93, 246, 0.12);
+}
+
+.ec-pipeline-ambient-green {
+  background: rgba(34, 201, 151, 0.1);
+}
+
+.ec-pipeline-card-active {
+  border-color: rgba(109, 93, 246, 0.55);
+  box-shadow: 0 0 0 1px rgba(109, 93, 246, 0.16), 0 22px 65px rgba(109, 93, 246, 0.16);
+}
+
+.ec-pipeline-icon {
+  animation: ecPipelinePulse 2.7s ease-in-out infinite;
+}
+
+.ec-pipeline-connector {
+  position: absolute;
+  left: calc(100% + 0.05rem);
+  top: 50%;
+  z-index: 0;
+  display: none;
+  width: 3.85rem;
+  height: 1.25rem;
+  align-items: center;
+  transform: translateY(-50%);
+}
+
+.ec-pipeline-connector::before {
+  content: "";
+  position: absolute;
+  left: 0.08rem;
+  top: 50%;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: #22c997;
+  box-shadow: 0 0 16px rgba(34, 201, 151, 0.85);
+  transform: translateY(-50%);
+  animation: ecPipelineTravel 1.9s ease-in-out infinite;
+}
+
+.ec-pipeline-connector::after {
+  content: "";
+  height: 2px;
+  flex: 1;
+  margin-left: 0.18rem;
+  background: #22c997;
+  box-shadow: 0 0 14px rgba(34, 201, 151, 0.38);
+}
+
+.ec-pipeline-flow {
+  position: absolute;
+  left: 0.18rem;
+  right: 0.45rem;
+  top: 50%;
+  height: 2px;
+  overflow: hidden;
+  transform: translateY(-50%);
+}
+
+.ec-pipeline-flow::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: -55%;
+  width: 55%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95), transparent);
+  animation: ecPipelineSweep 1.9s ease-in-out infinite;
+}
+
+.ec-pipeline-arrow {
+  width: 0;
+  height: 0;
+  border-bottom: 4px solid transparent;
+  border-left: 7px solid #22c997;
+  border-top: 4px solid transparent;
+  filter: drop-shadow(0 0 8px rgba(34, 201, 151, 0.85));
+}
+
+.ec-pipeline-card-active .ec-pipeline-connector::before {
+  background: #6D5DF6;
+  box-shadow: 0 0 18px rgba(109, 93, 246, 0.65);
+}
+
+.ec-pipeline-card-active .ec-pipeline-connector::after {
+  background: #6D5DF6;
+  box-shadow: 0 0 16px rgba(109, 93, 246, 0.34);
+}
+
+.ec-pipeline-card-active .ec-pipeline-arrow {
+  border-left-color: #6D5DF6;
+  filter: drop-shadow(0 0 8px rgba(109, 93, 246, 0.58));
+}
+
+.ec-pipeline-connector-mobile {
+  position: absolute;
+  bottom: -2.25rem;
+  left: 50%;
+  z-index: 0;
+  display: flex;
+  height: 2.25rem;
+  flex-direction: column;
+  align-items: center;
+  transform: translateX(-50%);
+}
+
+.ec-pipeline-connector-mobile::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #22c997;
+  box-shadow: 0 0 16px rgba(34, 201, 151, 0.85);
+  transform: translateX(-50%);
+  animation: ecPipelineTravelY 1.9s ease-in-out infinite;
+}
+
+.ec-pipeline-connector-mobile::after {
+  content: "";
+  width: 2px;
+  flex: 1;
+  margin-top: 0.15rem;
+  background: linear-gradient(180deg, rgba(34, 201, 151, 0.9), rgba(34, 201, 151, 0.2));
+  box-shadow: 0 0 14px rgba(34, 201, 151, 0.38);
+}
+
+@keyframes ecPipelineGrid {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    background-position: 44px 44px, 44px 44px;
+  }
+}
+
+@keyframes ecPipelinePulse {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-3px) scale(1.04);
+  }
+}
+
+@keyframes ecPipelineTravel {
+  0%, 100% {
+    opacity: 0.2;
+    transform: translate(0, -50%) scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(2.9rem, -50%) scale(1.15);
+  }
+}
+
+@keyframes ecPipelineTravelY {
+  0%, 100% {
+    opacity: 0.2;
+    transform: translate(-50%, 0) scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, 1.5rem) scale(1.15);
+  }
+}
+
+@keyframes ecPipelineSweep {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  30%, 70% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateX(280%);
+    opacity: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ec-pipeline-connector {
+    display: flex;
+  }
+  .ec-pipeline-connector-mobile {
+    display: none;
+  }
+}
+
+/* Base Animations */
+@keyframes ec-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ec-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes ec-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.ec-fade-up {
+  animation: ec-fade-up 700ms ease both;
+}
+
+.ec-float {
+  animation: ec-float 6s ease-in-out infinite;
+}
+
+.ec-marquee {
+  animation: ec-marquee 28s linear infinite;
+}
+
+.ec-marquee:hover {
+  animation-play-state: paused;
 }

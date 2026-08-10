@@ -1,0 +1,81 @@
+"use client";
+
+import React from "react";
+import Image from "next/image";
+
+interface HeroSectionProps {
+  onOpenEnquiry?: () => void;
+}
+
+export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenEnquiry }) => {
+  return (
+    <section id="heroSection" className="relative isolate overflow-hidden bg-[#FAFBFF] py-16 sm:py-20 lg:py-24">
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute right-8 top-1/2 h-[28rem] w-[28rem] -translate-y-1/2 rounded-full bg-[#6D5DF6]/8 blur-3xl" />
+      </div>
+
+      <div className="container-main">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          <div className="ec-fade-up">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#ECEBFF] bg-[#F5F3FF] px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-[#6D5DF6]">
+              <span className="h-2 w-2 rounded-full bg-[#22C55E]" />
+              Project-Based Learning Platform
+            </span>
+
+            <h1 className="mt-8 max-w-3xl text-4xl font-black leading-[1.02] tracking-tight text-[#161326] sm:text-5xl lg:text-[4rem]">
+              Build real projects. Prove you are job-ready.
+            </h1>
+
+            <p className="mt-6 max-w-[35rem] text-lg font-medium leading-8 text-[#6B7280]">
+              Pick a project for your level, complete guided milestones, publish your code to GitHub, and earn a certificate backed by reviewed work.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <a
+                href="#courses"
+                className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[#6D5DF6] px-7 py-3 text-sm font-black text-white shadow-[0_14px_34px_rgba(109,93,246,0.24)] transition duration-300 hover:-translate-y-1 hover:bg-[#5A4AE3]"
+              >
+                Explore Projects
+              </a>
+              <a
+                href="#how-it-works"
+                className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[#D9D6FF] bg-white px-7 py-3 text-sm font-black text-[#161326] transition duration-300 hover:-translate-y-1 hover:bg-[#F5F3FF] hover:text-[#161326]"
+              >
+                See How It Works
+              </a>
+            </div>
+          </div>
+
+          <div className="relative flex min-h-[410px] items-start justify-center pt-2 ec-fade-up sm:min-h-[470px] lg:min-h-[520px] lg:pt-6">
+            <div className="pointer-events-none absolute left-1/2 top-[42%] h-[25rem] w-[25rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#6D5DF6]/10 blur-3xl sm:h-[31rem] sm:w-[31rem]" />
+            <div className="pointer-events-none absolute bottom-16 left-1/2 h-16 w-[68%] -translate-x-1/2 rounded-full bg-[#D9D6FF]/45 blur-2xl" />
+
+            <Image
+              src="/images/hero-new-girl.png"
+              alt="Student building a project in a guided workspace"
+              width={600}
+              height={600}
+              priority
+              className="relative z-10 h-auto max-h-[410px] w-full max-w-[31rem] object-contain object-center sm:max-h-[500px] sm:max-w-[35rem] lg:max-h-[575px] lg:max-w-[38rem]"
+            />
+
+            <div className="absolute left-4 top-14 hidden rounded-2xl border border-[#ECEBFF] bg-white/90 px-4 py-3 shadow-[0_14px_34px_rgba(15,10,42,0.08)] backdrop-blur-xl sm:block">
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-[#8A8FA3]">GitHub</p>
+              <p className="mt-1 text-sm font-black text-[#161326]">Connected</p>
+            </div>
+
+            <div className="absolute right-4 top-[38%] hidden rounded-2xl border border-[#ECEBFF] bg-white/90 px-4 py-3 shadow-[0_14px_34px_rgba(15,10,42,0.08)] backdrop-blur-xl md:block">
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-[#8A8FA3]">Task</p>
+              <p className="mt-1 text-sm font-black text-[#161326]">Completed</p>
+            </div>
+
+            <div className="absolute bottom-16 left-8 hidden rounded-2xl border border-[#ECEBFF] bg-white/90 px-4 py-3 shadow-[0_14px_34px_rgba(15,10,42,0.08)] backdrop-blur-xl lg:block">
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-[#8A8FA3]">Certificate</p>
+              <p className="mt-1 text-sm font-black text-[#161326]">Ready</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};

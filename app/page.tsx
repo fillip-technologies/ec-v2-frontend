@@ -1,69 +1,97 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useState } from "react";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
+import { HeroSection } from "@/components/sections/HeroSection";
+import { HeroStatsCounterSection } from "@/components/sections/HeroStatsCounterSection";
+import { AboutNewSection } from "@/components/sections/AboutNewSection";
+import { ModulesSection } from "@/components/sections/ModulesSection";
+import { CollegeTieUpSection } from "@/components/sections/CollegeTieUpSection";
+import { HowWorkSection } from "@/components/sections/HowWorkSection";
+import { DashboardPreviewSection } from "@/components/sections/DashboardPreviewSection";
+import { CertificateShowcaseSection } from "@/components/sections/CertificateShowcaseSection";
+import { PartnershipCollegesSection } from "@/components/sections/PartnershipCollegesSection";
+import { OurVerticalsSection } from "@/components/sections/OurVerticalsSection";
+import { StatSection } from "@/components/sections/StatSection";
+import { MasterInternshipSection } from "@/components/sections/MasterInternshipSection";
+import { WhyChooseUsSection } from "@/components/sections/WhyChooseUsSection";
+import { ChooseSection } from "@/components/sections/ChooseSection";
+import { FaqSection } from "@/components/sections/FaqSection";
+import { EnquiryModal } from "@/components/ui/EnquiryModal";
+
+export default function HomePage() {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("Technology & Data");
+
+  const handleOpenModal = (category?: string) => {
+    if (category) {
+      setSelectedCategory(category);
+    }
+    setModalOpen(true);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <div className="min-h-screen flex flex-col bg-[#FAFBFF] text-[#160840] antialiased selection:bg-[#7C5CFC] selection:text-white">
+      {/* 1. Header / Navbar */}
+      <Navbar onOpenEnquiry={() => handleOpenModal()} />
+
+      <main className="flex-grow">
+        {/* 2. Hero Section */}
+        <HeroSection onOpenEnquiry={() => handleOpenModal()} />
+
+        {/* 3. Hero Stats Counter */}
+        <HeroStatsCounterSection />
+
+        {/* 4. Why Students Struggle (About New) */}
+        <AboutNewSection />
+
+        {/* 5. Level-Based Project Tracks (Modules) */}
+        <ModulesSection onOpenEnquiry={() => handleOpenModal()} />
+
+        {/* 6. College Tie-Up Program */}
+        <CollegeTieUpSection onOpenEnquiry={() => handleOpenModal("College Tie-up")} />
+
+        {/* 7. How It Works Pipeline */}
+        <HowWorkSection />
+
+        {/* 8. Student Workspace Dashboard Preview */}
+        <DashboardPreviewSection />
+
+        {/* 9. Certificate Showcase */}
+        <CertificateShowcaseSection />
+
+        {/* 10. Partnership Colleges Logos */}
+        <PartnershipCollegesSection />
+
+        {/* 11. Our Verticals */}
+        <OurVerticalsSection />
+
+        {/* 12. Success Numbers Stat Section */}
+        <StatSection />
+
+        {/* 13. Master Internship Plans (Pricing) */}
+        <MasterInternshipSection onOpenEnquiry={() => handleOpenModal()} />
+
+        {/* 14. Why Choose Us */}
+        <WhyChooseUsSection />
+
+        {/* 15. Student Testimonials (Choose) */}
+        <ChooseSection />
+
+        {/* 16. FAQ Accordion */}
+        <FaqSection />
       </main>
+
+      {/* 17. Footer */}
+      <Footer />
+
+      {/* Lead Capture Modal */}
+      <EnquiryModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        defaultCategory={selectedCategory}
+      />
     </div>
   );
 }
