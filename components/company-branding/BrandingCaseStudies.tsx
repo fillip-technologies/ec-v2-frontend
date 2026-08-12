@@ -28,18 +28,18 @@ export const BrandingCaseStudies: React.FC = () => {
   ];
 
   return (
-    <section className="bg-[#EEF5FF] py-16 sm:py-20">
+    <section className="bg-bgSoft py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid gap-8 lg:grid-cols-[0.72fr_1fr] lg:items-end">
           <div className="max-w-3xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#7C5CFC]">
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand">
               Campaign use cases
             </p>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[#160840] sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-textPrimary sm:text-4xl">
               Formats that translate reach into measurable business signals.
             </h2>
           </div>
-          <p className="text-base leading-8 text-[#6B7280]">
+          <p className="text-base leading-8 text-textGray">
             Each format combines audience context, distribution channels, conversion moments, and reporting, so teams can understand what moved and why.
           </p>
         </div>
@@ -48,21 +48,21 @@ export const BrandingCaseStudies: React.FC = () => {
           {cases.map((cs, idx) => (
             <article
               key={idx}
-              className="group rounded-2xl border border-[#E2D9FF] bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#7C5CFC]/30 hover:shadow-[0_18px_44px_rgba(22,8,64,0.10)]"
+              className="group rounded-2xl border border-borderLight bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand/30 hover:shadow-[0_18px_44px_rgba(22,8,64,0.10)]"
             >
               <div className="flex items-start justify-between gap-4">
-                <p className="text-sm font-extrabold text-[#7C5CFC]">{cs.title}</p>
-                <span className="rounded-full border border-[#E2D9FF] bg-[#EEF5FF] px-3 py-1 text-xs font-bold text-[#6B7280]">
+                <p className="text-sm font-extrabold text-brand">{cs.title}</p>
+                <span className="rounded-full border border-borderLight bg-bgSoft px-3 py-1 text-xs font-bold text-textGray">
                   {cs.tag}
                 </span>
               </div>
-              <div className="mt-6 rounded-xl border border-[#E2D9FF] bg-[#EEF5FF] p-4 transition duration-300 group-hover:bg-white">
-                <p className="text-3xl font-black text-[#160840]">{cs.metric}</p>
-                <p className="mt-1 text-xs font-extrabold uppercase tracking-[0.14em] text-[#8B7FBF]">
+              <div className="mt-6 rounded-xl border border-borderLight bg-bgSoft p-4 transition duration-300 group-hover:bg-white">
+                <p className="text-3xl font-black text-textPrimary">{cs.metric}</p>
+                <p className="mt-1 text-xs font-extrabold uppercase tracking-[0.14em] text-textMuted">
                   {cs.label}
                 </p>
               </div>
-              <p className="mt-5 text-sm leading-7 text-[#6B7280]">{cs.body}</p>
+              <p className="mt-5 text-sm leading-7 text-textGray">{cs.body}</p>
             </article>
           ))}
         </div>

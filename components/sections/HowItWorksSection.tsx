@@ -11,7 +11,7 @@ export const HowItWorksSection: React.FC = () => {
       num: "01",
       title: "Pick Stream & 3 Projects",
       desc: "Browse streams across Tech, Management, Engineering, Law, or Media, and select exactly 3 projects.",
-      icon: <FolderPlus className="h-6 w-6 text-[#6D5DF6]" />,
+      icon: <FolderPlus className="h-6 w-6 text-brand" />,
       badge: "Step 1",
     },
     {
@@ -49,10 +49,10 @@ export const HowItWorksSection: React.FC = () => {
       <Container size="wide">
         <div className="mx-auto mb-14 max-w-3xl text-center">
           <Badge variant="brand">Execution Pipeline</Badge>
-          <h2 className="mt-5 text-3xl font-black leading-tight text-[#161326] sm:text-4xl lg:text-5xl">
+          <h2 className="mt-5 text-3xl font-black leading-tight text-textPrimary sm:text-4xl lg:text-5xl">
             How the project internship works.
           </h2>
-          <p className="mt-4 text-base leading-8 text-[#6B7280]">
+          <p className="mt-4 text-base leading-8 text-textGray">
             From enrollment to certificate issuance: a structured, transparent state machine.
           </p>
         </div>
@@ -62,14 +62,14 @@ export const HowItWorksSection: React.FC = () => {
           {steps.map((item, idx) => (
             <div
               key={idx}
-              className="group relative flex flex-col justify-between rounded-3xl border border-[#ECEBFF] bg-[#FAFBFF] p-6 shadow-sm transition duration-300 hover:scale-[1.03] hover:border-[#6D5DF6] hover:bg-white hover:shadow-xl"
+              className="group relative flex flex-col justify-between rounded-3xl border border-borderSoft bg-bgBody p-6 shadow-sm transition duration-300 hover:scale-[1.03] hover:border-brand hover:bg-white hover:shadow-xl"
             >
               <div>
                 <div className="flex items-center justify-between">
-                  <span className="text-2xl font-black text-[#6D5DF6]/40 group-hover:text-[#6D5DF6]">
+                  <span className="text-2xl font-black text-brand/40 group-hover:text-brand">
                     {item.num}
                   </span>
-                  <span className="rounded-full bg-[#F5F3FF] px-2.5 py-1 text-[11px] font-black text-[#6D5DF6]">
+                  <span className="rounded-full bg-bgSoft px-2.5 py-1 text-[11px] font-black text-brand">
                     {item.badge}
                   </span>
                 </div>
@@ -78,13 +78,13 @@ export const HowItWorksSection: React.FC = () => {
                   {item.icon}
                 </div>
 
-                <h3 className="mt-4 text-base font-black text-[#161326]">{item.title}</h3>
-                <p className="mt-2 text-xs leading-6 text-[#6B7280]">{item.desc}</p>
+                <h3 className="mt-4 text-base font-black text-textPrimary">{item.title}</h3>
+                <p className="mt-2 text-xs leading-6 text-textGray">{item.desc}</p>
               </div>
 
               {idx < steps.length - 1 && (
                 <div className="hidden lg:block absolute -right-3 top-1/2 -translate-y-1/2 z-10">
-                  <ArrowRight className="h-5 w-5 text-[#6D5DF6]/40" />
+                  <ArrowRight className="h-5 w-5 text-brand/40" />
                 </div>
               )}
             </div>

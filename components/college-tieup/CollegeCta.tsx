@@ -11,7 +11,7 @@ export const CollegeCta: React.FC<CollegeCtaProps> = ({ onOpenEnquiry }) => {
   return (
     <section id="partnership-enquiry" className="bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="overflow-hidden rounded-2xl border border-[#E2D9FF] bg-[#160840] shadow-xl">
+        <div className="overflow-hidden rounded-2xl border border-borderLight bg-brandDark shadow-xl">
           <div className="grid gap-8 p-8 sm:p-10 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
               <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#F5C842]">
@@ -29,7 +29,7 @@ export const CollegeCta: React.FC<CollegeCtaProps> = ({ onOpenEnquiry }) => {
               <button
                 type="button"
                 onClick={onOpenEnquiry}
-                className="inline-flex items-center justify-center rounded-2xl bg-[#F5C842] px-6 py-3.5 text-sm font-extrabold text-[#160840] transition hover:bg-white cursor-pointer"
+                className="inline-flex items-center justify-center rounded-2xl bg-[#F5C842] px-6 py-3.5 text-sm font-extrabold text-textPrimary transition hover:bg-white cursor-pointer"
               >
                 Request discussion
               </button>

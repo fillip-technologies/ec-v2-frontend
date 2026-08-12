@@ -19,7 +19,7 @@ export default function CompanyBrandingPage() {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAFBFF] text-[#160840] antialiased selection:bg-[#7C5CFC] selection:text-white">
+    <div className="min-h-screen flex flex-col bg-bgBody text-textPrimary antialiased selection:bg-brand selection:text-white">
       <Navbar onOpenEnquiry={() => setModalOpen(true)} />
 
       <main className="flex-grow">

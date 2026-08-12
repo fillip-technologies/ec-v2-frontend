@@ -9,7 +9,7 @@ import { QrCode, Share2, FileCheck, GitBranch } from "lucide-react";
 export const CertificateShowcaseSection: React.FC = () => {
   const highlights = [
     {
-      icon: <QrCode className="h-5 w-5 text-[#6D5DF6]" />,
+      icon: <QrCode className="h-5 w-5 text-brand" />,
       title: "QR Verification",
       desc: "Instant tamper-proof authenticity check resolving to public verification URL.",
     },
@@ -31,16 +31,16 @@ export const CertificateShowcaseSection: React.FC = () => {
   ];
 
   return (
-    <section id="certificate-sample" className="relative isolate overflow-hidden bg-[#FAFBFF] py-16 sm:py-20 lg:py-24">
+    <section id="certificate-sample" className="relative isolate overflow-hidden bg-bgBody py-16 sm:py-20 lg:py-24">
       <Container size="wide">
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Left Text Column */}
           <div>
             <Badge variant="brand">Certificate Credentials</Badge>
-            <h2 className="mt-5 text-3xl font-black leading-tight text-[#161326] sm:text-4xl lg:text-5xl">
+            <h2 className="mt-5 text-3xl font-black leading-tight text-textPrimary sm:text-4xl lg:text-5xl">
               A certificate backed by completed project work.
             </h2>
-            <p className="mt-4 text-base leading-8 text-[#6B7280]">
+            <p className="mt-4 text-base leading-8 text-textGray">
               Engineers Clinic certificates carry unique verification codes and QR tags, giving recruiters and colleges instant access to your evaluated deliverables.
             </p>
 
@@ -48,13 +48,13 @@ export const CertificateShowcaseSection: React.FC = () => {
               {highlights.map((item, idx) => (
                 <div
                   key={idx}
-                  className="rounded-3xl border border-[#ECEBFF] bg-white p-5 transition duration-300 hover:scale-[1.02] hover:border-[#6D5DF6] hover:shadow-xl"
+                  className="rounded-3xl border border-borderSoft bg-white p-5 transition duration-300 hover:scale-[1.02] hover:border-brand hover:shadow-xl"
                 >
-                  <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#F5F3FF]">
+                  <span className="grid h-11 w-11 place-items-center rounded-2xl bg-bgSoft">
                     {item.icon}
                   </span>
-                  <h3 className="mt-4 font-black text-[#161326] text-sm sm:text-base">{item.title}</h3>
-                  <p className="mt-1 text-xs leading-5 text-[#6B7280]">{item.desc}</p>
+                  <h3 className="mt-4 font-black text-textPrimary text-sm sm:text-base">{item.title}</h3>
+                  <p className="mt-1 text-xs leading-5 text-textGray">{item.desc}</p>
                 </div>
               ))}
             </div>
@@ -62,8 +62,8 @@ export const CertificateShowcaseSection: React.FC = () => {
 
           {/* Right Image Showcase Column */}
           <div className="relative flex justify-center">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-[#6D5DF6]/20 to-[#22C55E]/15 blur-3xl" />
-            <div className="relative overflow-hidden rounded-3xl border border-[#ECEBFF] bg-white p-4 shadow-2xl transition duration-500 hover:scale-[1.02]">
+            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-brand/20 to-[#22C55E]/15 blur-3xl" />
+            <div className="relative overflow-hidden rounded-3xl border border-borderSoft bg-white p-4 shadow-2xl transition duration-500 hover:scale-[1.02]">
               <Image
                 src="/images/ec-cer.png"
                 alt="Engineers Clinic Verified Certificate Sample"

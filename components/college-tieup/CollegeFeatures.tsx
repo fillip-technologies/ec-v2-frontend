@@ -31,29 +31,29 @@ export const CollegeFeatures: React.FC = () => {
   ];
 
   return (
-    <section className="bg-[#EEF5FF] py-16 sm:py-20">
+    <section className="bg-bgSoft py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1fr] lg:items-center">
           <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#7C5CFC]">
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand">
               Features for colleges
             </p>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[#160840] sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-textPrimary sm:text-4xl">
               Operational controls for academic teams and placement cells.
             </h2>
-            <p className="mt-5 text-base leading-8 text-[#6B7280]">
+            <p className="mt-5 text-base leading-8 text-textGray">
               The platform experience is designed to help colleges coordinate learning activity, monitor student progress, and keep stakeholders informed.
             </p>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-[#E2D9FF] bg-white shadow-sm">
+          <div className="overflow-hidden rounded-2xl border border-borderLight bg-white shadow-sm">
             {features.map((feature, idx) => (
               <div
                 key={idx}
-                className="grid gap-3 border-b border-[#E2D9FF] p-5 last:border-b-0 sm:grid-cols-[220px_1fr] sm:gap-8 hover:bg-[#EEF5FF]/50 transition"
+                className="grid gap-3 border-b border-borderLight p-5 last:border-b-0 sm:grid-cols-[220px_1fr] sm:gap-8 hover:bg-bgSoft/50 transition"
               >
-                <h3 className="font-extrabold text-[#160840]">{feature.title}</h3>
-                <p className="text-sm leading-7 text-[#6B7280]">{feature.body}</p>
+                <h3 className="font-extrabold text-textPrimary">{feature.title}</h3>
+                <p className="text-sm leading-7 text-textGray">{feature.body}</p>
               </div>
             ))}
           </div>

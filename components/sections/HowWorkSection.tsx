@@ -32,7 +32,7 @@ export const HowWorkSection: React.FC = () => {
               </span>
               <div>
                 <p className="ec-pipeline-label text-xs font-black uppercase tracking-[0.18em]">How It Works</p>
-                <h2 className="mt-1 text-2xl font-black leading-tight text-[#161326] sm:text-3xl lg:text-4xl">
+                <h2 className="mt-1 text-2xl font-black leading-tight text-textPrimary sm:text-3xl lg:text-4xl">
                   Project completion pipeline
                 </h2>
               </div>
@@ -77,8 +77,8 @@ export const HowWorkSection: React.FC = () => {
                   {item.icon}
                 </span>
 
-                <h3 className="mt-4 text-base font-black text-[#161326]">{item.title}</h3>
-                <p className="mt-2 text-sm font-medium text-[#6B7280]">{item.desc}</p>
+                <h3 className="mt-4 text-base font-black text-textPrimary">{item.title}</h3>
+                <p className="mt-2 text-sm font-medium text-textGray">{item.desc}</p>
 
                 {!isLast && (
                   <>

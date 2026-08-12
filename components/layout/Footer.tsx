@@ -21,7 +21,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "mt-16" }) => {
   ];
 
   return (
-    <footer className={`bg-[#12052E] text-white ${className}`}>
+    <footer className={`bg-surfaceDark text-white ${className}`}>
       <div className="container-main py-14 sm:py-16">
         <div className="grid gap-10 lg:grid-cols-[1.05fr_2.1fr_0.9fr]">
           {/* Column 1: Brand & Contact Info */}

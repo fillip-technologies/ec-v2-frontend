@@ -36,11 +36,11 @@ export const FaqSection: React.FC = () => {
   ];
 
   return (
-    <section id="faq" className="relative isolate overflow-hidden bg-[#FAFBFF] py-16 sm:py-20 lg:py-24">
+    <section id="faq" className="relative isolate overflow-hidden bg-bgBody py-16 sm:py-20 lg:py-24">
       <Container size="narrow">
         <div className="mb-10 text-center">
           <Badge variant="brand">Frequently Asked Questions</Badge>
-          <h2 className="mt-5 text-3xl font-black leading-tight text-[#161326] sm:text-4xl lg:text-5xl">
+          <h2 className="mt-5 text-3xl font-black leading-tight text-textPrimary sm:text-4xl lg:text-5xl">
             Questions students ask before starting.
           </h2>
         </div>
@@ -52,16 +52,16 @@ export const FaqSection: React.FC = () => {
             return (
               <div
                 key={idx}
-                className="overflow-hidden rounded-3xl border border-[#ECEBFF] bg-white shadow-sm transition duration-300 hover:border-[#6D5DF6]"
+                className="overflow-hidden rounded-3xl border border-borderSoft bg-white shadow-sm transition duration-300 hover:border-brand"
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : idx)}
                   className="flex w-full items-center justify-between gap-4 p-5 text-left sm:p-6"
                 >
-                  <span className="text-base font-black text-[#161326] sm:text-lg">{faq.q}</span>
+                  <span className="text-base font-black text-textPrimary sm:text-lg">{faq.q}</span>
                   <span
                     className={`grid h-8 w-8 shrink-0 place-items-center rounded-full transition duration-300 ${
-                      isOpen ? "bg-[#6D5DF6] text-white rotate-180" : "bg-[#F5F3FF] text-[#6D5DF6]"
+                      isOpen ? "bg-brand text-white rotate-180" : "bg-bgSoft text-brand"
                     }`}
                   >
                     {isOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
@@ -69,7 +69,7 @@ export const FaqSection: React.FC = () => {
                 </button>
 
                 {isOpen && (
-                  <div className="border-t border-[#ECEBFF] px-5 pb-6 pt-4 text-sm leading-7 text-[#6B7280] sm:px-6">
+                  <div className="border-t border-borderSoft px-5 pb-6 pt-4 text-sm leading-7 text-textGray sm:px-6">
                     {faq.a}
                   </div>
                 )}

@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased selection:bg-[#7C5CFC] selection:text-white">
+    <html lang="en" className="h-full antialiased selection:bg-brand selection:text-white">
       <head>
         <link
           rel="stylesheet"
@@ -29,7 +29,7 @@ export default function RootLayout({
         {/*  title */}
         <title>Engineers Clinic</title>
       </head>
-      <body className="min-h-full flex flex-col font-sans bg-[#FAFBFF] text-[#160840] antialiased">
+      <body className="min-h-full flex flex-col font-sans bg-bgBody text-textPrimary antialiased">
         {children}
       </body>
     </html>

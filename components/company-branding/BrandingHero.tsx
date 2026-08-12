@@ -22,118 +22,118 @@ export const BrandingHero: React.FC = () => {
   return (
     <section className="relative overflow-hidden bg-white">
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(245,240,255,0.72),rgba(255,255,255,0.98)_42%,rgba(238,245,255,0.86))]" />
-      <div className="pointer-events-none absolute -right-24 top-16 h-72 w-72 rounded-full bg-[#7C5CFC]/15 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 top-16 h-72 w-72 rounded-full bg-brand/15 blur-3xl" />
 
       <div className="relative mx-auto grid max-w-7xl gap-12 px-6 py-16 sm:py-20 lg:grid-cols-[0.92fr_1fr] lg:items-center lg:py-24">
         {/* Left Content */}
         <div>
-          <div className="inline-flex items-center gap-3 rounded-full border border-[#E2D9FF] bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-[#7C5CFC] shadow-sm">
+          <div className="inline-flex items-center gap-3 rounded-full border border-borderLight bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-brand shadow-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-[#F5C842]" />
             Audience Reach Infrastructure
           </div>
 
-          <h1 className="mt-7 max-w-4xl text-4xl font-extrabold tracking-tight text-[#160840] sm:text-5xl lg:text-[4.25rem] lg:leading-[1.03]">
+          <h1 className="mt-7 max-w-4xl text-4xl font-extrabold tracking-tight text-textPrimary sm:text-5xl lg:text-[4.25rem] lg:leading-[1.03]">
             Scale student reach through a measurable campaign network.
           </h1>
 
-          <p className="mt-6 max-w-2xl text-base leading-8 text-[#6B7280] sm:text-lg">
+          <p className="mt-6 max-w-2xl text-base leading-8 text-textGray sm:text-lg">
             Engineers Clinic gives employer brands, SaaS teams, hiring teams, and certification providers a structured distribution layer for awareness, registrations, engagement, and qualified student interest.
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <a
               href="#branding-enquiry"
-              className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[#7C5CFC] px-7 py-3.5 text-sm font-extrabold text-white shadow-[0_18px_42px_rgba(124,92,252,0.24)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#6a49f3]"
+              className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-brand px-7 py-3.5 text-sm font-extrabold text-white shadow-[0_18px_42px_rgba(124,92,252,0.24)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#6a49f3]"
             >
               Launch Campaign
             </a>
             <a
               href="#branding-channels"
-              className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[#E2D9FF] bg-white/90 px-7 py-3.5 text-sm font-extrabold text-[#160840] shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-[#7C5CFC] hover:text-[#7C5CFC]"
+              className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-borderLight bg-white/90 px-7 py-3.5 text-sm font-extrabold text-textPrimary shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-brand hover:text-brand"
             >
               Explore Audience Reach
             </a>
           </div>
 
-          <div className="mt-8 grid gap-3 border-t border-[#E2D9FF] pt-6 text-sm text-[#6B7280] sm:grid-cols-3">
+          <div className="mt-8 grid gap-3 border-t border-borderLight pt-6 text-sm text-textGray sm:grid-cols-3">
             <div className="flex items-start gap-3">
-              <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#7C5CFC]" />
-              <span className="font-semibold text-[#160840]">Audience segmentation</span>
+              <span className="mt-2 h-1.5 w-1.5 rounded-full bg-brand" />
+              <span className="font-semibold text-textPrimary">Audience segmentation</span>
             </div>
             <div className="flex items-start gap-3">
-              <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#7C5CFC]" />
-              <span className="font-semibold text-[#160840]">Multi-channel activation</span>
+              <span className="mt-2 h-1.5 w-1.5 rounded-full bg-brand" />
+              <span className="font-semibold text-textPrimary">Multi-channel activation</span>
             </div>
             <div className="flex items-start gap-3">
-              <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#7C5CFC]" />
-              <span className="font-semibold text-[#160840]">Performance reporting</span>
+              <span className="mt-2 h-1.5 w-1.5 rounded-full bg-brand" />
+              <span className="font-semibold text-textPrimary">Performance reporting</span>
             </div>
           </div>
         </div>
 
         {/* Right Dashboard Console Preview */}
         <div className="relative">
-          <div className="absolute -left-5 top-10 hidden rounded-2xl border border-[#E2D9FF] bg-white px-4 py-3 shadow-[0_18px_44px_rgba(22,8,64,0.10)] lg:block z-20">
-            <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#8B7FBF]">
+          <div className="absolute -left-5 top-10 hidden rounded-2xl border border-borderLight bg-white px-4 py-3 shadow-[0_18px_44px_rgba(22,8,64,0.10)] lg:block z-20">
+            <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-textMuted">
               Live audience
             </p>
-            <p className="mt-1 text-xl font-extrabold text-[#160840]">48,200</p>
+            <p className="mt-1 text-xl font-extrabold text-textPrimary">48,200</p>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-[#E2D9FF] bg-white shadow-[0_28px_80px_rgba(22,8,64,0.12)]">
-            <div className="flex items-center justify-between border-b border-[#E2D9FF] px-5 py-4">
+          <div className="overflow-hidden rounded-2xl border border-borderLight bg-white shadow-[0_28px_80px_rgba(22,8,64,0.12)]">
+            <div className="flex items-center justify-between border-b border-borderLight px-5 py-4">
               <div>
-                <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#8B7FBF]">
+                <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-textMuted">
                   Campaign console
                 </p>
-                <p className="mt-1 text-sm font-extrabold text-[#160840]">
+                <p className="mt-1 text-sm font-extrabold text-textPrimary">
                   Employer brand launch dashboard
                 </p>
               </div>
-              <span className="rounded-full border border-[#7C5CFC]/20 bg-[#7C5CFC]/15 px-3 py-1 text-xs font-black text-[#7C5CFC]">
+              <span className="rounded-full border border-brand/20 bg-brand/15 px-3 py-1 text-xs font-black text-brand">
                 Live plan
               </span>
             </div>
 
             <div className="bg-[linear-gradient(135deg,#F5F0FF,#ffffff_48%,#EEF5FF)] p-5">
               <div className="grid gap-4 sm:grid-cols-3">
-                <div className="rounded-2xl border border-[#E2D9FF] bg-white p-4 shadow-sm">
-                  <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#8B7FBF]">
+                <div className="rounded-2xl border border-borderLight bg-white p-4 shadow-sm">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-textMuted">
                     Projected reach
                   </p>
-                  <p className="mt-2 text-2xl font-black text-[#160840]">48k</p>
+                  <p className="mt-2 text-2xl font-black text-textPrimary">48k</p>
                 </div>
-                <div className="rounded-2xl border border-[#E2D9FF] bg-white p-4 shadow-sm">
-                  <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#8B7FBF]">
+                <div className="rounded-2xl border border-borderLight bg-white p-4 shadow-sm">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-textMuted">
                     Intent signals
                   </p>
-                  <p className="mt-2 text-2xl font-black text-[#160840]">1,860</p>
+                  <p className="mt-2 text-2xl font-black text-textPrimary">1,860</p>
                 </div>
-                <div className="rounded-2xl border border-[#E2D9FF] bg-white p-4 shadow-sm">
-                  <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#8B7FBF]">
+                <div className="rounded-2xl border border-borderLight bg-white p-4 shadow-sm">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-textMuted">
                     Segments
                   </p>
-                  <p className="mt-2 text-2xl font-black text-[#160840]">34</p>
+                  <p className="mt-2 text-2xl font-black text-textPrimary">34</p>
                 </div>
               </div>
 
-              <div className="mt-4 rounded-2xl border border-[#E2D9FF] bg-white p-5">
+              <div className="mt-4 rounded-2xl border border-borderLight bg-white p-5">
                 <div className="flex items-center justify-between">
-                  <p className="font-extrabold text-[#160840]">Campaign funnel</p>
-                  <span className="rounded-full bg-[#EEF5FF] px-3 py-1 text-xs font-bold text-[#7C5CFC]">
+                  <p className="font-extrabold text-textPrimary">Campaign funnel</p>
+                  <span className="rounded-full bg-bgSoft px-3 py-1 text-xs font-bold text-brand">
                     Weekly lift
                   </span>
                 </div>
                 <div className="mt-5 space-y-4">
                   {funnel.map((row, idx) => (
                     <div key={idx}>
-                      <div className="mb-2 flex justify-between text-xs font-bold text-[#6B7280]">
+                      <div className="mb-2 flex justify-between text-xs font-bold text-textGray">
                         <span>{row.label}</span>
                         <span>{row.percent}%</span>
                       </div>
-                      <div className="h-2 rounded-full bg-[#EEF5FF]">
+                      <div className="h-2 rounded-full bg-bgSoft">
                         <div
-                          className="h-2 rounded-full bg-[#7C5CFC]"
+                          className="h-2 rounded-full bg-brand"
                           style={{ width: `${row.percent}%` }}
                         />
                       </div>
@@ -143,21 +143,21 @@ export const BrandingHero: React.FC = () => {
               </div>
 
               <div className="mt-4 grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
-                <div className="rounded-2xl border border-[#E2D9FF] bg-white p-4 shadow-sm">
-                  <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#8B7FBF]">
+                <div className="rounded-2xl border border-borderLight bg-white p-4 shadow-sm">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-textMuted">
                     Audience mix
                   </p>
-                  <div className="mt-4 space-y-3 text-xs text-[#6B7280]">
+                  <div className="mt-4 space-y-3 text-xs text-textGray">
                     {audienceMix.map((seg, idx) => (
                       <div key={idx} className="flex items-center gap-3">
-                        <span className="w-20 font-bold text-[#160840]">{seg.label}</span>
-                        <span className="h-2 flex-1 rounded-full bg-[#EEF5FF]">
+                        <span className="w-20 font-bold text-textPrimary">{seg.label}</span>
+                        <span className="h-2 flex-1 rounded-full bg-bgSoft">
                           <span
-                            className="block h-2 rounded-full bg-[#7C5CFC]"
+                            className="block h-2 rounded-full bg-brand"
                             style={{ width: `${seg.percent}%` }}
                           />
                         </span>
-                        <span className="w-8 text-right font-extrabold text-[#160840]">
+                        <span className="w-8 text-right font-extrabold text-textPrimary">
                           {seg.percent}%
                         </span>
                       </div>
@@ -165,14 +165,14 @@ export const BrandingHero: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-[#E2D9FF] bg-white p-4 shadow-sm">
+                <div className="rounded-2xl border border-borderLight bg-white p-4 shadow-sm">
                   <div className="flex items-center justify-between gap-4">
-                    <p className="text-sm font-extrabold text-[#160840]">Distribution queue</p>
-                    <span className="text-xs font-bold text-[#7C5CFC]">4 channels</span>
+                    <p className="text-sm font-extrabold text-textPrimary">Distribution queue</p>
+                    <span className="text-xs font-bold text-brand">4 channels</span>
                   </div>
-                  <div className="mt-4 grid gap-2 text-xs font-bold text-[#6B7280] sm:grid-cols-2">
+                  <div className="mt-4 grid gap-2 text-xs font-bold text-textGray sm:grid-cols-2">
                     {channels.map((ch, idx) => (
-                      <span key={idx} className="rounded-xl border border-[#E2D9FF] bg-[#EEF5FF] px-3 py-2">
+                      <span key={idx} className="rounded-xl border border-borderLight bg-bgSoft px-3 py-2">
                         {ch}
                       </span>
                     ))}

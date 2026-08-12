@@ -30,16 +30,16 @@ export const BrandingFaq: React.FC = () => {
   };
 
   return (
-    <section className="bg-[#EEF5FF] py-14 sm:py-16">
+    <section className="bg-bgSoft py-14 sm:py-16">
       <div className="mx-auto grid max-w-7xl gap-8 px-6 lg:grid-cols-[0.72fr_1fr]">
         <div>
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#7C5CFC]">
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand">
             Buyer FAQ
           </p>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[#160840] sm:text-4xl">
+          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-textPrimary sm:text-4xl">
             Common questions from campaign and brand teams.
           </h2>
-          <p className="mt-5 text-base leading-8 text-[#6B7280]">
+          <p className="mt-5 text-base leading-8 text-textGray">
             Designed for teams evaluating audience fit, campaign scope, activation support, and reporting quality.
           </p>
         </div>
@@ -51,24 +51,24 @@ export const BrandingFaq: React.FC = () => {
             return (
               <div
                 key={idx}
-                className="group rounded-2xl border border-[#E2D9FF] bg-white p-4 shadow-sm transition hover:border-[#7C5CFC]/30 hover:shadow-[0_14px_34px_rgba(22,8,64,0.06)]"
+                className="group rounded-2xl border border-borderLight bg-white p-4 shadow-sm transition hover:border-brand/30 hover:shadow-[0_14px_34px_rgba(22,8,64,0.06)]"
               >
                 <button
                   type="button"
                   onClick={() => toggle(idx)}
-                  className="flex w-full cursor-pointer items-center justify-between gap-5 text-left font-extrabold text-[#160840]"
+                  className="flex w-full cursor-pointer items-center justify-between gap-5 text-left font-extrabold text-textPrimary"
                 >
                   <span>{faq.q}</span>
                   <span
                     className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl transition ${
-                      isOpen ? "bg-[#7C5CFC] text-white" : "bg-[#EEF5FF] text-[#7C5CFC]"
+                      isOpen ? "bg-brand text-white" : "bg-bgSoft text-brand"
                     }`}
                   >
                     {isOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
                   </span>
                 </button>
                 {isOpen && (
-                  <p className="mt-4 text-sm leading-7 text-[#6B7280]">{faq.a}</p>
+                  <p className="mt-4 text-sm leading-7 text-textGray">{faq.a}</p>
                 )}
               </div>
             );

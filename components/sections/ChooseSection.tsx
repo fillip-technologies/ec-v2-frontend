@@ -49,13 +49,13 @@ export const ChooseSection: React.FC = () => {
 
       <div className="container-main">
         <div className="mx-auto mb-12 max-w-3xl text-center">
-          <span className="inline-flex rounded-full border border-[#ECEBFF] bg-[#FAFBFF] px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#6D5DF6]">
+          <span className="inline-flex rounded-full border border-borderSoft bg-bgBody px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-brand">
             Testimonials
           </span>
-          <h2 className="mt-5 text-3xl font-black leading-tight text-[#161326] sm:text-4xl lg:text-5xl">
+          <h2 className="mt-5 text-3xl font-black leading-tight text-textPrimary sm:text-4xl lg:text-5xl">
             Students feel the difference when learning becomes buildable.
           </h2>
-          <p className="mt-5 text-base leading-8 text-[#6B7280]">
+          <p className="mt-5 text-base leading-8 text-textGray">
             Real feedback from students using projects, GitHub submissions, and review-based certification to prove practical skills.
           </p>
         </div>
@@ -64,17 +64,17 @@ export const ChooseSection: React.FC = () => {
           {testimonials.map((testimonial, idx) => (
             <article
               key={idx}
-              className="group rounded-[2rem] border border-[#ECEBFF] bg-white p-6 shadow-[0_18px_48px_rgba(15,10,42,0.06)] transition duration-300 hover:scale-[1.02] hover:border-[#6D5DF6] hover:bg-[#FCFBFF] hover:shadow-[0_26px_70px_rgba(109,93,246,0.14)]"
+              className="group rounded-[2rem] border border-borderSoft bg-white p-6 shadow-[0_18px_48px_rgba(15,10,42,0.06)] transition duration-300 hover:scale-[1.02] hover:border-brand hover:bg-[#FCFBFF] hover:shadow-[0_26px_70px_rgba(109,93,246,0.14)]"
             >
               <div className="flex items-center gap-1 text-[#A855F7]">
                 {[...Array(5)].map((_, sIdx) => (
                   <span key={sIdx} className="text-sm">★</span>
                 ))}
               </div>
-              <p className="mt-5 text-base font-medium leading-8 text-[#161326]">
+              <p className="mt-5 text-base font-medium leading-8 text-textPrimary">
                 &ldquo;{testimonial.quote}&rdquo;
               </p>
-              <div className="mt-6 flex items-center gap-3 border-t border-[#ECEBFF] pt-5">
+              <div className="mt-6 flex items-center gap-3 border-t border-borderSoft pt-5">
                 <Image
                   src={testimonial.avatar}
                   alt={testimonial.name}
@@ -83,8 +83,8 @@ export const ChooseSection: React.FC = () => {
                   className="h-12 w-12 rounded-full object-cover object-top ring-4 ring-[#ECEBFF]"
                 />
                 <div>
-                  <p className="font-black text-[#161326]">{testimonial.name}</p>
-                  <p className="text-sm font-bold text-[#6B7280]">{testimonial.role}</p>
+                  <p className="font-black text-textPrimary">{testimonial.name}</p>
+                  <p className="text-sm font-bold text-textGray">{testimonial.role}</p>
                 </div>
               </div>
             </article>

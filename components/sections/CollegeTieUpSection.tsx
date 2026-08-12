@@ -21,40 +21,40 @@ export const CollegeTieUpSection: React.FC<CollegeTieUpSectionProps> = ({ onOpen
   return (
     <section id="college-tieup" className="relative overflow-hidden bg-white py-14 sm:py-16">
       <div className="container-main">
-        <div className="grid items-center gap-8 rounded-[2rem] border border-[#ECEBFF] bg-[#FAFBFF] p-6 shadow-[0_24px_70px_rgba(15,10,42,0.07)] lg:grid-cols-[0.9fr_1.1fr] lg:p-8">
+        <div className="grid items-center gap-8 rounded-[2rem] border border-borderSoft bg-bgBody p-6 shadow-[0_24px_70px_rgba(15,10,42,0.07)] lg:grid-cols-[0.9fr_1.1fr] lg:p-8">
           <div>
-            <span className="inline-flex rounded-full bg-[#6D5DF6]/10 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#6D5DF6]">
+            <span className="inline-flex rounded-full bg-brand/10 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-brand">
               College Tie-up Program
             </span>
-            <h2 className="mt-5 text-3xl font-black leading-tight text-[#161326] sm:text-4xl">
+            <h2 className="mt-5 text-3xl font-black leading-tight text-textPrimary sm:text-4xl">
               Bring project-based learning to your campus.
             </h2>
-            <p className="mt-4 max-w-xl text-base leading-8 text-[#6B7280]">
+            <p className="mt-4 max-w-xl text-base leading-8 text-textGray">
               We partner with institutions to run structured project workspaces, GitHub submissions, mentor reviews, certificates, and placement-ready progress reports.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <button
                 type="button"
                 onClick={onOpenEnquiry}
-                className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[#6D5DF6] px-5 py-3 text-sm font-black text-white shadow-[0_16px_38px_rgba(109,93,246,0.25)] transition hover:-translate-y-1 hover:bg-[#5A4AE3] cursor-pointer"
+                className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-brand px-5 py-3 text-sm font-black text-white shadow-[0_16px_38px_rgba(109,93,246,0.25)] transition hover:-translate-y-1 hover:bg-[#5A4AE3] cursor-pointer"
               >
                 Request College Tie-up
               </button>
               <a
                 href="#college-benefits"
-                className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-[#D9D6FF] bg-white px-5 py-3 text-sm font-black text-[#161326] transition hover:-translate-y-1 hover:bg-[#F5F3FF] hover:text-[#161326]"
+                className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-borderSoft bg-white px-5 py-3 text-sm font-black text-textPrimary transition hover:-translate-y-1 hover:bg-bgSoft hover:text-textPrimary"
               >
                 View Benefits
               </a>
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-[1.5rem] border border-[#ECEBFF] bg-white py-6 shadow-[0_16px_44px_rgba(15,10,42,0.06)]">
+          <div className="overflow-hidden rounded-[1.5rem] border border-borderSoft bg-white py-6 shadow-[0_16px_44px_rgba(15,10,42,0.06)]">
             <div className="flex w-max gap-4 ec-marquee">
               {[...colleges, ...colleges].map((college, idx) => (
                 <div
                   key={idx}
-                  className="flex h-20 w-52 shrink-0 items-center justify-center rounded-2xl border border-[#ECEBFF] bg-gradient-to-br from-white to-[#FAFBFF] px-5 text-center text-sm font-black text-[#161326] shadow-[0_10px_26px_rgba(15,10,42,0.05)]"
+                  className="flex h-20 w-52 shrink-0 items-center justify-center rounded-2xl border border-borderSoft bg-gradient-to-br from-white to-[#FAFBFF] px-5 text-center text-sm font-black text-textPrimary shadow-[0_10px_26px_rgba(15,10,42,0.05)]"
                 >
                   {college}
                 </div>
@@ -64,7 +64,7 @@ export const CollegeTieUpSection: React.FC<CollegeTieUpSectionProps> = ({ onOpen
               {["Campus onboarding", "MoU ready", "Coordinator support"].map((item, idx) => (
                 <div
                   key={idx}
-                  className="rounded-2xl bg-[#6D5DF6]/10 px-4 py-3 text-center text-sm font-black text-[#6D5DF6]"
+                  className="rounded-2xl bg-brand/10 px-4 py-3 text-center text-sm font-black text-brand"
                 >
                   {item}
                 </div>

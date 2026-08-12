@@ -19,7 +19,7 @@ export const CollegeServices: React.FC = () => {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-[#160840] py-16 text-white sm:py-20">
+    <section className="relative overflow-hidden bg-brandDark py-16 text-white sm:py-20">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(124,92,252,0.14),transparent_28%),radial-gradient(circle_at_82%_78%,rgba(245,200,66,0.08),transparent_26%)]" />
 
       <div className="relative mx-auto max-w-7xl px-6">

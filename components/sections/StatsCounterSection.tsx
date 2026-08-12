@@ -10,8 +10,8 @@ export const StatsCounterSection: React.FC = () => {
       value: "6,000+",
       label: "Enrolled Students",
       desc: "Learners actively building portfolio projects",
-      icon: <Users className="h-6 w-6 text-[#6D5DF6]" />,
-      bgTone: "bg-[#F5F3FF]",
+      icon: <Users className="h-6 w-6 text-brand" />,
+      bgTone: "bg-bgSoft",
     },
     {
       value: "320+",
@@ -37,13 +37,13 @@ export const StatsCounterSection: React.FC = () => {
   ];
 
   return (
-    <section className="relative border-y border-[#ECEBFF] bg-white py-10 sm:py-12">
+    <section className="relative border-y border-borderSoft bg-white py-10 sm:py-12">
       <Container size="wide">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((item, idx) => (
             <div
               key={idx}
-              className="group flex items-start gap-4 rounded-3xl border border-[#ECEBFF] bg-[#FAFBFF] p-5 transition duration-300 hover:scale-[1.02] hover:border-[#6D5DF6] hover:bg-white hover:shadow-xl"
+              className="group flex items-start gap-4 rounded-3xl border border-borderSoft bg-bgBody p-5 transition duration-300 hover:scale-[1.02] hover:border-brand hover:bg-white hover:shadow-xl"
             >
               <div
                 className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${item.bgTone} transition duration-300 group-hover:scale-110`}
@@ -51,11 +51,11 @@ export const StatsCounterSection: React.FC = () => {
                 {item.icon}
               </div>
               <div>
-                <p className="text-2xl font-black text-[#161326] sm:text-3xl">{item.value}</p>
-                <p className="text-xs font-black uppercase tracking-wider text-[#6D5DF6]">
+                <p className="text-2xl font-black text-textPrimary sm:text-3xl">{item.value}</p>
+                <p className="text-xs font-black uppercase tracking-wider text-brand">
                   {item.label}
                 </p>
-                <p className="mt-1 text-xs text-[#6B7280]">{item.desc}</p>
+                <p className="mt-1 text-xs text-textGray">{item.desc}</p>
               </div>
             </div>
           ))}

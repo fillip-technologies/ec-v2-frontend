@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Lock, Mail, ArrowRight } from "lucide-react";
+import { BACKEND_URL } from "@/config/api";
 
 export const LoginForm: React.FC = () => {
   const [activeRole, setActiveRole] = useState<"student" | "college" | "admin">("student");
@@ -29,17 +30,40 @@ export const LoginForm: React.FC = () => {
     },
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage("");
     setLoading(true);
 
-    // Simulated auth action
-    setTimeout(() => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          password,
+          role: activeRole,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Invalid email or password");
+      }
+
+      // Store JWT Token in localStorage
+      if (data.accessToken) {
+        localStorage.setItem("token", data.accessToken);
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
+
       setLoading(false);
-      // Redirect to dashboard or show error
-      window.location.href = activeRole === "student" ? "/#dashboard" : "/#college";
-    }, 1000);
+      window.location.href = "/student";
+    } catch (err: any) {
+      setLoading(false);
+      setErrorMessage(err.message || "Something went wrong during login");
+    }
   };
 
   return (
@@ -48,13 +72,13 @@ export const LoginForm: React.FC = () => {
         <div className="rounded-[1.75rem] border border-white/70 bg-white/90 p-6 sm:p-8 shadow-xl backdrop-blur-xl">
           {/* Header */}
           <div>
-            <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-[#7C5CFC]">
+            <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-brand">
               Secure Portal
             </p>
-            <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-[#160840]">
+            <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-textPrimary">
               Login
             </h2>
-            <p className="mt-2 text-sm leading-6 text-[#6B7280]">
+            <p className="mt-2 text-sm leading-6 text-textGray">
               Access your Engineers Clinic portal
             </p>
           </div>
@@ -69,32 +93,32 @@ export const LoginForm: React.FC = () => {
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
             {/* Email Field */}
             <div>
-              <label className="text-sm font-bold text-[#160840]">Email Address</label>
+              <label className="text-sm font-bold text-textPrimary">Email Address</label>
               <div className="relative mt-2">
-                <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8B7FBF]" />
+                <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-textMuted" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
-                  className="w-full rounded-2xl border border-[#E2D9FF] bg-[#F8F7FF] pl-11 pr-4 py-3.5 text-sm text-[#160840] outline-none transition placeholder:text-[#8B7FBF] focus:border-[#7C5CFC] focus:bg-white focus:ring-4 focus:ring-[#7C5CFC]/15"
+                  className="w-full rounded-2xl border border-borderLight bg-[#F8F7FF] pl-11 pr-4 py-3.5 text-sm text-textPrimary outline-none transition placeholder:text-textMuted focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                 />
               </div>
             </div>
 
             {/* Password Field */}
             <div>
-              <label className="text-sm font-bold text-[#160840]">Password</label>
+              <label className="text-sm font-bold text-textPrimary">Password</label>
               <div className="relative mt-2">
-                <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8B7FBF]" />
+                <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-textMuted" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full rounded-2xl border border-[#E2D9FF] bg-[#F8F7FF] pl-11 pr-4 py-3.5 text-sm text-[#160840] outline-none transition placeholder:text-[#8B7FBF] focus:border-[#7C5CFC] focus:bg-white focus:ring-4 focus:ring-[#7C5CFC]/15"
+                  className="w-full rounded-2xl border border-borderLight bg-[#F8F7FF] pl-11 pr-4 py-3.5 text-sm text-textPrimary outline-none transition placeholder:text-textMuted focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                 />
               </div>
             </div>
@@ -103,7 +127,7 @@ export const LoginForm: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#7C5CFC] to-[#9B7BFF] px-5 py-4 text-sm font-extrabold text-white shadow-lg shadow-[#7C5CFC]/25 transition hover:scale-[1.01] cursor-pointer disabled:opacity-70"
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand to-[#9B7BFF] px-5 py-4 text-sm font-extrabold text-white shadow-lg shadow-[#7C5CFC]/25 transition hover:scale-[1.01] cursor-pointer disabled:opacity-70"
             >
               <span>{loading ? "Signing in..." : `Login as ${roles[activeRole].label}`}</span>
               <ArrowRight className="h-4 w-4" />
@@ -111,7 +135,7 @@ export const LoginForm: React.FC = () => {
 
             {/* Role Switcher */}
             <div className="mt-6 text-center">
-              <p className="text-sm font-bold text-[#6B7280]">Login as:</p>
+              <p className="text-sm font-bold text-textGray">Login as:</p>
               <div className="mt-3 flex flex-wrap justify-center gap-3">
                 {(["student", "college", "admin"] as const).map((roleKey) => (
                   <button
@@ -120,8 +144,8 @@ export const LoginForm: React.FC = () => {
                     onClick={() => setActiveRole(roleKey)}
                     className={`inline-flex items-center justify-center rounded-full border px-4 py-2 text-xs font-black transition cursor-pointer ${
                       activeRole === roleKey
-                        ? "border-transparent bg-gradient-to-r from-[#7C5CFC] to-[#9B7BFF] text-white shadow-lg shadow-[#7C5CFC]/20"
-                        : "border-[#E2D9FF] bg-white text-[#6B7280] hover:border-[#7C5CFC]/40 hover:bg-[#7C5CFC]/5 hover:text-[#160840]"
+                        ? "border-transparent bg-gradient-to-r from-brand to-[#9B7BFF] text-white shadow-lg shadow-[#7C5CFC]/20"
+                        : "border-borderLight bg-white text-textGray hover:border-brand/40 hover:bg-brand/5 hover:text-textPrimary"
                     }`}
                   >
                     {roles[roleKey].label}
@@ -133,11 +157,11 @@ export const LoginForm: React.FC = () => {
             {/* Dynamic Signup Link */}
             {roles[activeRole].signupUrl && (
               <div className="mt-4 text-center">
-                <p className="text-sm text-[#6B7280]">
+                <p className="text-sm text-textGray">
                   New here?{" "}
                   <Link
                     href={roles[activeRole].signupUrl!}
-                    className="font-extrabold text-[#7C5CFC] transition hover:text-[#160840]"
+                    className="font-extrabold text-brand transition hover:text-textPrimary"
                   >
                     {roles[activeRole].signupLabel}
                   </Link>

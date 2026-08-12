@@ -28,25 +28,25 @@ export const AboutValues: React.FC = () => {
   ];
 
   return (
-    <section className="bg-[#EEF5FF] py-14 sm:py-16">
+    <section className="bg-bgSoft py-14 sm:py-16">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-8 max-w-2xl">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#7C5CFC]">
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand">
             Our Values
           </p>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[#160840] sm:text-4xl">
+          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-textPrimary sm:text-4xl">
             The principles that shape every program we build.
           </h2>
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {values.map((item, idx) => (
-            <article key={idx} className="rounded-2xl border border-[#E2D9FF] bg-white p-6 shadow-sm">
-              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#7C5CFC]/10 text-[#7C5CFC]">
+            <article key={idx} className="rounded-2xl border border-borderLight bg-white p-6 shadow-sm">
+              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
                 {item.icon}
               </div>
-              <h3 className="text-lg font-extrabold text-[#160840]">{item.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-[#6B7280]">{item.desc}</p>
+              <h3 className="text-lg font-extrabold text-textPrimary">{item.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-textGray">{item.desc}</p>
             </article>
           ))}
         </div>

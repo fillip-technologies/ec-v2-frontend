@@ -31,16 +31,16 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
     );
 
   const levelConfigs: Record<string, { badge: string; color: string }> = {
-    Beginner: { badge: "45 Days • 3 Projects", color: "from-[#6D5DF6] to-[#8B5CF6]" },
-    Intermediate: { badge: "75 Days • 6 Projects", color: "from-[#0EA5E9] to-[#6D5DF6]" },
+    Beginner: { badge: "45 Days • 3 Projects", color: "from-brand to-[#8B5CF6]" },
+    Intermediate: { badge: "75 Days • 6 Projects", color: "from-[#0EA5E9] to-brand" },
     Advanced: { badge: "90 Days • 9 Projects", color: "from-[#22C55E] to-[#0EA5E9]" },
   };
 
   return (
-    <section id="courses" className="relative isolate overflow-hidden bg-[#FAFBFF] py-16 sm:py-20 lg:py-24">
+    <section id="courses" className="relative isolate overflow-hidden bg-bgBody py-16 sm:py-20 lg:py-24">
       {/* Background Lighting */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-1/4 top-1/4 h-[32rem] w-[32rem] rounded-full bg-[#6D5DF6]/8 blur-3xl" />
+        <div className="absolute left-1/4 top-1/4 h-[32rem] w-[32rem] rounded-full bg-brand/8 blur-3xl" />
         <div className="absolute right-10 bottom-10 h-[28rem] w-[28rem] rounded-full bg-[#22C55E]/8 blur-3xl" />
       </div>
 
@@ -48,16 +48,16 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
         {/* Section Header */}
         <div className="mx-auto mb-10 max-w-3xl text-center">
           <Badge variant="brand">Level-Based Project Tracks</Badge>
-          <h2 className="mt-5 text-3xl font-black leading-tight tracking-tight text-[#161326] sm:text-4xl lg:text-5xl">
+          <h2 className="mt-5 text-3xl font-black leading-tight tracking-tight text-textPrimary sm:text-4xl lg:text-5xl">
             Pick a project track that matches your level.
           </h2>
-          <p className="mt-4 text-base leading-8 text-[#6B7280]">
+          <p className="mt-4 text-base leading-8 text-textGray">
             Every track is designed as a practical build: guided milestones, GitHub submission, AI evaluation, and a verified certificate.
           </p>
         </div>
 
         {/* Level Tabs Switcher */}
-        <div className="mx-auto mb-8 flex max-w-2xl items-center justify-center rounded-3xl border border-[#ECEBFF] bg-white p-2 shadow-lg">
+        <div className="mx-auto mb-8 flex max-w-2xl items-center justify-center rounded-3xl border border-borderSoft bg-white p-2 shadow-lg">
           {Object.keys(INTERNSHIP_DATA).map((level) => (
             <button
               key={level}
@@ -67,8 +67,8 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
               }}
               className={`flex-1 rounded-2xl py-3 text-sm font-black transition duration-300 ${
                 activeLevel === level
-                  ? "bg-[#6D5DF6] text-white shadow-md"
-                  : "text-[#6B7280] hover:text-[#6D5DF6]"
+                  ? "bg-brand text-white shadow-md"
+                  : "text-textGray hover:text-brand"
               }`}
             >
               {level} Level
@@ -77,19 +77,19 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
         </div>
 
         {/* Level Info Banner */}
-        <div className="mb-8 rounded-3xl border border-[#ECEBFF] bg-white p-6 shadow-md">
+        <div className="mb-8 rounded-3xl border border-borderSoft bg-white p-6 shadow-md">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <span className="text-xs font-black uppercase tracking-wider text-[#6D5DF6]">
+              <span className="text-xs font-black uppercase tracking-wider text-brand">
                 {activeLevel} Level Internship Policy
               </span>
-              <h3 className="mt-1 text-xl font-black text-[#161326]">
+              <h3 className="mt-1 text-xl font-black text-textPrimary">
                 {currentLevelData.projects} ({currentLevelData.duration})
               </h3>
-              <p className="mt-1 text-xs text-[#6B7280]">{currentLevelData.focus}</p>
+              <p className="mt-1 text-xs text-textGray">{currentLevelData.focus}</p>
             </div>
             <div className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F5F3FF] px-4 py-2 text-xs font-bold text-[#6D5DF6]">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-bgSoft px-4 py-2 text-xs font-bold text-brand">
                 <Clock className="h-3.5 w-3.5" /> {currentLevelData.duration}
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F0FDF4] px-4 py-2 text-xs font-bold text-[#22C55E]">
@@ -107,7 +107,7 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
               className={`rounded-full px-4 py-2 text-xs font-bold transition ${
                 selectedCategory === "All"
                   ? "bg-[#161326] text-white"
-                  : "bg-white border border-[#ECEBFF] text-[#6B7280] hover:border-[#6D5DF6]"
+                  : "bg-white border border-borderSoft text-textGray hover:border-brand"
               }`}
             >
               All Categories
@@ -118,8 +118,8 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
                 onClick={() => setSelectedCategory(cat.name)}
                 className={`rounded-full px-4 py-2 text-xs font-bold transition ${
                   selectedCategory === cat.name
-                    ? "bg-[#6D5DF6] text-white"
-                    : "bg-white border border-[#ECEBFF] text-[#6B7280] hover:border-[#6D5DF6]"
+                    ? "bg-brand text-white"
+                    : "bg-white border border-borderSoft text-textGray hover:border-brand"
                 }`}
               >
                 {cat.name}
@@ -128,13 +128,13 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
           </div>
 
           <div className="relative w-full lg:w-72">
-            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
+            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-textGray" />
             <input
               type="text"
               placeholder="Search topic..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-full border border-[#ECEBFF] bg-white py-2 pl-10 pr-4 text-xs font-medium text-[#161326] outline-none transition focus:border-[#6D5DF6]"
+              className="w-full rounded-full border border-borderSoft bg-white py-2 pl-10 pr-4 text-xs font-medium text-textPrimary outline-none transition focus:border-brand"
             />
           </div>
         </div>
@@ -145,26 +145,26 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
             cat.topics.map((topic, idx) => (
               <div
                 key={`${cat.name}-${topic.slug}`}
-                className="group relative flex flex-col justify-between rounded-3xl border border-[#ECEBFF] bg-white p-6 shadow-md transition duration-300 hover:-translate-y-1 hover:border-[#6D5DF6] hover:shadow-2xl"
+                className="group relative flex flex-col justify-between rounded-3xl border border-borderSoft bg-white p-6 shadow-md transition duration-300 hover:-translate-y-1 hover:border-brand hover:shadow-2xl"
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="rounded-full bg-[#F5F3FF] px-3 py-1 text-[11px] font-black text-[#6D5DF6]">
+                    <span className="rounded-full bg-bgSoft px-3 py-1 text-[11px] font-black text-brand">
                       {cat.name}
                     </span>
-                    <span className="text-[11px] font-bold text-[#6B7280]">
+                    <span className="text-[11px] font-bold text-textGray">
                       {activeLevel} Track
                     </span>
                   </div>
 
-                  <h4 className="mt-4 text-base font-black leading-snug text-[#161326] group-hover:text-[#6D5DF6]">
+                  <h4 className="mt-4 text-base font-black leading-snug text-textPrimary group-hover:text-brand">
                     {topic.title}
                   </h4>
 
-                  <div className="mt-4 space-y-2 border-t border-[#ECEBFF] pt-3 text-xs text-[#6B7280]">
+                  <div className="mt-4 space-y-2 border-t border-borderSoft pt-3 text-xs text-textGray">
                     <div className="flex items-center justify-between">
                       <span>Requirement:</span>
-                      <span className="font-bold text-[#161326]">{currentLevelData.projects}</span>
+                      <span className="font-bold text-textPrimary">{currentLevelData.projects}</span>
                     </div>
                     <div className="flex items-center justify-between">
                       <span>Evaluation:</span>
@@ -178,7 +178,7 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
                   size="sm"
                   icon={<ArrowUpRight className="h-4 w-4" />}
                   onClick={() => onOpenEnquiry(cat.name)}
-                  className="mt-6 w-full group-hover:bg-[#6D5DF6] group-hover:text-white group-hover:border-[#6D5DF6]"
+                  className="mt-6 w-full group-hover:bg-brand group-hover:text-white group-hover:border-brand"
                 >
                   Select & Start Project
                 </Button>

@@ -1,0 +1,98 @@
+{
+  "student": {
+    "roleName": "Student",
+    "groups": [
+      {
+        "id": "programme",
+        "label": "PROGRAMME",
+        "items": [
+          { "id": "overview", "label": "Overview", "slug": "overview", "enabled": true },
+          { "id": "projects", "label": "Projects", "slug": "projects", "enabled": true },
+          { "id": "submissions", "label": "Submissions", "slug": "submissions", "enabled": true },
+          { "id": "rubrics", "label": "Rubrics & Scores", "slug": "rubrics", "enabled": true }
+        ]
+      },
+      {
+        "id": "outcomes",
+        "label": "OUTCOMES",
+        "items": [
+          { "id": "certificate", "label": "Certificate", "slug": "certificate", "enabled": true },
+          { "id": "payments", "label": "Payments", "slug": "payments", "enabled": true }
+        ]
+      }
+    ],
+    "widgets": {
+      "referralWallet": true
+    }
+  },
+  "college": {
+    "roleName": "College",
+    "groups": [
+      {
+        "id": "programme",
+        "label": "PROGRAMME",
+        "items": [
+          { "id": "overview", "label": "Overview", "slug": "overview", "enabled": true },
+          { "id": "projects", "label": "Projects", "slug": "projects", "enabled": true },
+          { "id": "students", "label": "Student Cohorts", "slug": "students", "enabled": true }
+        ]
+      },
+      {
+        "id": "institution",
+        "label": "INSTITUTION",
+        "items": [
+          { "id": "coupons", "label": "Coupon Batches", "slug": "coupons", "enabled": true },
+          { "id": "reports", "label": "Completion Reports", "slug": "reports", "enabled": true }
+        ]
+      }
+    ]
+  },
+  "admin": {
+    "roleName": "Administrator",
+    "groups": [
+      {
+        "id": "catalogue",
+        "label": "CATALOGUE MANAGEMENT",
+        "items": [
+          { "id": "overview", "label": "Overview", "slug": "overview", "enabled": true },
+          { "id": "programs", "label": "Manage Programs", "slug": "programs", "enabled": true },
+          { "id": "projects", "label": "Manage Projects", "slug": "projects", "enabled": true },
+          { "id": "rubrics", "label": "Configure Rubrics", "slug": "rubrics", "enabled": true }
+        ]
+      },
+      {
+        "id": "admin_ops",
+        "label": "ADMINISTRATION",
+        "items": [
+          { "id": "colleges", "label": "Colleges & Seats", "slug": "colleges", "enabled": true },
+          { "id": "users", "label": "Platform Users", "slug": "users", "enabled": true },
+          { "id": "coupons", "label": "Coupon Engine", "slug": "coupons", "enabled": true }
+        ]
+      }
+    ]
+  },
+  "super_admin": {
+    "roleName": "Super Administrator",
+    "groups": [
+      {
+        "id": "catalogue",
+        "label": "CATALOGUE MANAGEMENT",
+        "items": [
+          { "id": "overview", "label": "Overview", "slug": "overview", "enabled": true },
+          { "id": "programs", "label": "Manage Programs", "slug": "programs", "enabled": true },
+          { "id": "projects", "label": "Manage Projects", "slug": "projects", "enabled": true },
+          { "id": "rubrics", "label": "Configure Rubrics", "slug": "rubrics", "enabled": true }
+        ]
+      },
+      {
+        "id": "admin_ops",
+        "label": "ADMINISTRATION",
+        "items": [
+          { "id": "colleges", "label": "Colleges & Seats", "slug": "colleges", "enabled": true },
+          { "id": "users", "label": "Platform Users", "slug": "users", "enabled": true },
+          { "id": "coupons", "label": "Coupon Engine", "slug": "coupons", "enabled": true }
+        ]
+      }
+    ]
+  }
+}

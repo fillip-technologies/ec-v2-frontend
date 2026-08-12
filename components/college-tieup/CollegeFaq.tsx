@@ -30,11 +30,11 @@ export const CollegeFaq: React.FC = () => {
   };
 
   return (
-    <section className="bg-[#EEF5FF] py-16 sm:py-20">
+    <section className="bg-bgSoft py-16 sm:py-20">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[0.72fr_1fr]">
         <div>
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#7C5CFC]">FAQ</p>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[#160840] sm:text-4xl">
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand">FAQ</p>
+          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-textPrimary sm:text-4xl">
             Clear answers for college decision-makers.
           </h2>
         </div>
@@ -46,23 +46,23 @@ export const CollegeFaq: React.FC = () => {
             return (
               <div
                 key={idx}
-                className="group rounded-2xl border border-[#E2D9FF] bg-white p-5 shadow-sm transition hover:border-[#7C5CFC]/30"
+                className="group rounded-2xl border border-borderLight bg-white p-5 shadow-sm transition hover:border-brand/30"
               >
                 <button
                   type="button"
                   onClick={() => toggle(idx)}
-                  className="flex w-full cursor-pointer items-center justify-between gap-5 text-left font-extrabold text-[#160840]"
+                  className="flex w-full cursor-pointer items-center justify-between gap-5 text-left font-extrabold text-textPrimary"
                 >
                   <span>{faq.q}</span>
                   <span
                     className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition ${
-                      isOpen ? "bg-[#7C5CFC] text-white" : "bg-[#EEF5FF] text-[#7C5CFC]"
+                      isOpen ? "bg-brand text-white" : "bg-bgSoft text-brand"
                     }`}
                   >
                     {isOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
                   </span>
                 </button>
-                {isOpen && <p className="mt-4 text-sm leading-7 text-[#6B7280]">{faq.a}</p>}
+                {isOpen && <p className="mt-4 text-sm leading-7 text-textGray">{faq.a}</p>}
               </div>
             );
           })}

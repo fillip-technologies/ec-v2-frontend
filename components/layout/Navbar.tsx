@@ -20,7 +20,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
   const [mobileMoreOpen, setMobileMoreOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#E2D9FF]/70 bg-white/60 backdrop-blur-2xl transition-all duration-300">
+    <header className="sticky top-0 z-50 border-b border-borderLight/70 bg-white/60 backdrop-blur-2xl transition-all duration-300">
       <div className="container-main flex items-center justify-between py-4">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-3" aria-label="Engineers Clinic home">
@@ -61,7 +61,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
               For Enterprises & Employers
               <ChevronDown
                 className={`h-4 w-4 transition duration-200 ${
-                  enterpriseOpen ? "rotate-180 text-[#7C5CFC]" : ""
+                  enterpriseOpen ? "rotate-180 text-brand" : ""
                 }`}
               />
             </button>
@@ -73,13 +73,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
                   <Link
                     href="/company-branding"
                     onClick={() => setEnterpriseOpen(false)}
-                    className="group flex items-start gap-4 rounded-[14px] p-4 transition hover:bg-[#EEF5FF]"
+                    className="group flex items-start gap-4 rounded-[14px] p-4 transition hover:bg-bgSoft"
                   >
-                    <span className="grid h-12 w-12 place-items-center rounded-[14px] bg-[#7C5CFC] text-white shadow-sm">
+                    <span className="grid h-12 w-12 place-items-center rounded-[14px] bg-brand text-white shadow-sm">
                       <LayoutGrid className="h-5 w-5" />
                     </span>
                     <span>
-                      <span className="block text-sm font-bold text-[#160840]">
+                      <span className="block text-sm font-bold text-textPrimary">
                         Company For Branding
                       </span>
                       <span className="mt-1 block text-caption">
@@ -91,13 +91,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
                   <a
                     href="#college-tieup"
                     onClick={() => setEnterpriseOpen(false)}
-                    className="group mt-2 flex items-start gap-4 rounded-[14px] p-4 transition hover:bg-[#EEF5FF]"
+                    className="group mt-2 flex items-start gap-4 rounded-[14px] p-4 transition hover:bg-bgSoft"
                   >
-                    <span className="grid h-12 w-12 place-items-center rounded-[14px] bg-[#7C5CFC]/15 text-[#7C5CFC]">
+                    <span className="grid h-12 w-12 place-items-center rounded-[14px] bg-brand/15 text-brand">
                       <Megaphone className="h-5 w-5" />
                     </span>
                     <span>
-                      <span className="block text-sm font-bold text-[#160840]">
+                      <span className="block text-sm font-bold text-textPrimary">
                         For Selling Services & Products
                       </span>
                       <span className="mt-1 block text-caption">
@@ -123,7 +123,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
               More
               <ChevronDown
                 className={`h-4 w-4 transition duration-200 ${
-                  moreOpen ? "rotate-180 text-[#7C5CFC]" : ""
+                  moreOpen ? "rotate-180 text-brand" : ""
                 }`}
               />
             </button>
@@ -135,7 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
                   <a
                     href="#how-it-works"
                     onClick={() => setMoreOpen(false)}
-                    className="block rounded-[14px] px-4 py-3 text-sm font-semibold text-[#3D2090] transition hover:bg-[#EEF5FF] hover:text-[#7C5CFC]"
+                    className="block rounded-[14px] px-4 py-3 text-sm font-semibold text-textSecondary transition hover:bg-bgSoft hover:text-brand"
                   >
                     AI Tools
                   </a>
@@ -145,14 +145,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
                       setMoreOpen(false);
                       onOpenEnquiry?.();
                     }}
-                    className="mt-1 w-full text-left block rounded-[14px] px-4 py-3 text-sm font-semibold text-[#3D2090] transition hover:bg-[#EEF5FF] hover:text-[#7C5CFC] cursor-pointer"
+                    className="mt-1 w-full text-left block rounded-[14px] px-4 py-3 text-sm font-semibold text-textSecondary transition hover:bg-bgSoft hover:text-brand cursor-pointer"
                   >
                     Refer & Earn
                   </button>
                   <Link
                     href="/about"
                     onClick={() => setMoreOpen(false)}
-                    className="mt-1 block rounded-[14px] px-4 py-3 text-sm font-semibold text-[#3D2090] transition hover:bg-[#EEF5FF] hover:text-[#7C5CFC]"
+                    className="mt-1 block rounded-[14px] px-4 py-3 text-sm font-semibold text-textSecondary transition hover:bg-bgSoft hover:text-brand"
                   >
                     About Us
                   </Link>
@@ -168,10 +168,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
           <button
             type="button"
             onClick={onOpenEnquiry}
-            className="group relative hidden items-center gap-2 overflow-hidden rounded-full border border-[#F5C842]/50 bg-[#F5C842]/18 px-4 py-2.5 text-sm font-black text-[#160840] shadow-[0_10px_28px_rgba(245,200,66,0.22)] transition hover:-translate-y-0.5 hover:border-[#F5C842] hover:bg-[#F5C842] lg:inline-flex cursor-pointer"
+            className="group relative hidden items-center gap-2 overflow-hidden rounded-full border border-[#F5C842]/50 bg-[#F5C842]/18 px-4 py-2.5 text-sm font-black text-textPrimary shadow-[0_10px_28px_rgba(245,200,66,0.22)] transition hover:-translate-y-0.5 hover:border-[#F5C842] hover:bg-[#F5C842] lg:inline-flex cursor-pointer"
           >
             <span className="absolute inset-0 animate-ping rounded-full bg-[#F5C842]/25 opacity-40" />
-            <span className="relative grid h-5 w-5 place-items-center rounded-full bg-white text-[#7C5CFC] shadow-sm">
+            <span className="relative grid h-5 w-5 place-items-center rounded-full bg-white text-brand shadow-sm">
               <Gift className="h-3.5 w-3.5" />
             </span>
             <span className="relative">Refer & Earn</span>
@@ -189,7 +189,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
           <button
             type="button"
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="grid h-11 w-11 place-items-center rounded-[14px] border border-[#E2D9FF] bg-white text-[#160840] shadow-sm lg:hidden cursor-pointer"
+            className="grid h-11 w-11 place-items-center rounded-[14px] border border-borderLight bg-white text-textPrimary shadow-sm lg:hidden cursor-pointer"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -199,12 +199,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
 
       {/* Mobile Drawer */}
       {mobileOpen && (
-        <div className="border-t border-[#E2D9FF] bg-white lg:hidden">
+        <div className="border-t border-borderLight bg-white lg:hidden">
           <nav className="container-main space-y-2 py-5">
             <Link
               href="/"
               onClick={() => setMobileOpen(false)}
-              className="block rounded-[14px] bg-[#7C5CFC] px-5 py-4 text-sm font-bold text-white"
+              className="block rounded-[14px] bg-brand px-5 py-4 text-sm font-bold text-white"
             >
               Home
             </Link>
@@ -215,17 +215,17 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
                 setMobileOpen(false);
                 onOpenEnquiry?.();
               }}
-              className="relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[14px] border border-[#F5C842]/50 bg-[#F5C842]/18 px-5 py-4 text-sm font-black text-[#160840] shadow-sm cursor-pointer"
+              className="relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[14px] border border-[#F5C842]/50 bg-[#F5C842]/18 px-5 py-4 text-sm font-black text-textPrimary shadow-sm cursor-pointer"
             >
-              <Gift className="relative text-[#7C5CFC] h-4 w-4" />
+              <Gift className="relative text-brand h-4 w-4" />
               <span className="relative">Refer & Earn</span>
             </button>
 
             {/* Mobile Internships Accordion */}
-            <div className="rounded-[14px] border border-[#E2D9FF] bg-white">
+            <div className="rounded-[14px] border border-borderLight bg-white">
               <button
                 type="button"
-                className="flex w-full items-center justify-between px-5 py-4 text-left text-sm font-bold text-[#160840]"
+                className="flex w-full items-center justify-between px-5 py-4 text-left text-sm font-bold text-textPrimary"
                 onClick={() => setMobileInternshipOpen(!mobileInternshipOpen)}
               >
                 <span>Internships</span>
@@ -236,7 +236,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
                 />
               </button>
               {mobileInternshipOpen && (
-                <div className="border-t border-[#E2D9FF] p-4">
+                <div className="border-t border-borderLight p-4">
                   <MegaMenu mobile onSelect={() => setMobileOpen(false)} />
                 </div>
               )}
@@ -245,16 +245,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
             <a
               href="#college-tieup"
               onClick={() => setMobileOpen(false)}
-              className="block rounded-[14px] px-5 py-4 text-sm font-bold text-[#3D2090] transition hover:bg-[#EEF5FF] hover:text-[#7C5CFC]"
+              className="block rounded-[14px] px-5 py-4 text-sm font-bold text-textSecondary transition hover:bg-bgSoft hover:text-brand"
             >
               College Tie-ups
             </a>
 
             {/* Mobile Enterprise Accordion */}
-            <div className="rounded-[14px] border border-[#E2D9FF] bg-white">
+            <div className="rounded-[14px] border border-borderLight bg-white">
               <button
                 type="button"
-                className="flex w-full items-center justify-between px-5 py-4 text-left text-sm font-bold text-[#160840]"
+                className="flex w-full items-center justify-between px-5 py-4 text-left text-sm font-bold text-textPrimary"
                 onClick={() => setMobileEnterpriseOpen(!mobileEnterpriseOpen)}
               >
                 <span>For Enterprises & Employers</span>
@@ -265,18 +265,18 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
                 />
               </button>
               {mobileEnterpriseOpen && (
-                <div className="space-y-2 border-t border-[#E2D9FF] p-4">
+                <div className="space-y-2 border-t border-borderLight p-4">
                   <a
                     href="#college-tieup"
                     onClick={() => setMobileOpen(false)}
-                    className="block rounded-[14px] bg-[#EEF5FF] px-4 py-3 text-sm font-semibold text-[#160840]"
+                    className="block rounded-[14px] bg-bgSoft px-4 py-3 text-sm font-semibold text-textPrimary"
                   >
                     Company For Branding
                   </a>
                   <a
                     href="#college-tieup"
                     onClick={() => setMobileOpen(false)}
-                    className="block rounded-[14px] bg-[#EEF5FF] px-4 py-3 text-sm font-semibold text-[#160840]"
+                    className="block rounded-[14px] bg-bgSoft px-4 py-3 text-sm font-semibold text-textPrimary"
                   >
                     For Selling Services & Products
                   </a>
@@ -285,10 +285,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
             </div>
 
             {/* Mobile More Accordion */}
-            <div className="rounded-[14px] border border-[#E2D9FF] bg-white">
+            <div className="rounded-[14px] border border-borderLight bg-white">
               <button
                 type="button"
-                className="flex w-full items-center justify-between px-5 py-4 text-left text-sm font-bold text-[#160840]"
+                className="flex w-full items-center justify-between px-5 py-4 text-left text-sm font-bold text-textPrimary"
                 onClick={() => setMobileMoreOpen(!mobileMoreOpen)}
               >
                 <span>More</span>
@@ -299,11 +299,11 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
                 />
               </button>
               {mobileMoreOpen && (
-                <div className="space-y-2 border-t border-[#E2D9FF] p-4">
+                <div className="space-y-2 border-t border-borderLight p-4">
                   <a
                     href="#how-it-works"
                     onClick={() => setMobileOpen(false)}
-                    className="block rounded-[14px] bg-[#EEF5FF] px-4 py-3 text-sm font-semibold text-[#160840]"
+                    className="block rounded-[14px] bg-bgSoft px-4 py-3 text-sm font-semibold text-textPrimary"
                   >
                     AI Tools
                   </a>
@@ -313,21 +313,21 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
                       setMobileOpen(false);
                       onOpenEnquiry?.();
                     }}
-                    className="w-full text-left block rounded-[14px] bg-[#EEF5FF] px-4 py-3 text-sm font-semibold text-[#160840]"
+                    className="w-full text-left block rounded-[14px] bg-bgSoft px-4 py-3 text-sm font-semibold text-textPrimary"
                   >
                     Refer & Earn
                   </button>
                   <a
                     href="#faq"
                     onClick={() => setMobileOpen(false)}
-                    className="block rounded-[14px] bg-[#EEF5FF] px-4 py-3 text-sm font-semibold text-[#160840]"
+                    className="block rounded-[14px] bg-bgSoft px-4 py-3 text-sm font-semibold text-textPrimary"
                   >
                     Blog
                   </a>
                   <a
                     href="#about"
                     onClick={() => setMobileOpen(false)}
-                    className="block rounded-[14px] bg-[#EEF5FF] px-4 py-3 text-sm font-semibold text-[#160840]"
+                    className="block rounded-[14px] bg-bgSoft px-4 py-3 text-sm font-semibold text-textPrimary"
                   >
                     About Us
                   </a>
@@ -338,7 +338,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
             <Link
               href="/login"
               onClick={() => setMobileOpen(false)}
-              className="block w-full rounded-[14px] bg-[#7C5CFC] px-5 py-4 text-center text-sm font-bold text-white cursor-pointer"
+              className="block w-full rounded-[14px] bg-brand px-5 py-4 text-center text-sm font-bold text-white cursor-pointer"
             >
               Login
             </Link>

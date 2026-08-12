@@ -18,20 +18,20 @@ export const BrandingAnalytics: React.FC = () => {
     <section className="bg-white py-16 sm:py-20">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[0.74fr_1fr] lg:items-center">
         <div>
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#7C5CFC]">
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand">
             Reporting layer
           </p>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[#160840] sm:text-4xl">
+          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-textPrimary sm:text-4xl">
             Performance visibility for marketing, talent, and leadership teams.
           </h2>
-          <p className="mt-5 text-base leading-8 text-[#6B7280]">
+          <p className="mt-5 text-base leading-8 text-textGray">
             Every activation can be reviewed through a practical reporting layer covering audience reach, registrations, engagement quality, channel performance, and recommended follow-ups.
           </p>
           <div className="mt-7 grid gap-3 sm:grid-cols-2">
             {metrics.map((m, idx) => (
               <div
                 key={idx}
-                className="rounded-2xl border border-[#E2D9FF] bg-[#EEF5FF] px-4 py-3 text-sm font-bold text-[#160840]"
+                className="rounded-2xl border border-borderLight bg-bgSoft px-4 py-3 text-sm font-bold text-textPrimary"
               >
                 {m}
               </div>
@@ -40,60 +40,60 @@ export const BrandingAnalytics: React.FC = () => {
         </div>
 
         {/* Analytics Card */}
-        <div className="overflow-hidden rounded-2xl border border-[#E2D9FF] bg-white shadow-[0_24px_70px_rgba(22,8,64,0.10)]">
-          <div className="flex items-center justify-between border-b border-[#E2D9FF] px-5 py-4">
+        <div className="overflow-hidden rounded-2xl border border-borderLight bg-white shadow-[0_24px_70px_rgba(22,8,64,0.10)]">
+          <div className="flex items-center justify-between border-b border-borderLight px-5 py-4">
             <div>
-              <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-[#8B7FBF]">
+              <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-textMuted">
                 Campaign report
               </p>
-              <p className="mt-1 font-extrabold text-[#160840]">
+              <p className="mt-1 font-extrabold text-textPrimary">
                 Employer branding webinar series
               </p>
             </div>
-            <span className="rounded-full bg-[#EEF5FF] px-3 py-1 text-xs font-bold text-[#7C5CFC]">
+            <span className="rounded-full bg-bgSoft px-3 py-1 text-xs font-bold text-brand">
               Export ready
             </span>
           </div>
 
-          <div className="bg-[#EEF5FF] p-5">
+          <div className="bg-bgSoft p-5">
             <div className="grid gap-4 sm:grid-cols-3">
-              <div className="rounded-2xl border border-[#E2D9FF] bg-white p-4 shadow-sm">
-                <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#8B7FBF]">
+              <div className="rounded-2xl border border-borderLight bg-white p-4 shadow-sm">
+                <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-textMuted">
                   Registrations
                 </p>
-                <p className="mt-2 text-2xl font-black text-[#160840]">2,430</p>
+                <p className="mt-2 text-2xl font-black text-textPrimary">2,430</p>
               </div>
-              <div className="rounded-2xl border border-[#E2D9FF] bg-white p-4 shadow-sm">
-                <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#8B7FBF]">
+              <div className="rounded-2xl border border-borderLight bg-white p-4 shadow-sm">
+                <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-textMuted">
                   Engagement
                 </p>
-                <p className="mt-2 text-2xl font-black text-[#160840]">61%</p>
+                <p className="mt-2 text-2xl font-black text-textPrimary">61%</p>
               </div>
-              <div className="rounded-2xl border border-[#E2D9FF] bg-white p-4 shadow-sm">
-                <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#8B7FBF]">
+              <div className="rounded-2xl border border-borderLight bg-white p-4 shadow-sm">
+                <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-textMuted">
                   Qualified actions
                 </p>
-                <p className="mt-2 text-2xl font-black text-[#160840]">380</p>
+                <p className="mt-2 text-2xl font-black text-textPrimary">380</p>
               </div>
             </div>
 
-            <div className="mt-5 rounded-2xl border border-[#E2D9FF] bg-white p-5 shadow-sm">
+            <div className="mt-5 rounded-2xl border border-borderLight bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between gap-4">
-                <p className="font-extrabold text-[#160840]">Channel performance</p>
-                <span className="rounded-full bg-[#EEF5FF] px-3 py-1 text-xs font-bold text-[#7C5CFC]">
+                <p className="font-extrabold text-textPrimary">Channel performance</p>
+                <span className="rounded-full bg-bgSoft px-3 py-1 text-xs font-bold text-brand">
                   Attribution view
                 </span>
               </div>
               <div className="mt-5 space-y-4">
                 {channelPerf.map((row, idx) => (
                   <div key={idx}>
-                    <div className="mb-2 flex justify-between text-xs font-bold text-[#6B7280]">
+                    <div className="mb-2 flex justify-between text-xs font-bold text-textGray">
                       <span>{row.label}</span>
                       <span>{row.percent}%</span>
                     </div>
-                    <div className="h-2 rounded-full bg-[#EEF5FF]">
+                    <div className="h-2 rounded-full bg-bgSoft">
                       <div
-                        className="h-2 rounded-full bg-[#7C5CFC]"
+                        className="h-2 rounded-full bg-brand"
                         style={{ width: `${row.percent}%` }}
                       />
                     </div>
@@ -103,19 +103,19 @@ export const BrandingAnalytics: React.FC = () => {
             </div>
 
             <div className="mt-5 grid gap-4 sm:grid-cols-[1.1fr_0.9fr]">
-              <div className="rounded-2xl border border-[#E2D9FF] bg-white p-5 shadow-sm">
-                <p className="text-sm font-extrabold text-[#160840]">Audience quality signals</p>
+              <div className="rounded-2xl border border-borderLight bg-white p-5 shadow-sm">
+                <p className="text-sm font-extrabold text-textPrimary">Audience quality signals</p>
                 <div className="mt-4 flex items-end gap-2">
                   {bars.map((h, idx) => (
                     <span
                       key={idx}
-                      className="flex-1 rounded-t-md bg-[#7C5CFC]/80 transition duration-300 hover:bg-[#7C5CFC]"
+                      className="flex-1 rounded-t-md bg-brand/80 transition duration-300 hover:bg-brand"
                       style={{ height: `${h}px` }}
                     />
                   ))}
                 </div>
               </div>
-              <div className="rounded-2xl border border-[#E2D9FF] bg-[#160840] p-5 text-white shadow-sm">
+              <div className="rounded-2xl border border-borderLight bg-brandDark p-5 text-white shadow-sm">
                 <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-white/60">
                   Recommendation
                 </p>

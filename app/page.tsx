@@ -32,7 +32,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAFBFF] text-[#160840] antialiased selection:bg-[#7C5CFC] selection:text-white">
+    <div className="min-h-screen flex flex-col bg-bgBody text-textPrimary antialiased selection:bg-brand selection:text-white">
       {/* 1. Header / Navbar */}
       <Navbar onOpenEnquiry={() => handleOpenModal()} />
 

@@ -38,16 +38,16 @@ export const AboutOfferings: React.FC = () => {
   ];
 
   return (
-    <section className="bg-[#EEF5FF] py-14 sm:py-16">
+    <section className="bg-bgSoft py-14 sm:py-16">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-8 max-w-2xl">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#7C5CFC]">
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand">
             What We Offer
           </p>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[#160840] sm:text-4xl">
+          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-textPrimary sm:text-4xl">
             Everything a learner needs to go from classroom to career.
           </h2>
-          <p className="mt-4 text-base leading-8 text-[#6B7280]">
+          <p className="mt-4 text-base leading-8 text-textGray">
             We&apos;ve designed each offering around a single goal — turning potential into performance through real execution.
           </p>
         </div>
@@ -56,13 +56,13 @@ export const AboutOfferings: React.FC = () => {
           {offerings.map((item, idx) => (
             <article
               key={idx}
-              className="group rounded-2xl border border-[#E2D9FF] bg-white p-6 shadow-sm transition hover:border-[#7C5CFC]/40 hover:shadow-md"
+              className="group rounded-2xl border border-borderLight bg-white p-6 shadow-sm transition hover:border-brand/40 hover:shadow-md"
             >
-              <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#7C5CFC]/10 text-[#7C5CFC] transition group-hover:bg-[#7C5CFC] group-hover:text-white">
+              <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-brand/10 text-brand transition group-hover:bg-brand group-hover:text-white">
                 {item.icon}
               </div>
-              <h3 className="text-xl font-extrabold text-[#160840]">{item.title}</h3>
-              <p className="mt-3 leading-7 text-[#6B7280]">{item.desc}</p>
+              <h3 className="text-xl font-extrabold text-textPrimary">{item.title}</h3>
+              <p className="mt-3 leading-7 text-textGray">{item.desc}</p>
             </article>
           ))}
         </div>

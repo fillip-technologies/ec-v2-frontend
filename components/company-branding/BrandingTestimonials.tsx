@@ -23,14 +23,14 @@ export const BrandingTestimonials: React.FC = () => {
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid gap-8 lg:grid-cols-[0.72fr_1fr] lg:items-end">
           <div className="max-w-3xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#7C5CFC]">
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand">
               Partner signals
             </p>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[#160840] sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-textPrimary sm:text-4xl">
               Built for teams that need reach with operational clarity.
             </h2>
           </div>
-          <div className="rounded-2xl border border-[#E2D9FF] bg-[#EEF5FF] p-5">
+          <div className="rounded-2xl border border-borderLight bg-bgSoft p-5">
             <div className="grid gap-4 sm:grid-cols-3">
               {[
                 ["Signal", "Audience fit"],
@@ -38,10 +38,10 @@ export const BrandingTestimonials: React.FC = () => {
                 ["Output", "Actionable report"],
               ].map((item, idx) => (
                 <div key={idx}>
-                  <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#8B7FBF]">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-textMuted">
                     {item[0]}
                   </p>
-                  <p className="mt-1 text-sm font-extrabold text-[#160840]">{item[1]}</p>
+                  <p className="mt-1 text-sm font-extrabold text-textPrimary">{item[1]}</p>
                 </div>
               ))}
             </div>
@@ -52,17 +52,17 @@ export const BrandingTestimonials: React.FC = () => {
           {testimonials.map((t, idx) => (
             <figure
               key={idx}
-              className="relative rounded-2xl border border-[#E2D9FF] bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#7C5CFC]/30 hover:shadow-[0_18px_44px_rgba(22,8,64,0.08)]"
+              className="relative rounded-2xl border border-borderLight bg-white p-7 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand/30 hover:shadow-[0_18px_44px_rgba(22,8,64,0.08)]"
             >
-              <div className="absolute right-7 top-6 text-5xl font-black leading-none text-[#7C5CFC]/15">
+              <div className="absolute right-7 top-6 text-5xl font-black leading-none text-brand/15">
                 &ldquo;
               </div>
-              <blockquote className="relative text-base leading-8 text-[#6B7280]">
+              <blockquote className="relative text-base leading-8 text-textGray">
                 &quot;{t.quote}&quot;
               </blockquote>
-              <figcaption className="mt-6 border-t border-[#E2D9FF] pt-5">
-                <p className="font-extrabold text-[#160840]">{t.name}</p>
-                <p className="mt-1 text-sm font-medium text-[#8B7FBF]">{t.meta}</p>
+              <figcaption className="mt-6 border-t border-borderLight pt-5">
+                <p className="font-extrabold text-textPrimary">{t.name}</p>
+                <p className="mt-1 text-sm font-medium text-textMuted">{t.meta}</p>
               </figcaption>
             </figure>
           ))}

@@ -27,7 +27,7 @@ export const AboutImpactStats: React.FC = () => {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-[#12052E] py-14 sm:py-16 text-white">
+    <section className="relative overflow-hidden bg-surfaceDark py-14 sm:py-16 text-white">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(124,92,252,0.18),transparent_60%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(245,200,66,0.10),transparent_60%)]" />
 

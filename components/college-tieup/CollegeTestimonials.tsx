@@ -22,10 +22,10 @@ export const CollegeTestimonials: React.FC = () => {
     <section className="bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-6">
         <div className="max-w-3xl">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#7C5CFC]">
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand">
             Institution signals
           </p>
-          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[#160840] sm:text-4xl">
+          <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-textPrimary sm:text-4xl">
             Trusted by teams who care about delivery, reporting, and outcomes.
           </h2>
         </div>
@@ -34,14 +34,14 @@ export const CollegeTestimonials: React.FC = () => {
           {testimonials.map((t, idx) => (
             <figure
               key={idx}
-              className="rounded-2xl border border-[#E2D9FF] bg-white p-7 shadow-sm transition hover:shadow-md"
+              className="rounded-2xl border border-borderLight bg-white p-7 shadow-sm transition hover:shadow-md"
             >
-              <blockquote className="text-base leading-8 text-[#6B7280]">
+              <blockquote className="text-base leading-8 text-textGray">
                 &quot;{t.quote}&quot;
               </blockquote>
-              <figcaption className="mt-6 border-t border-[#E2D9FF] pt-5">
-                <p className="font-extrabold text-[#160840]">{t.name}</p>
-                <p className="mt-1 text-sm font-medium text-[#8B7FBF]">{t.meta}</p>
+              <figcaption className="mt-6 border-t border-borderLight pt-5">
+                <p className="font-extrabold text-textPrimary">{t.name}</p>
+                <p className="mt-1 text-sm font-medium text-textMuted">{t.meta}</p>
               </figcaption>
             </figure>
           ))}

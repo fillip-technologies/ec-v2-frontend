@@ -32,23 +32,23 @@ export const BrandingProcess: React.FC = () => {
   ];
 
   return (
-    <section className="bg-[#EEF5FF] py-16 sm:py-20">
+    <section className="bg-bgSoft py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1fr] lg:items-end">
           <div className="max-w-3xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#7C5CFC]">
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand">
               Operating workflow
             </p>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-[#160840] sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-textPrimary sm:text-4xl">
               A campaign system from brief to performance review.
             </h2>
           </div>
-          <div className="rounded-2xl border border-[#E2D9FF] bg-white p-5 shadow-sm">
-            <div className="flex flex-wrap gap-2 text-xs font-bold text-[#6B7280]">
+          <div className="rounded-2xl border border-borderLight bg-white p-5 shadow-sm">
+            <div className="flex flex-wrap gap-2 text-xs font-bold text-textGray">
               {["Brief", "Segment", "Launch", "Track", "Report"].map((stage, idx) => (
                 <span
                   key={idx}
-                  className="rounded-full border border-[#E2D9FF] bg-[#EEF5FF] px-3 py-1.5"
+                  className="rounded-full border border-borderLight bg-bgSoft px-3 py-1.5"
                 >
                   {stage}
                 </span>
@@ -58,23 +58,23 @@ export const BrandingProcess: React.FC = () => {
         </div>
 
         <div className="relative mt-12 grid gap-5 lg:grid-cols-4">
-          <div className="absolute left-0 right-0 top-[2.65rem] hidden h-px bg-gradient-to-r from-transparent via-[#7C5CFC]/25 to-transparent lg:block" />
+          <div className="absolute left-0 right-0 top-[2.65rem] hidden h-px bg-gradient-to-r from-transparent via-brand/25 to-transparent lg:block" />
           {steps.map((step, idx) => (
             <article
               key={idx}
-              className="group relative rounded-2xl border border-[#E2D9FF] bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#7C5CFC]/40 hover:shadow-[0_18px_44px_rgba(22,8,64,0.10)]"
+              className="group relative rounded-2xl border border-borderLight bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-[0_18px_44px_rgba(22,8,64,0.10)]"
             >
               <div className="flex items-center justify-between gap-4">
-                <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-[#E2D9FF] bg-white text-[#7C5CFC] shadow-sm transition duration-300 group-hover:border-[#7C5CFC]/30 group-hover:bg-[#7C5CFC] group-hover:text-white">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-borderLight bg-white text-brand shadow-sm transition duration-300 group-hover:border-brand/30 group-hover:bg-brand group-hover:text-white">
                   {step.icon}
                 </span>
-                <span className="rounded-full border border-[#E2D9FF] bg-[#F5F0FF] px-3 py-1 text-xs font-black text-[#7C5CFC]">
+                <span className="rounded-full border border-borderLight bg-bgMain px-3 py-1 text-xs font-black text-brand">
                   {step.label}
                 </span>
               </div>
-              <h3 className="mt-6 text-lg font-extrabold text-[#160840]">{step.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-[#6B7280]">{step.body}</p>
-              <div className="mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-[#8B7FBF]">
+              <h3 className="mt-6 text-lg font-extrabold text-textPrimary">{step.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-textGray">{step.body}</p>
+              <div className="mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-textMuted">
                 <span className="h-px flex-1 bg-[#E2D9FF]" />
                 <span>Ops step</span>
               </div>

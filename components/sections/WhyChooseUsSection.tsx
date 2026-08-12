@@ -8,7 +8,7 @@ import { FolderGit2, Layout, GitBranch, Sparkles, Award, ShieldAlert } from "luc
 export const WhyChooseUsSection: React.FC = () => {
   const features = [
     {
-      icon: <FolderGit2 className="h-6 w-6 text-[#6D5DF6]" />,
+      icon: <FolderGit2 className="h-6 w-6 text-brand" />,
       title: "Level-Based Projects",
       desc: "Choose beginner (45d), intermediate (75d), or advanced (90d) tracks tailored to your skills.",
       glow: "rgba(109, 93, 246, 0.18)",
@@ -56,10 +56,10 @@ export const WhyChooseUsSection: React.FC = () => {
       <Container size="wide">
         <div className="mx-auto mb-12 max-w-3xl text-center">
           <Badge variant="brand">Why Choose Us</Badge>
-          <h2 className="mt-5 text-3xl font-black leading-tight text-[#161326] sm:text-4xl lg:text-5xl">
+          <h2 className="mt-5 text-3xl font-black leading-tight text-textPrimary sm:text-4xl lg:text-5xl">
             Everything students need to turn learning into proof.
           </h2>
-          <p className="mt-4 text-base leading-8 text-[#6B7280]">
+          <p className="mt-4 text-base leading-8 text-textGray">
             A premium project-based system designed around outcomes recruiters can inspect.
           </p>
         </div>
@@ -68,7 +68,7 @@ export const WhyChooseUsSection: React.FC = () => {
           {features.map((item, idx) => (
             <div
               key={idx}
-              className={`group relative overflow-hidden rounded-3xl border border-[#ECEBFF] bg-gradient-to-br ${item.bg} p-6 shadow-md transition duration-300 hover:scale-[1.02] hover:border-[#6D5DF6] hover:shadow-2xl`}
+              className={`group relative overflow-hidden rounded-3xl border border-borderSoft bg-gradient-to-br ${item.bg} p-6 shadow-md transition duration-300 hover:scale-[1.02] hover:border-brand hover:shadow-2xl`}
             >
               <div
                 className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full blur-2xl transition duration-300 group-hover:scale-125"
@@ -80,8 +80,8 @@ export const WhyChooseUsSection: React.FC = () => {
                   {item.icon}
                 </span>
 
-                <h3 className="mt-5 text-lg font-black text-[#161326]">{item.title}</h3>
-                <p className="mt-2 text-xs leading-6 text-[#6B7280]">{item.desc}</p>
+                <h3 className="mt-5 text-lg font-black text-textPrimary">{item.title}</h3>
+                <p className="mt-2 text-xs leading-6 text-textGray">{item.desc}</p>
               </div>
             </div>
           ))}

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { User, Mail, Building, Lock, CheckCircle2, ArrowRight } from "lucide-react";
+import { BACKEND_URL } from "@/config/api";
 
 interface SignupFormProps {
   initialRole?: "student" | "college";
@@ -51,40 +52,85 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
     { value: "other", label: "Other (Enter custom college name)" },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMsg("");
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+      if (role === "student") {
+        if (studentPassword !== studentConfirmPassword) {
+          throw new Error("Passwords do not match");
+        }
+
+        const collegeName =
+          studentCollege === "other"
+            ? studentCollegeOther
+            : collegeOptions.find((c) => c.value === studentCollege)?.label || studentCollege;
+
+        const res = await fetch(`${BACKEND_URL}/auth/register/student`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: studentName,
+            email: studentEmail,
+            password: studentPassword,
+            college_name: collegeName,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(Array.isArray(data.message) ? data.message.join(", ") : data.message || "Registration failed");
+        }
+
+        if (data.accessToken) {
+          localStorage.setItem("token", data.accessToken);
+          localStorage.setItem("user", JSON.stringify(data.user));
+        }
+
+        setLoading(false);
+        setSuccess(true);
+      } else {
+        // College registration fallback
+        setTimeout(() => {
+          setLoading(false);
+          setSuccess(true);
+        }, 1000);
+      }
+    } catch (err: any) {
       setLoading(false);
-      setSuccess(true);
-    }, 1000);
+      setErrorMsg(err.message || "An error occurred during registration");
+    }
   };
 
   return (
     <div className="w-full">
-      <div className="rounded-[2rem] border border-[#E2D9FF] bg-white/40 p-4 shadow-2xl backdrop-blur-2xl">
+      <div className="rounded-[2rem] border border-borderLight bg-white/40 p-4 shadow-2xl backdrop-blur-2xl">
         <div className="rounded-[1.75rem] border border-white/80 bg-white/95 p-6 sm:p-8 shadow-xl">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-[#E2D9FF] pb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-borderLight pb-6">
             <div>
-              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#7C5CFC]">
+              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand">
                 {role === "student" ? "Student" : "College Partner"} Registration
               </p>
-              <h2 className="mt-1 text-2xl sm:text-3xl font-extrabold text-[#160840]">
+              <h2 className="mt-1 text-2xl sm:text-3xl font-extrabold text-textPrimary">
                 Create your account
               </h2>
             </div>
 
             {/* Role Toggle Switch */}
-            <div className="inline-flex rounded-full bg-[#EEF5FF] p-1 border border-[#E2D9FF]">
+            <div className="inline-flex rounded-full bg-bgSoft p-1 border border-borderLight">
               <button
                 type="button"
                 onClick={() => handleRoleSwitch("student")}
                 className={`rounded-full px-4 py-2 text-xs font-black transition cursor-pointer ${
                   role === "student"
-                    ? "bg-[#7C5CFC] text-white shadow-md"
-                    : "text-[#3D2090] hover:text-[#7C5CFC]"
+                    ? "bg-brand text-white shadow-md"
+                    : "text-textSecondary hover:text-brand"
                 }`}
               >
                 Student
@@ -94,14 +140,20 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
                 onClick={() => handleRoleSwitch("college")}
                 className={`rounded-full px-4 py-2 text-xs font-black transition cursor-pointer ${
                   role === "college"
-                    ? "bg-[#7C5CFC] text-white shadow-md"
-                    : "text-[#3D2090] hover:text-[#7C5CFC]"
+                    ? "bg-brand text-white shadow-md"
+                    : "text-textSecondary hover:text-brand"
                 }`}
               >
                 College
               </button>
             </div>
           </div>
+
+          {errorMsg && (
+            <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">
+              {errorMsg}
+            </div>
+          )}
 
           {success ? (
             <div className="my-8 rounded-2xl border border-green-200 bg-green-50 p-6 text-center text-green-800">
@@ -112,7 +164,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
               </p>
               <Link
                 href="/login"
-                className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#7C5CFC] px-6 py-3 text-sm font-extrabold text-white shadow-md transition hover:bg-[#6a49f3]"
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-extrabold text-white shadow-md transition hover:bg-[#6a49f3]"
               >
                 Go to Login <ArrowRight className="h-4 w-4" />
               </Link>
@@ -124,46 +176,46 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
                 <>
                   {/* Full Name */}
                   <div>
-                    <label className="text-sm font-bold text-[#160840]">Full Name</label>
+                    <label className="text-sm font-bold text-textPrimary">Full Name</label>
                     <div className="relative mt-1.5">
-                      <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8B7FBF]" />
+                      <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-textMuted" />
                       <input
                         type="text"
                         required
                         value={studentName}
                         onChange={(e) => setStudentName(e.target.value)}
                         placeholder="Enter your full name"
-                        className="w-full rounded-2xl border border-[#E2D9FF] bg-[#EEF5FF]/50 pl-11 pr-4 py-3 text-sm text-[#160840] outline-none transition focus:border-[#7C5CFC] focus:bg-white focus:ring-4 focus:ring-[#7C5CFC]/15"
+                        className="w-full rounded-2xl border border-borderLight bg-bgSoft/50 pl-11 pr-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                       />
                     </div>
                   </div>
 
                   {/* Email */}
                   <div>
-                    <label className="text-sm font-bold text-[#160840]">Student Email</label>
+                    <label className="text-sm font-bold text-textPrimary">Student Email</label>
                     <div className="relative mt-1.5">
-                      <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8B7FBF]" />
+                      <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-textMuted" />
                       <input
                         type="email"
                         required
                         value={studentEmail}
                         onChange={(e) => setStudentEmail(e.target.value)}
                         placeholder="Enter your student email"
-                        className="w-full rounded-2xl border border-[#E2D9FF] bg-[#EEF5FF]/50 pl-11 pr-4 py-3 text-sm text-[#160840] outline-none transition focus:border-[#7C5CFC] focus:bg-white focus:ring-4 focus:ring-[#7C5CFC]/15"
+                        className="w-full rounded-2xl border border-borderLight bg-bgSoft/50 pl-11 pr-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                       />
                     </div>
                   </div>
 
                   {/* College Select */}
                   <div>
-                    <label className="text-sm font-bold text-[#160840]">College Name</label>
+                    <label className="text-sm font-bold text-textPrimary">College Name</label>
                     <div className="relative mt-1.5">
-                      <Building className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8B7FBF]" />
+                      <Building className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-textMuted" />
                       <select
                         required
                         value={studentCollege}
                         onChange={(e) => setStudentCollege(e.target.value)}
-                        className="w-full appearance-none rounded-2xl border border-[#E2D9FF] bg-[#EEF5FF]/50 pl-11 pr-4 py-3 text-sm text-[#160840] outline-none transition focus:border-[#7C5CFC] focus:bg-white focus:ring-4 focus:ring-[#7C5CFC]/15 cursor-pointer"
+                        className="w-full appearance-none rounded-2xl border border-borderLight bg-bgSoft/50 pl-11 pr-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15 cursor-pointer"
                       >
                         <option value="">Select your college</option>
                         {collegeOptions.map((opt) => (
@@ -178,7 +230,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
                   {/* Custom College Name if 'other' is selected */}
                   {studentCollege === "other" && (
                     <div>
-                      <label className="text-sm font-bold text-[#7C5CFC]">
+                      <label className="text-sm font-bold text-brand">
                         Enter Your Custom College Name
                       </label>
                       <input
@@ -187,7 +239,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
                         value={studentCollegeOther}
                         onChange={(e) => setStudentCollegeOther(e.target.value)}
                         placeholder="e.g. ABC Institute of Technology"
-                        className="mt-1.5 w-full rounded-2xl border border-[#7C5CFC] bg-white px-4 py-3 text-sm text-[#160840] outline-none transition focus:ring-4 focus:ring-[#7C5CFC]/15"
+                        className="mt-1.5 w-full rounded-2xl border border-brand bg-white px-4 py-3 text-sm text-textPrimary outline-none transition focus:ring-4 focus:ring-brand/15"
                       />
                     </div>
                   )}
@@ -195,30 +247,30 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
                   {/* Password Grid */}
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="text-sm font-bold text-[#160840]">Password</label>
+                      <label className="text-sm font-bold text-textPrimary">Password</label>
                       <div className="relative mt-1.5">
-                        <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8B7FBF]" />
+                        <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-textMuted" />
                         <input
                           type="password"
                           required
                           value={studentPassword}
                           onChange={(e) => setStudentPassword(e.target.value)}
                           placeholder="Create a password"
-                          className="w-full rounded-2xl border border-[#E2D9FF] bg-[#EEF5FF]/50 pl-11 pr-4 py-3 text-sm text-[#160840] outline-none transition focus:border-[#7C5CFC] focus:bg-white focus:ring-4 focus:ring-[#7C5CFC]/15"
+                          className="w-full rounded-2xl border border-borderLight bg-bgSoft/50 pl-11 pr-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                         />
                       </div>
                     </div>
                     <div>
-                      <label className="text-sm font-bold text-[#160840]">Confirm Password</label>
+                      <label className="text-sm font-bold text-textPrimary">Confirm Password</label>
                       <div className="relative mt-1.5">
-                        <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8B7FBF]" />
+                        <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-textMuted" />
                         <input
                           type="password"
                           required
                           value={studentConfirmPassword}
                           onChange={(e) => setStudentConfirmPassword(e.target.value)}
                           placeholder="Confirm password"
-                          className="w-full rounded-2xl border border-[#E2D9FF] bg-[#EEF5FF]/50 pl-11 pr-4 py-3 text-sm text-[#160840] outline-none transition focus:border-[#7C5CFC] focus:bg-white focus:ring-4 focus:ring-[#7C5CFC]/15"
+                          className="w-full rounded-2xl border border-borderLight bg-bgSoft/50 pl-11 pr-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                         />
                       </div>
                     </div>
@@ -228,53 +280,53 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
                 /* COLLEGE FORM FIELDS */
                 <>
                   <div>
-                    <label className="text-sm font-bold text-[#160840]">College Name</label>
+                    <label className="text-sm font-bold text-textPrimary">College Name</label>
                     <input
                       type="text"
                       required
                       value={collegeName}
                       onChange={(e) => setCollegeName(e.target.value)}
                       placeholder="Enter institution full name"
-                      className="mt-1.5 w-full rounded-2xl border border-[#E2D9FF] bg-[#EEF5FF]/50 px-4 py-3 text-sm text-[#160840] outline-none transition focus:border-[#7C5CFC] focus:bg-white focus:ring-4 focus:ring-[#7C5CFC]/15"
+                      className="mt-1.5 w-full rounded-2xl border border-borderLight bg-bgSoft/50 px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                     />
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="text-sm font-bold text-[#160840]">Official Email</label>
+                      <label className="text-sm font-bold text-textPrimary">Official Email</label>
                       <input
                         type="email"
                         required
                         value={collegeEmail}
                         onChange={(e) => setCollegeEmail(e.target.value)}
                         placeholder="e.g. tpo@university.edu.in"
-                        className="mt-1.5 w-full rounded-2xl border border-[#E2D9FF] bg-[#EEF5FF]/50 px-4 py-3 text-sm text-[#160840] outline-none transition focus:border-[#7C5CFC] focus:bg-white focus:ring-4 focus:ring-[#7C5CFC]/15"
+                        className="mt-1.5 w-full rounded-2xl border border-borderLight bg-bgSoft/50 px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-bold text-[#160840]">Contact Person</label>
+                      <label className="text-sm font-bold text-textPrimary">Contact Person</label>
                       <input
                         type="text"
                         required
                         value={collegeContact}
                         onChange={(e) => setCollegeContact(e.target.value)}
                         placeholder="Coordinator / TPO Name"
-                        className="mt-1.5 w-full rounded-2xl border border-[#E2D9FF] bg-[#EEF5FF]/50 px-4 py-3 text-sm text-[#160840] outline-none transition focus:border-[#7C5CFC] focus:bg-white focus:ring-4 focus:ring-[#7C5CFC]/15"
+                        className="mt-1.5 w-full rounded-2xl border border-borderLight bg-bgSoft/50 px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                       />
                     </div>
                   </div>
 
                   {/* Level-Wise Student Count Group */}
-                  <div className="rounded-2xl border border-[#E2D9FF] bg-[#EEF5FF]/40 p-4">
-                    <p className="text-sm font-bold text-[#160840]">
+                  <div className="rounded-2xl border border-borderLight bg-bgSoft/40 p-4">
+                    <p className="text-sm font-bold text-textPrimary">
                       Number of Students (Level-wise)
                     </p>
-                    <p className="text-xs text-[#8B7FBF]">
+                    <p className="text-xs text-textMuted">
                       How many students do you plan to enroll at each level?
                     </p>
                     <div className="mt-3 grid grid-cols-3 gap-3">
                       <div>
-                        <label className="mb-1 flex items-center gap-1.5 text-xs font-bold text-[#160840]">
+                        <label className="mb-1 flex items-center gap-1.5 text-xs font-bold text-textPrimary">
                           <span className="h-2 w-2 rounded-full bg-emerald-500" /> Beginner
                         </label>
                         <input
@@ -282,11 +334,11 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
                           min="0"
                           value={studentsBeginner}
                           onChange={(e) => setStudentsBeginner(Number(e.target.value))}
-                          className="w-full rounded-xl border border-[#E2D9FF] bg-white px-3 py-2 text-sm font-extrabold text-[#160840] outline-none focus:border-[#7C5CFC]"
+                          className="w-full rounded-xl border border-borderLight bg-white px-3 py-2 text-sm font-extrabold text-textPrimary outline-none focus:border-brand"
                         />
                       </div>
                       <div>
-                        <label className="mb-1 flex items-center gap-1.5 text-xs font-bold text-[#160840]">
+                        <label className="mb-1 flex items-center gap-1.5 text-xs font-bold text-textPrimary">
                           <span className="h-2 w-2 rounded-full bg-blue-500" /> Intermediate
                         </label>
                         <input
@@ -294,11 +346,11 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
                           min="0"
                           value={studentsIntermediate}
                           onChange={(e) => setStudentsIntermediate(Number(e.target.value))}
-                          className="w-full rounded-xl border border-[#E2D9FF] bg-white px-3 py-2 text-sm font-extrabold text-[#160840] outline-none focus:border-[#7C5CFC]"
+                          className="w-full rounded-xl border border-borderLight bg-white px-3 py-2 text-sm font-extrabold text-textPrimary outline-none focus:border-brand"
                         />
                       </div>
                       <div>
-                        <label className="mb-1 flex items-center gap-1.5 text-xs font-bold text-[#160840]">
+                        <label className="mb-1 flex items-center gap-1.5 text-xs font-bold text-textPrimary">
                           <span className="h-2 w-2 rounded-full bg-violet-500" /> Advanced
                         </label>
                         <input
@@ -306,7 +358,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
                           min="0"
                           value={studentsAdvanced}
                           onChange={(e) => setStudentsAdvanced(Number(e.target.value))}
-                          className="w-full rounded-xl border border-[#E2D9FF] bg-white px-3 py-2 text-sm font-extrabold text-[#160840] outline-none focus:border-[#7C5CFC]"
+                          className="w-full rounded-xl border border-borderLight bg-white px-3 py-2 text-sm font-extrabold text-textPrimary outline-none focus:border-brand"
                         />
                       </div>
                     </div>
@@ -315,25 +367,25 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
                   {/* Password Grid */}
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="text-sm font-bold text-[#160840]">Password</label>
+                      <label className="text-sm font-bold text-textPrimary">Password</label>
                       <input
                         type="password"
                         required
                         value={collegePassword}
                         onChange={(e) => setCollegePassword(e.target.value)}
                         placeholder="Create a password"
-                        className="mt-1.5 w-full rounded-2xl border border-[#E2D9FF] bg-[#EEF5FF]/50 px-4 py-3 text-sm text-[#160840] outline-none transition focus:border-[#7C5CFC] focus:bg-white focus:ring-4 focus:ring-[#7C5CFC]/15"
+                        className="mt-1.5 w-full rounded-2xl border border-borderLight bg-bgSoft/50 px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-bold text-[#160840]">Confirm Password</label>
+                      <label className="text-sm font-bold text-textPrimary">Confirm Password</label>
                       <input
                         type="password"
                         required
                         value={collegeConfirmPassword}
                         onChange={(e) => setCollegeConfirmPassword(e.target.value)}
                         placeholder="Confirm password"
-                        className="mt-1.5 w-full rounded-2xl border border-[#E2D9FF] bg-[#EEF5FF]/50 px-4 py-3 text-sm text-[#160840] outline-none transition focus:border-[#7C5CFC] focus:bg-white focus:ring-4 focus:ring-[#7C5CFC]/15"
+                        className="mt-1.5 w-full rounded-2xl border border-borderLight bg-bgSoft/50 px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                       />
                     </div>
                   </div>
@@ -344,7 +396,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#7C5CFC] to-[#F5C842] px-5 py-4 text-sm font-black text-white shadow-lg transition hover:scale-[1.01] cursor-pointer disabled:opacity-70"
+                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand to-[#F5C842] px-5 py-4 text-sm font-black text-white shadow-lg transition hover:scale-[1.01] cursor-pointer disabled:opacity-70"
               >
                 <span>
                   {loading
@@ -355,11 +407,11 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
               </button>
 
               <div className="mt-4 text-center">
-                <p className="text-sm text-[#6B7280]">
+                <p className="text-sm text-textGray">
                   Already have an account?{" "}
                   <Link
                     href="/login"
-                    className="font-extrabold text-[#7C5CFC] transition hover:text-[#160840]"
+                    className="font-extrabold text-brand transition hover:text-textPrimary"
                   >
                     Log in here
                   </Link>

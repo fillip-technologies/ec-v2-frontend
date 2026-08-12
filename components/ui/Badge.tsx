@@ -14,18 +14,18 @@ export const Badge: React.FC<BadgeProps> = ({
   className = "",
 }) => {
   const variantStyles = {
-    brand: "bg-[#F5F3FF] border-[#ECEBFF] text-[#6D5DF6]",
+    brand: "bg-bgSoft border-borderSoft text-brand",
     emerald: "bg-[#F0FDF4] border-[#DCFCE7] text-[#16A34A]",
     amber: "bg-[#FEFCE8] border-[#FEF08A] text-[#CA8A04]",
-    outline: "bg-white border-[#ECEBFF] text-[#161326]",
-    white: "bg-white/90 border-[#ECEBFF] text-[#161326] shadow-sm backdrop-blur-md",
+    outline: "bg-white border-borderSoft text-textPrimary",
+    white: "bg-white/90 border-borderSoft text-textPrimary shadow-sm backdrop-blur-md",
   };
 
   const dotStyles = {
-    brand: "bg-[#6D5DF6]",
+    brand: "bg-brand",
     emerald: "bg-[#22C55E]",
     amber: "bg-[#EAB308]",
-    outline: "bg-[#6D5DF6]",
+    outline: "bg-brand",
     white: "bg-[#22C55E]",
   };
 

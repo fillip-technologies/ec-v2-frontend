@@ -19,17 +19,17 @@ export const PartnershipCollegesSection: React.FC = () => {
   ];
 
   return (
-    <section className="bg-[#FAFBFF] py-12 sm:py-16">
+    <section className="bg-bgBody py-12 sm:py-16">
       <div className="container-main">
-        <div className="border-y border-[#ECEBFF] py-10">
+        <div className="border-y border-borderSoft py-10">
           <div className="mx-auto max-w-3xl text-center">
-            <span className="text-xs font-black uppercase tracking-[0.16em] text-[#6D5DF6]">
+            <span className="text-xs font-black uppercase tracking-[0.16em] text-brand">
               Partnership Colleges
             </span>
-            <h2 className="mt-3 text-2xl font-black leading-tight text-[#161326] sm:text-3xl">
+            <h2 className="mt-3 text-2xl font-black leading-tight text-textPrimary sm:text-3xl">
               Trusted by students from leading campuses.
             </h2>
-            <p className="mt-4 text-base leading-7 text-[#6B7280]">
+            <p className="mt-4 text-base leading-7 text-textGray">
               Our programs support learners across respected colleges and universities with practical project-based training.
             </p>
           </div>
@@ -38,7 +38,7 @@ export const PartnershipCollegesSection: React.FC = () => {
             {collegeLogos.map((college, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-center overflow-hidden rounded-2xl border border-[#ECEBFF] bg-white px-5 shadow-[0_12px_32px_rgba(15,10,42,0.05)]"
+                className="flex items-center justify-center overflow-hidden rounded-2xl border border-borderSoft bg-white px-5 shadow-[0_12px_32px_rgba(15,10,42,0.05)]"
                 style={{ height: "88px" }}
               >
                 <Image
