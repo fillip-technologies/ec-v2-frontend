@@ -31,7 +31,7 @@ function CatalogClientContent({
   const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null);
   const [selectedTechId, setSelectedTechId] = useState<number | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState("all");
+  // const [selectedStatus, setSelectedStatus] = useState("all");
 
   // Read URL query parameters on navigation from MegaMenu links
   useEffect(() => {
@@ -79,8 +79,8 @@ function CatalogClientContent({
       selectedClusterId !== null ||
       selectedTopicId !== null ||
       selectedTechId !== null ||
-      selectedDuration !== null ||
-      selectedStatus !== "all"
+      selectedDuration !== null 
+      // selectedStatus !== "all"
     );
   }, [
     searchQuery,
@@ -88,7 +88,7 @@ function CatalogClientContent({
     selectedTopicId,
     selectedTechId,
     selectedDuration,
-    selectedStatus,
+    // selectedStatus,
   ]);
 
   const handleClearFilters = () => {
@@ -97,7 +97,7 @@ function CatalogClientContent({
     setSelectedTopicId(null);
     setSelectedTechId(null);
     setSelectedDuration(null);
-    setSelectedStatus("all");
+    // setSelectedStatus("all");
   };
 
   // Filter programs dynamically based on criteria
@@ -143,10 +143,10 @@ function CatalogClientContent({
         if (program.durationHours < selectedDuration) return false;
       }
 
-      // 6. Status Filter
-      if (selectedStatus !== "all") {
-        if (program.status !== selectedStatus) return false;
-      }
+        // // 6. Status Filter
+        // if (selectedStatus !== "all") {
+        //   if (program.status !== selectedStatus) return false;
+        // }
 
       return true;
     });
@@ -157,7 +157,7 @@ function CatalogClientContent({
     selectedTopicId,
     selectedTechId,
     selectedDuration,
-    selectedStatus,
+    // selectedStatus,
   ]);
 
   return (
@@ -190,8 +190,8 @@ function CatalogClientContent({
             onTechSelect={setSelectedTechId}
             selectedDuration={selectedDuration}
             onDurationSelect={setSelectedDuration}
-            selectedStatus={selectedStatus}
-            onStatusSelect={setSelectedStatus}
+            // selectedStatus={selectedStatus}
+            // onStatusSelect={setSelectedStatus}
             onClearFilters={handleClearFilters}
             hasActiveFilters={hasActiveFilters}
           />

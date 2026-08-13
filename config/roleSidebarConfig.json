@@ -7,7 +7,7 @@
         "label": "PROGRAMME",
         "items": [
           { "id": "overview", "label": "Overview", "slug": "overview", "enabled": true },
-          { "id": "projects", "label": "Projects", "slug": "projects", "enabled": true },
+          { "id": "program", "label": "Program", "slug": "program", "enabled": true },
           { "id": "submissions", "label": "Submissions", "slug": "submissions", "enabled": true },
           { "id": "rubrics", "label": "Rubrics & Scores", "slug": "rubrics", "enabled": true }
         ]
@@ -33,7 +33,7 @@
         "label": "PROGRAMME",
         "items": [
           { "id": "overview", "label": "Overview", "slug": "overview", "enabled": true },
-          { "id": "projects", "label": "Projects", "slug": "projects", "enabled": true },
+          { "id": "program", "label": "Program", "slug": "program", "enabled": true },
           { "id": "students", "label": "Student Cohorts", "slug": "students", "enabled": true }
         ]
       },

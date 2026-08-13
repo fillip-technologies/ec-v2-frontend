@@ -4,10 +4,19 @@ import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { StudentSidebar } from '@/components/student/StudentSidebar';
 import { StudentOverview } from '@/components/student/StudentOverview';
+import { StudentProgramView } from '@/components/student/StudentProgramView';
 import { SharedProjectsView } from '@/components/shared/SharedProjectsView';
 import { Can } from '@/components/auth/Can';
 import { Project } from '@/types/catalog';
 import { getProgramByIdOrSlug } from '@/lib/api/catalog';
+import {
+  getStudentOverview,
+  getStudentProfile,
+  getStudentWorkspace,
+  getStudentPrograms,
+  getStudentSubmissions,
+  getStudentRubrics,
+} from '@/lib/api/student';
 import studentData from '@/config/studentData.json';
 import { User, School, Shield } from 'lucide-react';
 
@@ -15,23 +24,83 @@ function StudentDashboardContent() {
   const { user } = useAuth();
   const [activeSlug, setActiveSlug] = useState<string>('overview');
   const [projects, setProjects] = useState<Project[]>([]);
+  const [programsData, setProgramsData] = useState<any[]>([]);
+  const [overviewData, setOverviewData] = useState<any>(null);
+  const [profileData, setProfileData] = useState<any>(null);
+  const [submissionsList, setSubmissionsList] = useState<any[]>(studentData.submissions);
+  const [rubricsList, setRubricsList] = useState<any[]>(studentData.rubrics);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Fetch default program projects from backend using JSON config slug
-    getProgramByIdOrSlug(studentData.defaultProgramSlug)
-      .then((data) => {
-        if (data?.projects) {
-          setProjects(data.projects);
+    // 1. Fetch live enrolled programs list for student
+    getStudentPrograms()
+      .then((progs) => {
+        if (Array.isArray(progs) && progs.length > 0) {
+          setProgramsData(progs);
         }
       })
-      .catch((err) => console.error('Failed to load program projects:', err))
+      .catch((err) => console.error('Failed to load student programs:', err));
+
+    // 2. Fetch live student workspace projects (with step progress statuses)
+    getStudentWorkspace()
+      .then((wsProjects) => {
+        if (Array.isArray(wsProjects) && wsProjects.length > 0) {
+          setProjects(wsProjects);
+        } else {
+          // Fallback to catalog template projects
+          getProgramByIdOrSlug(studentData.defaultProgramSlug)
+            .then((data) => {
+              if (data?.projects) setProjects(data.projects);
+            })
+            .catch((err) => console.error('Failed to load program projects:', err));
+        }
+      })
+      .catch(() => {
+        getProgramByIdOrSlug(studentData.defaultProgramSlug)
+          .then((data) => {
+            if (data?.projects) setProjects(data.projects);
+          })
+          .catch((err) => console.error('Failed to load program projects:', err));
+      });
+
+    // 3. Fetch live student overview metrics from NestJS API
+    getStudentOverview()
+      .then((data) => {
+        if (data) setOverviewData(data);
+      })
+      .catch((err) => console.error('Failed to load student overview:', err));
+
+    // 3. Fetch student profile details from NestJS API
+    getStudentProfile()
+      .then((data) => {
+        if (data) setProfileData(data);
+      })
+      .catch((err) => console.error('Failed to load student profile:', err));
+
+    // 4. Fetch submissions & rubrics
+    getStudentSubmissions()
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setSubmissionsList(data);
+      })
+      .catch((err) => console.error('Failed to load submissions:', err));
+
+    getStudentRubrics()
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setRubricsList(data);
+      })
+      .catch((err) => console.error('Failed to load rubrics:', err))
       .finally(() => setLoading(false));
   }, []);
 
-  const displayName = user?.firstName
+  const displayName = profileData?.displayName
+    ? profileData.displayName
+    : user?.firstName
     ? `${user.firstName} ${user.lastName || ''}`.trim()
     : 'Rahul Sharma';
+
+  const userEmail = profileData?.email || user?.email || 'student@example.com';
+  const institutionName = profileData?.institutionName || studentData.profile.institutionName;
+  const verificationStatus = profileData?.verificationStatus || studentData.profile.verificationStatus;
 
   return (
     <div className="h-screen w-screen overflow-hidden flex bg-bgSoft">
@@ -46,28 +115,20 @@ function StudentDashboardContent() {
       <main className="flex-1 h-full overflow-y-auto p-6 sm:p-8">
         <div className="mx-auto max-w-6xl space-y-6">
           {activeSlug === 'overview' && (
-            <StudentOverview projects={projects} onSelectSlug={setActiveSlug} />
+            <StudentOverview
+              projects={projects}
+              overviewData={overviewData}
+              onSelectSlug={setActiveSlug}
+            />
           )}
 
-          {activeSlug === 'projects' && (
-            <div>
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-xl font-black text-textPrimary">Program Projects</h2>
-                
-                {/* Action protected by <Can do="project:edit"> */}
-                <Can do="project:edit">
-                  <button className="rounded-xl bg-brand px-3.5 py-1.5 text-xs font-bold text-white hover:bg-brandHover transition-all">
-                    + Add New Capstone Project
-                  </button>
-                </Can>
-              </div>
-
-              <SharedProjectsView
-                projects={projects}
-                onSelectProject={(proj) => alert(`Selected ${proj.title}`)}
-                onEditProject={(proj) => alert(`Editing permissions for ${proj.title}`)}
-              />
-            </div>
+          {(activeSlug === 'program' || activeSlug === 'projects') && (
+            <StudentProgramView
+              programsData={programsData}
+              fallbackProjects={projects}
+              onSelectProject={(proj) => alert(`Selected ${proj.title}`)}
+              onEditProject={(proj) => alert(`Editing permissions for ${proj.title}`)}
+            />
           )}
 
           {activeSlug === 'submissions' && (
@@ -78,20 +139,20 @@ function StudentDashboardContent() {
               </p>
               
               <div className="space-y-3">
-                {studentData.submissions.map((sub) => (
+                {submissionsList.map((sub: any) => (
                   <div
                     key={sub.id}
                     className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-borderLight bg-bgSoft/60 p-4 text-xs font-bold text-textPrimary"
                   >
                     <div>
-                      <div className="text-sm font-extrabold">{sub.taskTitle}</div>
+                      <div className="text-sm font-extrabold">{sub.taskTitle || sub.stepTitle || `Submission #${sub.id}`}</div>
                       <div className="text-[11px] font-medium text-textMuted mt-0.5">
-                        {sub.stepTitle} • {sub.evaluator}
+                        {sub.stepTitle ? `${sub.stepTitle} • ` : ''}{sub.evaluator || 'AI Reviewer Engine'}
                       </div>
                     </div>
 
                     <div className="flex items-center gap-3">
-                      {sub.score !== null && (
+                      {sub.score !== null && sub.score !== undefined && (
                         <span className="text-sm font-black text-emerald-700">
                           {sub.score} / 100
                         </span>
@@ -120,8 +181,8 @@ function StudentDashboardContent() {
               </p>
 
               <div className="space-y-4">
-                {studentData.rubrics.map((r) => (
-                  <div key={r.stepId} className="rounded-2xl border border-borderLight bg-bgSoft/60 p-4 space-y-2">
+                {rubricsList.map((r: any) => (
+                  <div key={r.stepId || r.id} className="rounded-2xl border border-borderLight bg-bgSoft/60 p-4 space-y-2">
                     <div className="flex justify-between items-center text-xs font-bold text-textPrimary">
                       <span>{r.stepTitle}</span>
                       <span className="rounded-full bg-brand/10 px-2.5 py-0.5 text-[10px] text-brand">
@@ -129,11 +190,17 @@ function StudentDashboardContent() {
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-2 text-xs text-textMuted pt-1">
-                      {r.criteria.map((c, cIdx) => (
-                        <span key={cIdx} className="rounded-lg bg-white border border-borderLight px-2.5 py-1 font-semibold text-textPrimary">
-                          • {c.criterion} (Max: {c.maxScore})
+                      {Array.isArray(r.criteria) ? (
+                        r.criteria.map((c: any, cIdx: number) => (
+                          <span key={cIdx} className="rounded-lg bg-white border border-borderLight px-2.5 py-1 font-semibold text-textPrimary">
+                            • {c.criterion} (Max: {c.maxScore})
+                          </span>
+                        ))
+                      ) : (
+                        <span className="rounded-lg bg-white border border-borderLight px-2.5 py-1 font-semibold text-textPrimary">
+                          • Standard Rubric Criteria Configured
                         </span>
-                      ))}
+                      )}
                     </div>
                   </div>
                 ))}
@@ -145,10 +212,10 @@ function StudentDashboardContent() {
             <div className="rounded-[24px] border border-borderLight bg-white p-8 text-center space-y-4 shadow-xs">
               <h2 className="text-xl font-black text-textPrimary">Verified Certificate</h2>
               <p className="text-xs text-textMuted max-w-md mx-auto">
-                Complete all {studentData.metrics.totalProjects} capstone projects to unlock your QR-verifiable certificate.
+                Complete all capstone projects to unlock your QR-verifiable certificate.
               </p>
               <div className="inline-block rounded-full bg-brand/10 px-4 py-1.5 text-xs font-bold text-brand">
-                {studentData.metrics.completionPercentage}% Complete ({studentData.metrics.projectsDone} / {studentData.metrics.totalProjects} Projects)
+                {overviewData?.metrics?.completionPercentage || studentData.metrics.completionPercentage}% Complete
               </div>
             </div>
           )}
@@ -172,7 +239,7 @@ function StudentDashboardContent() {
                 </div>
                 <div>
                   <h2 className="text-xl font-black text-textPrimary">{displayName}</h2>
-                  <p className="text-xs text-textMuted">{user?.email || 'student@example.com'}</p>
+                  <p className="text-xs text-textMuted">{userEmail}</p>
                   <span className="mt-1 inline-block rounded-full bg-brand/10 px-2.5 py-0.5 text-[10px] font-extrabold uppercase text-brand">
                     {typeof user?.role === 'string' ? user.role : 'Student Account'}
                   </span>
@@ -185,7 +252,7 @@ function StudentDashboardContent() {
                     <School className="h-4 w-4 text-brand" />
                     <span>Institution</span>
                   </div>
-                  <div className="text-sm font-bold text-textPrimary">{studentData.profile.institutionName}</div>
+                  <div className="text-sm font-bold text-textPrimary">{institutionName}</div>
                 </div>
 
                 <div className="rounded-2xl border border-borderLight bg-bgSoft/50 p-4 space-y-1">
@@ -193,7 +260,7 @@ function StudentDashboardContent() {
                     <Shield className="h-4 w-4 text-brand" />
                     <span>Verification Status</span>
                   </div>
-                  <div className="text-sm font-bold text-emerald-700">{studentData.profile.verificationStatus}</div>
+                  <div className="text-sm font-bold text-emerald-700">{verificationStatus}</div>
                 </div>
               </div>
             </div>

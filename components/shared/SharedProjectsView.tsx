@@ -64,14 +64,6 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                     <span>Edit Project</span>
                   </button>
                 </Can>
-
-                <button
-                  onClick={() => onSelectProject?.(project)}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-3.5 py-1.5 text-xs font-bold text-white hover:bg-brandHover transition-all"
-                >
-                  <Play className="h-3.5 w-3.5" />
-                  <span>Open Workspace</span>
-                </button>
               </div>
             </div>
 
@@ -89,17 +81,41 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2.5">
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand/10 text-xs font-bold text-brand">
-                          {sIdx + 1}
+                        <span
+                          className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
+                            (step as any).status === 'PASSED'
+                              ? 'bg-statusPassedBg text-statusPassedText'
+                              : (step as any).status === 'OPEN'
+                              ? 'bg-brand/10 text-brand'
+                              : 'bg-gray-200 text-gray-500'
+                          }`}
+                        >
+                          {(step as any).status === 'PASSED' ? '✓' : sIdx + 1}
                         </span>
-                        <h4 className="text-xs font-bold text-textPrimary">{step.title}</h4>
+                        <div>
+                          <h4 className="text-xs font-bold text-textPrimary">{step.title}</h4>
+                        </div>
                       </div>
 
-                      <Can do="project:edit">
-                        <button className="text-[11px] font-semibold text-brand hover:underline">
-                          + Edit Rubric
-                        </button>
-                      </Can>
+                      <div className="flex items-center gap-3">
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase ${
+                            (step as any).status === 'PASSED'
+                              ? 'bg-statusPassedBg text-statusPassedText'
+                              : (step as any).status === 'OPEN'
+                              ? 'bg-brand text-white'
+                              : 'bg-gray-200 text-gray-600'
+                          }`}
+                        >
+                          {(step as any).status || 'OPEN'}
+                        </span>
+
+                        <Can do="project:edit">
+                          <button className="text-[11px] font-semibold text-brand hover:underline">
+                            + Edit Rubric
+                          </button>
+                        </Can>
+                      </div>
                     </div>
 
                     <p className="mt-1 text-[11px] text-textMuted pl-8">{step.description}</p>

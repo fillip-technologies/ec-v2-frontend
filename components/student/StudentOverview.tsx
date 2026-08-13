@@ -9,16 +9,21 @@ import { Clock, FolderKanban, Award, Send, ArrowRight, ShieldCheck } from 'lucid
 interface StudentOverviewProps {
   projects: Project[];
   programTitle?: string;
+  overviewData?: any;
   onSelectSlug: (slug: string) => void;
 }
 
 export const StudentOverview: React.FC<StudentOverviewProps> = ({
   projects,
   programTitle = 'Full Stack Web Engineering (MERN & Next.js)',
+  overviewData,
   onSelectSlug,
 }) => {
   const { user } = useAuth();
-  const { metrics, recentAiReview } = studentData;
+  const metrics = overviewData?.metrics || studentData.metrics;
+  const recentAiReview = overviewData?.recentAiReview || studentData.recentAiReview;
+  const title = overviewData?.programTitle || programTitle;
+  const projectTracks = overviewData?.projects?.length ? overviewData.projects : projects;
 
   const firstName = user?.firstName || 'Learner';
 
@@ -29,7 +34,7 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="text-xs font-bold uppercase tracking-wider text-white/80">
-              {programTitle}
+              {title}
             </div>
             <h2 className="mt-1 text-2xl font-black text-white">Hi {firstName}</h2>
             <p className="mt-1 text-xs text-white/90">
@@ -94,7 +99,7 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
           <div className="flex items-center justify-between border-b border-borderLight pb-3">
             <h3 className="text-sm font-bold text-textPrimary">Program Projects</h3>
             <button
-              onClick={() => onSelectSlug('projects')}
+              onClick={() => onSelectSlug('program')}
               className="inline-flex items-center gap-1 text-xs font-bold text-brand hover:underline"
             >
               <span>View All</span>
@@ -165,7 +170,7 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
             </div>
 
             <div className="space-y-1 text-xs text-emerald-950">
-              {recentAiReview.breakdown.map((item, bIdx) => (
+              {Array.isArray(recentAiReview.breakdown) && recentAiReview.breakdown.map((item: any, bIdx: number) => (
                 <div key={bIdx} className="flex justify-between">
                   <span>{item.criterion}:</span>
                   <span className="font-bold">{item.score} / {item.maxScore}</span>
