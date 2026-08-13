@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { StudentSidebar } from '@/components/student/StudentSidebar';
 import { StudentOverview } from '@/components/student/StudentOverview';
 import { StudentProgramView } from '@/components/student/StudentProgramView';
+import { TaskSubmissionModal } from '@/components/student/TaskSubmissionModal';
 import { SharedProjectsView } from '@/components/shared/SharedProjectsView';
 import { Can } from '@/components/auth/Can';
 import { Project } from '@/types/catalog';
@@ -16,6 +17,7 @@ import {
   getStudentPrograms,
   getStudentSubmissions,
   getStudentRubrics,
+  submitStudentTask,
 } from '@/lib/api/student';
 import studentData from '@/config/studentData.json';
 import { User, School, Shield } from 'lucide-react';
@@ -30,6 +32,22 @@ function StudentDashboardContent() {
   const [submissionsList, setSubmissionsList] = useState<any[]>(studentData.submissions);
   const [rubricsList, setRubricsList] = useState<any[]>(studentData.rubrics);
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Modal State
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [selectedStep, setSelectedStep] = useState<{ id: number; title: string } | null>(null);
+
+  const handleOpenSubmissionModal = (stepId: number, stepTitle: string) => {
+    setSelectedStep({ id: stepId, title: stepTitle });
+    setIsModalOpen(true);
+  };
+
+  const handleSubmissionSuccess = (result: any) => {
+    // Re-fetch live metrics & submissions after successful evaluation
+    getStudentOverview().then((data) => { if (data) setOverviewData(data); });
+    getStudentPrograms().then((progs) => { if (Array.isArray(progs) && progs.length > 0) setProgramsData(progs); });
+    getStudentSubmissions().then((subs) => { if (Array.isArray(subs)) setSubmissionsList(subs); });
+  };
 
   useEffect(() => {
     // 1. Fetch live enrolled programs list for student
@@ -128,6 +146,7 @@ function StudentDashboardContent() {
               fallbackProjects={projects}
               onSelectProject={(proj) => alert(`Selected ${proj.title}`)}
               onEditProject={(proj) => alert(`Editing permissions for ${proj.title}`)}
+              onSubmitTaskWork={handleOpenSubmissionModal}
             />
           )}
 
@@ -267,6 +286,18 @@ function StudentDashboardContent() {
           )}
         </div>
       </main>
+
+      {/* Task Submission Modal */}
+      {selectedStep && (
+        <TaskSubmissionModal
+          isOpen={isModalOpen}
+          stepId={selectedStep.id}
+          stepTitle={selectedStep.title}
+          onClose={() => setIsModalOpen(false)}
+          onSubmitSuccess={handleSubmissionSuccess}
+          submitFn={submitStudentTask}
+        />
+      )}
     </div>
   );
 }

@@ -59,9 +59,21 @@ export const StudentSidebar: React.FC<StudentSidebarProps> = ({
     }
   };
 
-  const displayName = user?.firstName
-    ? `${user.firstName} ${user.lastName || ''}`.trim()
-    : 'Rahul Sharma';
+  const studentObj = (user as any)?.student;
+  const firstName = studentObj?.firstName || user?.firstName || '';
+  const lastName = studentObj?.lastName || user?.lastName || '';
+  
+  const displayName = (firstName || lastName)
+    ? `${firstName} ${lastName}`.trim()
+    : user?.email
+    ? user.email.split('@')[0]
+    : 'Student Account';
+
+  const avatarInitials = firstName
+    ? `${firstName[0]}${lastName ? lastName[0] : ''}`.toUpperCase()
+    : user?.email
+    ? user.email[0].toUpperCase()
+    : 'S';
 
   return (
     <aside className="w-64 h-full shrink-0 border-r border-borderLight bg-white p-5 flex flex-col justify-between overflow-y-auto selection:bg-brand selection:text-white">
@@ -119,14 +131,14 @@ export const StudentSidebar: React.FC<StudentSidebarProps> = ({
             title="Open Student Profile"
           >
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand font-black text-xs group-hover:bg-brand group-hover:text-white transition-all">
-              <User className="h-4 w-4" />
+              {avatarInitials}
             </div>
             <div className="flex-1 truncate">
               <div className="text-xs font-extrabold text-textPrimary truncate group-hover:text-brand transition-all">
                 {displayName}
               </div>
               <div className="text-[10px] font-medium text-textMuted truncate">
-                {user?.email || 'student@example.com'}
+                {user?.email || 'Logged in user'}
               </div>
             </div>
           </button>

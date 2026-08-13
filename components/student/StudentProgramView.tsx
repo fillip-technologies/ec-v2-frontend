@@ -26,6 +26,7 @@ interface StudentProgramViewProps {
   fallbackProjects: Project[];
   onSelectProject?: (project: Project) => void;
   onEditProject?: (project: Project) => void;
+  onSubmitTaskWork?: (stepId: number, stepTitle: string) => void;
 }
 
 export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
@@ -33,6 +34,7 @@ export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
   fallbackProjects,
   onSelectProject,
   onEditProject,
+  onSubmitTaskWork,
 }) => {
   // Default mock programs list if no multi-program data passed
   const programs: ProgramDetail[] = Array.isArray(programsData) && programsData.length > 0
@@ -202,6 +204,7 @@ export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
           projects={selectedProgram.projects}
           onSelectProject={onSelectProject}
           onEditProject={onEditProject}
+          onSubmitTaskWork={onSubmitTaskWork}
         />
       </div>
     </div>

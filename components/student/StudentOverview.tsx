@@ -25,7 +25,12 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
   const title = overviewData?.programTitle || programTitle;
   const projectTracks = overviewData?.projects?.length ? overviewData.projects : projects;
 
-  const firstName = user?.firstName || 'Learner';
+  const firstName =
+    overviewData?.firstName ||
+    (user as any)?.student?.firstName ||
+    user?.firstName ||
+    (user as any)?.displayName ||
+    'Learner';
 
   return (
     <div className="space-y-6">

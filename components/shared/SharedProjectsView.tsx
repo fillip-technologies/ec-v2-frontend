@@ -10,7 +10,7 @@ interface SharedProjectsViewProps {
   activeProjectId?: number;
   onSelectProject?: (project: Project) => void;
   onEditProject?: (project: Project) => void;
-  onSubmitTaskWork?: (projectId: number, stepId: number, taskId: number) => void;
+  onSubmitTaskWork?: (stepId: number, stepTitle: string) => void;
 }
 
 export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
@@ -33,12 +33,18 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
       {projects.map((project, projIdx) => {
         const isSelected = activeProjectId ? activeProjectId === project.id : projIdx === 0;
         const steps = project.workspaceTemplate?.steps || [];
+        const projectStatus = (project as any).status || (projIdx === 0 ? 'Active' : 'Locked');
+        const isProjectLocked = projectStatus === 'Locked';
 
         return (
           <div
             key={project.id || projIdx}
-            className={`rounded-[24px] border bg-white p-6 shadow-sm transition-all ${
-              isSelected ? 'border-brand ring-2 ring-brand/10' : 'border-borderLight'
+            className={`rounded-[24px] border p-6 shadow-xs transition-all ${
+              isProjectLocked
+                ? 'border-borderLight bg-bgSoft/40 opacity-80'
+                : isSelected
+                ? 'border-brand bg-white ring-2 ring-brand/10'
+                : 'border-borderLight bg-white'
             }`}
           >
             {/* Project Header */}
@@ -47,6 +53,17 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                 <div className="flex items-center gap-2">
                   <span className="rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-bold text-brand">
                     Project #{projIdx + 1}
+                  </span>
+                  <span
+                    className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase ${
+                      projectStatus === 'Done'
+                        ? 'bg-statusPassedBg text-statusPassedText'
+                        : projectStatus === 'Active'
+                        ? 'bg-brand text-white'
+                        : 'bg-gray-200 text-gray-700'
+                    }`}
+                  >
+                    {projectStatus === 'Done' ? '✓ DONE' : projectStatus === 'Active' ? '▶ ACTIVE' : '🔒 LOCKED'}
                   </span>
                   <h3 className="text-lg font-bold text-textPrimary">{project.title}</h3>
                 </div>
@@ -74,51 +91,67 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
               </div>
 
               <div className="grid gap-3">
-                {steps.map((step, sIdx) => (
-                  <div
-                    key={step.id || sIdx}
-                    className="rounded-[18px] border border-borderLight/80 bg-bgSoft/50 p-4"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2.5">
-                        <span
-                          className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
-                            (step as any).status === 'PASSED'
-                              ? 'bg-statusPassedBg text-statusPassedText'
-                              : (step as any).status === 'OPEN'
-                              ? 'bg-brand/10 text-brand'
-                              : 'bg-gray-200 text-gray-500'
-                          }`}
-                        >
-                          {(step as any).status === 'PASSED' ? '✓' : sIdx + 1}
-                        </span>
-                        <div>
-                          <h4 className="text-xs font-bold text-textPrimary">{step.title}</h4>
+                {steps.map((step, sIdx) => {
+                  const stepStatus = (step as any).status || 'LOCKED';
+                  const isStepLocked = stepStatus === 'LOCKED' || isProjectLocked;
+                  const isStepPassed = stepStatus === 'PASSED';
+                  const isStepNeedsWork = stepStatus === 'NEEDS_WORK';
+
+                  return (
+                    <div
+                      key={step.id || sIdx}
+                      className={`rounded-[18px] border p-4 transition-all ${
+                        isStepLocked
+                          ? 'border-borderLight/60 bg-gray-100/50 opacity-75'
+                          : isStepPassed
+                          ? 'border-statusPassedBorder bg-statusPassedSoftBg/40'
+                          : 'border-borderLight/80 bg-bgSoft/50'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <span
+                            className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
+                              isStepPassed
+                                ? 'bg-statusPassedBg text-statusPassedText'
+                                : stepStatus === 'OPEN'
+                                ? 'bg-brand text-white'
+                                : isStepNeedsWork
+                                ? 'bg-amber-100 text-amber-800'
+                                : 'bg-gray-200 text-gray-500'
+                            }`}
+                          >
+                            {isStepPassed ? '✓' : isStepLocked ? '🔒' : sIdx + 1}
+                          </span>
+                          <div>
+                            <h4 className="text-xs font-bold text-textPrimary">{step.title}</h4>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase ${
+                              isStepPassed
+                                ? 'bg-statusPassedBg text-statusPassedText'
+                                : stepStatus === 'OPEN'
+                                ? 'bg-brand text-white'
+                                : isStepNeedsWork
+                                ? 'bg-amber-100 text-amber-800'
+                                : 'bg-gray-200 text-gray-600'
+                            }`}
+                          >
+                            {isStepPassed ? '✓ PASSED' : isStepNeedsWork ? '⚠️ NEEDS WORK' : stepStatus === 'OPEN' ? '▶ OPEN' : '🔒 LOCKED'}
+                          </span>
+
+                          <Can do="project:edit">
+                            <button className="text-[11px] font-semibold text-brand hover:underline">
+                              + Edit Rubric
+                            </button>
+                          </Can>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <span
-                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase ${
-                            (step as any).status === 'PASSED'
-                              ? 'bg-statusPassedBg text-statusPassedText'
-                              : (step as any).status === 'OPEN'
-                              ? 'bg-brand text-white'
-                              : 'bg-gray-200 text-gray-600'
-                          }`}
-                        >
-                          {(step as any).status || 'OPEN'}
-                        </span>
-
-                        <Can do="project:edit">
-                          <button className="text-[11px] font-semibold text-brand hover:underline">
-                            + Edit Rubric
-                          </button>
-                        </Can>
-                      </div>
-                    </div>
-
-                    <p className="mt-1 text-[11px] text-textMuted pl-8">{step.description}</p>
+                      <p className="mt-1 text-[11px] text-textMuted pl-8">{step.description}</p>
 
                     {/* Step Tasks */}
                     {step.tasks && step.tasks.length > 0 && (
@@ -156,24 +189,37 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                                 </div>
                               )}
 
-                              <button
-                                onClick={() => onSubmitTaskWork?.(project.id, step.id, task.id)}
-                                className="rounded-lg bg-brand/10 px-2.5 py-1 text-[11px] font-bold text-brand hover:bg-brand/20 transition-all"
-                              >
-                                Submit Work
-                              </button>
+                              {isStepPassed ? (
+                                <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-100 px-2.5 py-1 text-[11px] font-extrabold text-emerald-800">
+                                  <CheckCircle2 className="h-3 w-3 text-emerald-700" />
+                                  <span>Completed</span>
+                                </span>
+                              ) : (
+                                <button
+                                  onClick={() => onSubmitTaskWork?.(step.id, step.title)}
+                                  disabled={isStepLocked}
+                                  className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition-all ${
+                                    isStepLocked
+                                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                      : 'bg-brand text-white hover:bg-brandHover cursor-pointer shadow-xs'
+                                  }`}
+                                >
+                                  Submit Work
+                                </button>
+                              )}
                             </div>
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
-        );
-      })}
-    </div>
-  );
+        </div>
+      );
+    })}
+  </div>
+);
 };
