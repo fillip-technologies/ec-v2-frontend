@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { User, Mail, Building, Lock, CheckCircle2, ArrowRight } from "lucide-react";
-import { BACKEND_URL } from "@/config/api";
+import { registerStudent, registerCollege } from "@/lib/api/auth";
 
 interface SignupFormProps {
   initialRole?: "student" | "college";
@@ -68,23 +68,12 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
             ? studentCollegeOther
             : collegeOptions.find((c) => c.value === studentCollege)?.label || studentCollege;
 
-        const res = await fetch(`${BACKEND_URL}/auth/register/student`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            name: studentName,
-            email: studentEmail,
-            password: studentPassword,
-            college_name: collegeName,
-          }),
+        const data = await registerStudent({
+          name: studentName,
+          email: studentEmail,
+          password: studentPassword,
+          college_name: collegeName,
         });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(Array.isArray(data.message) ? data.message.join(", ") : data.message || "Registration failed");
-        }
 
         if (data.accessToken) {
           localStorage.setItem("token", data.accessToken);
@@ -101,25 +90,14 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
           throw new Error("Passwords do not match");
         }
 
-        const res = await fetch(`${BACKEND_URL}/auth/register/college`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            email: collegeEmail,
-            password: collegePassword,
-            phoneNo: collegePhone || "N/A",
-            countryId: 1, // Defaulting to India
-            collegeName: collegeName,
-            address: collegeAddress || "Campus Address",
-          }),
+        const data = await registerCollege({
+          email: collegeEmail,
+          password: collegePassword,
+          phoneNo: collegePhone || "N/A",
+          countryId: 1, // Defaulting to India
+          collegeName: collegeName,
+          address: collegeAddress || "Campus Address",
         });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(Array.isArray(data.message) ? data.message.join(", ") : data.message || "Registration failed");
-        }
 
         setLoading(false);
         setSuccess(true);

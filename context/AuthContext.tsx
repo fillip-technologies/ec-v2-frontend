@@ -1,8 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { BACKEND_URL } from '@/config/api';
 import { apiClient, refreshTokenSilently } from '@/lib/api/client';
+import { logout as apiLogout } from '@/lib/api/auth';
 
 export interface UserPermissions {
   id: number;
@@ -123,12 +123,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       const storedRefreshToken = localStorage.getItem('refreshToken');
-      await fetch(`${BACKEND_URL}/auth/logout`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({ refreshToken: storedRefreshToken }),
-      });
+      await apiLogout(storedRefreshToken);
     } catch (e) {
       console.warn('[AuthContext] Logout request failed:', e);
     }

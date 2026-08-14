@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { Lock, Mail, ArrowRight } from "lucide-react";
-import { BACKEND_URL } from "@/config/api";
+import { login } from "@/lib/api/auth";
 
 export const LoginForm: React.FC = () => {
   const [activeRole, setActiveRole] = useState<"student" | "college" | "admin">("student");
@@ -36,22 +36,11 @@ export const LoginForm: React.FC = () => {
     setLoading(true);
 
     try {
-      const res = await fetch(`${BACKEND_URL}/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          email,
-          password,
-          role: activeRole,
-        }),
+      const data = await login({
+        email,
+        password,
+        role: activeRole,
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Invalid email or password");
-      }
 
       // Store JWT Tokens in localStorage
       if (data.accessToken) {
