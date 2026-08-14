@@ -13,7 +13,7 @@ export const CollegeStats: React.FC = () => {
   return (
     <section className="border-y border-borderLight bg-white py-8">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="grid gap-px overflow-hidden rounded-2xl border border-borderLight bg-[#E2D9FF] sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-px overflow-hidden rounded-2xl border border-borderLight bg-borderLight sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, idx) => (
             <div key={idx} className="bg-white p-6">
               <p className="text-3xl font-black tracking-tight text-textPrimary">{stat.value}</p>

@@ -45,7 +45,7 @@ export const ProgramDetailOverview: React.FC<ProgramDetailOverviewProps> = ({ pr
               key={idx}
               className="flex items-start gap-3 rounded-2xl border border-borderLight/70 bg-bgBody p-4 shadow-2xs"
             >
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
+              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-success" />
               <span className="text-xs font-bold leading-relaxed text-textPrimary md:text-sm">
                 {outcome.replace(/^[-*•]\s*/, "")}
               </span>

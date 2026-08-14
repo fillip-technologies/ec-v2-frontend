@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import roleSidebarConfig from '@/config/roleSidebarConfig.json';
 import { useAuth } from '@/context/AuthContext';
@@ -28,6 +28,12 @@ export const StudentSidebar: React.FC<StudentSidebarProps> = ({
   onOpenProfile,
 }) => {
   const { user, roleName, logout } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const userRole = roleName || 'student';
   
   // Load sidebar config dynamically based on active user role from JSON
@@ -39,6 +45,7 @@ export const StudentSidebar: React.FC<StudentSidebarProps> = ({
         return <LayoutDashboard className="h-4 w-4" />;
       case 'projects':
       case 'programs':
+      case 'program':
         return <FolderKanban className="h-4 w-4" />;
       case 'submissions':
         return <Send className="h-4 w-4" />;
@@ -63,17 +70,23 @@ export const StudentSidebar: React.FC<StudentSidebarProps> = ({
   const firstName = studentObj?.firstName || user?.firstName || '';
   const lastName = studentObj?.lastName || user?.lastName || '';
   
-  const displayName = (firstName || lastName)
-    ? `${firstName} ${lastName}`.trim()
-    : user?.email
-    ? user.email.split('@')[0]
-    : 'Student Account';
+  const displayName = mounted
+    ? (firstName || lastName)
+      ? `${firstName} ${lastName}`.trim()
+      : user?.email
+      ? user.email.split('@')[0]
+      : 'Account'
+    : 'Account';
 
-  const avatarInitials = firstName
-    ? `${firstName[0]}${lastName ? lastName[0] : ''}`.toUpperCase()
-    : user?.email
-    ? user.email[0].toUpperCase()
-    : 'S';
+  const avatarInitials = mounted
+    ? firstName
+      ? `${firstName[0]}${lastName ? lastName[0] : ''}`.toUpperCase()
+      : user?.email
+      ? user.email[0].toUpperCase()
+      : 'U'
+    : 'U';
+
+  const userEmailDisplay = mounted ? user?.email || 'Logged in user' : 'Logged in user';
 
   return (
     <aside className="w-64 h-full shrink-0 border-r border-borderLight bg-white p-5 flex flex-col justify-between overflow-y-auto selection:bg-brand selection:text-white">
@@ -83,7 +96,7 @@ export const StudentSidebar: React.FC<StudentSidebarProps> = ({
           <Link href="/" className="text-base font-black tracking-tight text-textPrimary hover:text-brand transition-all">
             Engineers Clinic
           </Link>
-          <div className="text-[10px] font-bold text-textMuted uppercase tracking-widest mt-0.5">
+          <div className="text-[10px] font-bold text-textMuted uppercase tracking-widest mt-0.5" suppressHydrationWarning>
             {roleConfig.roleName || 'Student Portal'}
           </div>
         </div>
@@ -102,7 +115,7 @@ export const StudentSidebar: React.FC<StudentSidebarProps> = ({
                   <button
                     key={item.id}
                     onClick={() => onSelectSlug(item.slug)}
-                    className={`w-full flex items-center gap-3 rounded-[14px] px-3 py-2.5 text-xs font-bold transition-all text-left ${
+                    className={`w-full flex items-center gap-3 rounded-[14px] px-3 py-2.5 text-xs font-bold transition-all text-left cursor-pointer ${
                       isActive
                         ? 'bg-brand text-white shadow-xs'
                         : 'text-textPrimary hover:bg-bgSoft hover:text-brand'
@@ -128,17 +141,26 @@ export const StudentSidebar: React.FC<StudentSidebarProps> = ({
               else onSelectSlug('profile');
             }}
             className="flex items-center gap-2.5 flex-1 min-w-0 text-left group cursor-pointer"
-            title="Open Student Profile"
+            title="Open Profile"
           >
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand font-black text-xs group-hover:bg-brand group-hover:text-white transition-all">
+            <div
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand font-black text-xs group-hover:bg-brand group-hover:text-white transition-all"
+              suppressHydrationWarning
+            >
               {avatarInitials}
             </div>
             <div className="flex-1 truncate">
-              <div className="text-xs font-extrabold text-textPrimary truncate group-hover:text-brand transition-all">
+              <div
+                className="text-xs font-extrabold text-textPrimary truncate group-hover:text-brand transition-all"
+                suppressHydrationWarning
+              >
                 {displayName}
               </div>
-              <div className="text-[10px] font-medium text-textMuted truncate">
-                {user?.email || 'Logged in user'}
+              <div
+                className="text-[10px] font-medium text-textMuted truncate"
+                suppressHydrationWarning
+              >
+                {userEmailDisplay}
               </div>
             </div>
           </button>
@@ -146,7 +168,7 @@ export const StudentSidebar: React.FC<StudentSidebarProps> = ({
           {/* Logout Button at the Very End */}
           <button
             onClick={logout}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all cursor-pointer"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-dangerLight text-danger hover:bg-danger hover:text-white transition-all cursor-pointer"
             title="Logout"
           >
             <LogOut className="h-4 w-4" />

@@ -40,7 +40,7 @@ export const CatalogFilterSidebar: React.FC<CatalogFilterSidebarProps> = ({
   hasActiveFilters,
 }) => {
   return (
-    <aside className="sticky top-24 rounded-2xl border border-glassBorder bg-white/90 p-5 shadow-lg backdrop-blur-xl">
+    <aside className="lg:sticky lg:top-24 static rounded-2xl border border-glassBorder bg-white/90 p-5 shadow-lg backdrop-blur-xl lg:z-20">
       <div className="flex items-center justify-between border-b border-borderLight/60 pb-3.5">
         <div className="flex items-center gap-2 font-bold text-textPrimary">
           <Filter className="h-4 w-4 text-brand" />

@@ -7,14 +7,21 @@
   /* Primary Brand Color Tokens (Global CSS Design System) */
   --color-brand: #7C5CFC;
   --color-brand-hover: #6a49f3;
+  --color-brand-accent: #6D5DF6;
   --color-brand-light: #A78BFA;
   --color-brand-dark: #160840;
   --color-brand-soft: rgba(124, 92, 252, 0.15);
+  --color-brand-pastel: #D9D6FF;
+  --color-brand-pastel-soft: #DDD0FF;
 
   /* CamelCase Aliases for Tailwind Utility Integration */
+  --color-brandHover: #6a49f3;
+  --color-brandAccent: #6D5DF6;
   --color-brandLight: #A78BFA;
   --color-brandDark: #160840;
   --color-brandSoft: rgba(124, 92, 252, 0.15);
+  --color-brandPastel: #D9D6FF;
+  --color-brandPastelSoft: #DDD0FF;
 
   /* Primary Color Tokens */
   --color-primary: #7C5CFC;
@@ -26,14 +33,16 @@
   --color-primaryDark: #160840;
   --color-primarySoft: rgba(124, 92, 252, 0.15);
 
-  /* Secondary Color Tokens */
+  /* Secondary / Gold Color Tokens */
   --color-secondary: #F5C842;
-  --color-secondary-light: #A78BFA;
-  --color-secondary-dark: #160840;
+  --color-secondary-hover: #E5B832;
+  --color-secondary-light: #FEF08A;
+  --color-secondary-dark: #CA8A04;
   --color-secondary-soft: rgba(245, 200, 66, 0.18);
 
-  --color-secondaryLight: #A78BFA;
-  --color-secondaryDark: #160840;
+  --color-secondaryHover: #E5B832;
+  --color-secondaryLight: #FEF08A;
+  --color-secondaryDark: #CA8A04;
   --color-secondarySoft: rgba(245, 200, 66, 0.18);
 
   /* Accent & Aurora Color Tokens */
@@ -56,7 +65,7 @@
   --color-bg-main: #F5F0FF;
   --color-bg-soft: #EEF5FF;
   --color-bg-white: #ffffff;
-  --color-bg-dark: #F5F0FF;
+  --color-bg-dark: #160840;
   --color-bg-dark-soft: #ffffff;
   --color-bg-indigo: #EEF5FF;
   --color-bg-body: #FAFBFF;
@@ -64,7 +73,7 @@
   --color-bgMain: #F5F0FF;
   --color-bgSoft: #EEF5FF;
   --color-bgWhite: #ffffff;
-  --color-bgDark: #F5F0FF;
+  --color-bgDark: #160840;
   --color-bgDarkSoft: #ffffff;
   --color-bgIndigo: #EEF5FF;
   --color-bgBody: #FAFBFF;
@@ -92,10 +101,13 @@
   --color-text-secondary: #3D2090;
   --color-text-muted: #8B7FBF;
   --color-text-gray: #6B7280;
+  --color-text-subtle: #8A8FA3;
 
   --color-textPrimary: #160840;
   --color-textSecondary: #3D2090;
   --color-textMuted: #8B7FBF;
+  --color-textGray: #6B7280;
+  --color-textSubtle: #8A8FA3;
 
   /* Border & Pipeline Accent Color Tokens */
   --color-border-light: #E2D9FF;
@@ -118,8 +130,42 @@
 
   /* Status Colors */
   --color-success: #22C55E;
+  --color-success-light: #F0FDF4;
+  --color-success-border: #DCFCE7;
+  --color-success-dark: #16A34A;
+
+  --color-successLight: #F0FDF4;
+  --color-successBorder: #DCFCE7;
+  --color-successDark: #16A34A;
+
   --color-warning: #F59E0B;
+  --color-warning-light: #FEFCE8;
+  --color-warning-border: #FEF08A;
+  --color-warning-dark: #CA8A04;
+  --color-warning-muted: #EAB308;
+
+  --color-warningLight: #FEFCE8;
+  --color-warningBorder: #FEF08A;
+  --color-warningDark: #CA8A04;
+  --color-warningMuted: #EAB308;
+
   --color-danger: #EF4444;
+  --color-danger-light: #FEF2F2;
+  --color-danger-border: #FEE2E2;
+  --color-danger-dark: #DC2626;
+
+  --color-dangerLight: #FEF2F2;
+  --color-dangerBorder: #FEE2E2;
+  --color-dangerDark: #DC2626;
+
+  --color-info: #0EA5E9;
+  --color-info-light: #F0F9FF;
+  --color-info-border: #BAE6FD;
+  --color-info-dark: #0284C7;
+
+  --color-infoLight: #F0F9FF;
+  --color-infoBorder: #BAE6FD;
+  --color-infoDark: #0284C7;
 
   --color-status-published-bg: #D1FAE5;
   --color-status-published-text: #047857;

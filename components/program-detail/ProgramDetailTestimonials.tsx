@@ -24,7 +24,7 @@ export const ProgramDetailTestimonials: React.FC<ProgramDetailTestimonialsProps>
       authorName: "Aarav Mehta",
       authorRole: "Software Engineer at TCS",
       quote:
-        "Extremely practical program! Helped me build production microservices with AI evaluated rubrics and cleared my NEP-2020 internship credits.",
+        "Extremely practical program! Helped me build production microservices with AI evaluated rubrics and cleared my university internship credits.",
       rating: 5,
     },
     {
@@ -70,7 +70,7 @@ export const ProgramDetailTestimonials: React.FC<ProgramDetailTestimonialsProps>
                 )}
               </div>
 
-              <div className="flex items-center gap-0.5 text-amber-500">
+              <div className="flex items-center gap-0.5 text-secondary">
                 {Array.from({ length: item.rating || 5 }).map((_, i) => (
                   <Star key={i} className="h-3.5 w-3.5 fill-current" />
                 ))}

@@ -14,17 +14,17 @@ export const CertificateShowcaseSection: React.FC = () => {
       desc: "Instant tamper-proof authenticity check resolving to public verification URL.",
     },
     {
-      icon: <Share2 className="h-5 w-5 text-[#0EA5E9]" />,
+      icon: <Share2 className="h-5 w-5 text-info" />,
       title: "LinkedIn Ready",
       desc: "One-click license & certification sharing to elevate your professional profile.",
     },
     {
-      icon: <FileCheck className="h-5 w-5 text-[#22C55E]" />,
+      icon: <FileCheck className="h-5 w-5 text-success" />,
       title: "Resume Ready Proof",
-      desc: "Includes 120-hour NEP-2020 aligned internship duration & project credits.",
+      desc: "Includes 120-hour internship duration & project credits.",
     },
     {
-      icon: <GitBranch className="h-5 w-5 text-[#EAB308]" />,
+      icon: <GitBranch className="h-5 w-5 text-warningMuted" />,
       title: "GitHub Proof of Work",
       desc: "Linked directly to reviewed repositories, commits, and AI grading score.",
     },
@@ -62,7 +62,7 @@ export const CertificateShowcaseSection: React.FC = () => {
 
           {/* Right Image Showcase Column */}
           <div className="relative flex justify-center">
-            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-brand/20 to-[#22C55E]/15 blur-3xl" />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-brand/20 to-success/15 blur-3xl" />
             <div className="relative overflow-hidden rounded-3xl border border-borderSoft bg-white p-4 shadow-2xl transition duration-500 hover:scale-[1.02]">
               <Image
                 src="/images/ec-cer.png"

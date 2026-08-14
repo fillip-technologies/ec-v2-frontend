@@ -18,7 +18,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenEnquiry }) => {
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <div className="ec-fade-up">
             <span className="inline-flex items-center gap-2 rounded-full border border-borderSoft bg-bgSoft px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-brand">
-              <span className="h-2 w-2 rounded-full bg-[#22C55E]" />
+              <span className="h-2 w-2 rounded-full bg-success" />
               Project-Based Learning Platform
             </span>
 
@@ -33,7 +33,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenEnquiry }) => {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a
                 href="#courses"
-                className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-brand px-7 py-3 text-sm font-black text-white shadow-[0_14px_34px_rgba(109,93,246,0.24)] transition duration-300 hover:-translate-y-1 hover:bg-[#5A4AE3]"
+                className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-brand px-7 py-3 text-sm font-black text-white shadow-lg shadow-brand/25 transition duration-300 hover:-translate-y-1 hover:bg-brandHover"
               >
                 Explore Projects
               </a>
@@ -48,7 +48,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenEnquiry }) => {
 
           <div className="relative flex min-h-[410px] items-start justify-center pt-2 ec-fade-up sm:min-h-[470px] lg:min-h-[520px] lg:pt-6">
             <div className="pointer-events-none absolute left-1/2 top-[42%] h-[25rem] w-[25rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/10 blur-3xl sm:h-[31rem] sm:w-[31rem]" />
-            <div className="pointer-events-none absolute bottom-16 left-1/2 h-16 w-[68%] -translate-x-1/2 rounded-full bg-[#D9D6FF]/45 blur-2xl" />
+            <div className="pointer-events-none absolute bottom-16 left-1/2 h-16 w-[68%] -translate-x-1/2 rounded-full bg-brandPastel/45 blur-2xl" />
 
             <Image
               src="/images/hero-new-girl.png"
@@ -59,18 +59,18 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onOpenEnquiry }) => {
               className="relative z-10 h-auto max-h-[410px] w-full max-w-[31rem] object-contain object-center sm:max-h-[500px] sm:max-w-[35rem] lg:max-h-[575px] lg:max-w-[38rem]"
             />
 
-            <div className="absolute left-4 top-14 hidden rounded-2xl border border-borderSoft bg-white/90 px-4 py-3 shadow-[0_14px_34px_rgba(15,10,42,0.08)] backdrop-blur-xl sm:block">
-              <p className="text-xs font-black uppercase tracking-[0.12em] text-[#8A8FA3]">GitHub</p>
+            <div className="absolute left-4 top-14 hidden rounded-2xl border border-borderSoft bg-white/90 px-4 py-3 shadow-md backdrop-blur-xl sm:block">
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-textSubtle">GitHub</p>
               <p className="mt-1 text-sm font-black text-textPrimary">Connected</p>
             </div>
 
-            <div className="absolute right-4 top-[38%] hidden rounded-2xl border border-borderSoft bg-white/90 px-4 py-3 shadow-[0_14px_34px_rgba(15,10,42,0.08)] backdrop-blur-xl md:block">
-              <p className="text-xs font-black uppercase tracking-[0.12em] text-[#8A8FA3]">Task</p>
+            <div className="absolute right-4 top-[38%] hidden rounded-2xl border border-borderSoft bg-white/90 px-4 py-3 shadow-md backdrop-blur-xl md:block">
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-textSubtle">Task</p>
               <p className="mt-1 text-sm font-black text-textPrimary">Completed</p>
             </div>
 
-            <div className="absolute bottom-16 left-8 hidden rounded-2xl border border-borderSoft bg-white/90 px-4 py-3 shadow-[0_14px_34px_rgba(15,10,42,0.08)] backdrop-blur-xl lg:block">
-              <p className="text-xs font-black uppercase tracking-[0.12em] text-[#8A8FA3]">Certificate</p>
+            <div className="absolute bottom-16 left-8 hidden rounded-2xl border border-borderSoft bg-white/90 px-4 py-3 shadow-md backdrop-blur-xl lg:block">
+              <p className="text-xs font-black uppercase tracking-[0.12em] text-textSubtle">Certificate</p>
               <p className="mt-1 text-sm font-black text-textPrimary">Ready</p>
             </div>
           </div>

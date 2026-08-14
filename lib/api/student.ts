@@ -1,5 +1,6 @@
 import { BACKEND_URL } from "@/config/api";
 import studentData from "@/config/studentData.json";
+import { apiClient as fetch } from "./client";
 
 function getAuthHeader(): Record<string, string> {
   if (typeof window === "undefined") return {};
@@ -79,13 +80,13 @@ export async function getStudentWorkspace() {
         workspaceTemplate: {
           id: ep.workspace?.workspaceTemplateId || ep.project.id,
           version: ep.workspace?.templateVersion || 1,
-          steps: (ep.workspace?.steps || []).map((st: any) => ({
-            id: st.id,
-            title: st.title,
-            description: st.description,
-            orderIndex: st.orderIndex,
-            status: st.progress?.status || "LOCKED",
-            tasks: st.tasks || [],
+          tasks: (ep.workspace?.tasks || []).map((t: any) => ({
+            id: t.id,
+            title: t.title,
+            description: t.description,
+            orderIndex: t.orderIndex,
+            status: t.progress?.status || "LOCKED",
+            resources: t.templateTask?.resources || [],
           })),
         },
       }));
@@ -146,14 +147,14 @@ export async function getStudentSubmissions() {
 /**
  * Submit Task Deliverable for a Workspace Step
  */
-export async function submitStudentTask(workspaceStepId: number, payloadUrl: string) {
+export async function submitStudentTask(workspaceTaskId: number, payloadUrl: string) {
   const res = await fetch(`${BACKEND_URL}/student/submissions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       ...getAuthHeader(),
     },
-    body: JSON.stringify({ workspaceStepId, payloadUrl }),
+    body: JSON.stringify({ workspaceTaskId, payloadUrl }),
   });
 
   if (!res.ok) {

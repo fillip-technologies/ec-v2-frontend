@@ -4,16 +4,19 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { MegaMenu } from "./MegaMenu";
-import { ChevronDown, Gift, Menu, X, LayoutGrid, Megaphone } from "lucide-react";
+import { ChevronDown, Gift, Menu, X, LayoutGrid, Megaphone, User, LogOut } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 
 interface NavbarProps {
   onOpenEnquiry?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
+  const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [enterpriseOpen, setEnterpriseOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
 
   const [mobileInternshipOpen, setMobileInternshipOpen] = useState(false);
   const [mobileEnterpriseOpen, setMobileEnterpriseOpen] = useState(false);
@@ -168,22 +171,61 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
           <button
             type="button"
             onClick={onOpenEnquiry}
-            className="group relative hidden items-center gap-2 overflow-hidden rounded-full border border-[#F5C842]/50 bg-[#F5C842]/18 px-4 py-2.5 text-sm font-black text-textPrimary shadow-[0_10px_28px_rgba(245,200,66,0.22)] transition hover:-translate-y-0.5 hover:border-[#F5C842] hover:bg-[#F5C842] lg:inline-flex cursor-pointer"
+            className="group relative hidden items-center gap-2 overflow-hidden rounded-full border border-secondary/50 bg-secondarySoft px-4 py-2.5 text-sm font-black text-textPrimary shadow-[0_10px_28px_rgba(245,200,66,0.22)] transition hover:-translate-y-0.5 hover:border-secondary hover:bg-secondary lg:inline-flex cursor-pointer"
           >
-            <span className="absolute inset-0 animate-ping rounded-full bg-[#F5C842]/25 opacity-40" />
+            <span className="absolute inset-0 animate-ping rounded-full bg-secondary/25 opacity-40" />
             <span className="relative grid h-5 w-5 place-items-center rounded-full bg-white text-brand shadow-sm">
               <Gift className="h-3.5 w-3.5" />
             </span>
             <span className="relative">Refer & Earn</span>
           </button>
 
-          {/* Login Button */}
-          <Link
-            href="/login"
-            className="btn-primary hidden lg:inline-flex"
-          >
-            Login
-          </Link>
+          {/* User Profile Dropdown or Login Button */}
+          {user ? (
+            <div className="relative hidden lg:block">
+              <button
+                type="button"
+                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                className="flex h-12 w-12 items-center justify-center rounded-full border border-borderLight bg-white hover:bg-bgSoft transition-all cursor-pointer"
+                title={user.email}
+              >
+                <div className="flex h-full w-full items-center justify-center rounded-full bg-brand/10 text-brand font-black text-xl">
+                  {user.email?.[0].toUpperCase() || "U"}
+                </div>
+              </button>
+
+              {profileDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 rounded-[20px] border border-borderLight bg-white p-2 shadow-lg z-50">
+                  <Link
+                    href="/student"
+                    onClick={() => setProfileDropdownOpen(false)}
+                    className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold text-textPrimary hover:bg-bgSoft hover:text-brand transition-all text-left"
+                  >
+                    <User className="h-4 w-4" />
+                    <span>Go to Dashboard</span>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProfileDropdownOpen(false);
+                      logout();
+                    }}
+                    className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold text-danger hover:bg-dangerLight transition-all text-left cursor-pointer"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className="btn-primary hidden lg:inline-flex"
+            >
+              Login
+            </Link>
+          )}
 
           {/* Mobile Drawer Toggle */}
           <button
@@ -215,7 +257,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
                 setMobileOpen(false);
                 onOpenEnquiry?.();
               }}
-              className="relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[14px] border border-[#F5C842]/50 bg-[#F5C842]/18 px-5 py-4 text-sm font-black text-textPrimary shadow-sm cursor-pointer"
+              className="relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-[14px] border border-secondary/50 bg-secondarySoft px-5 py-4 text-sm font-black text-textPrimary shadow-sm cursor-pointer"
             >
               <Gift className="relative text-brand h-4 w-4" />
               <span className="relative">Refer & Earn</span>
@@ -335,13 +377,35 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
               )}
             </div>
 
-            <Link
-              href="/login"
-              onClick={() => setMobileOpen(false)}
-              className="block w-full rounded-[14px] bg-brand px-5 py-4 text-center text-sm font-bold text-white cursor-pointer"
-            >
-              Login
-            </Link>
+            {user ? (
+              <div className="space-y-2">
+                <Link
+                  href="/student"
+                  onClick={() => setMobileOpen(false)}
+                  className="block w-full rounded-[14px] bg-brand px-5 py-4 text-center text-sm font-bold text-white cursor-pointer"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileOpen(false);
+                    logout();
+                  }}
+                  className="block w-full rounded-[14px] bg-rose-600 px-5 py-4 text-center text-sm font-bold text-white cursor-pointer"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileOpen(false)}
+                className="block w-full rounded-[14px] bg-brand px-5 py-4 text-center text-sm font-bold text-white cursor-pointer"
+              >
+                Login
+              </Link>
+            )}
           </nav>
         </div>
       )}

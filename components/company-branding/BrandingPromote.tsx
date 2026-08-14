@@ -78,17 +78,17 @@ export const BrandingPromote: React.FC = () => {
           {items.map((item, idx) => (
             <article
               key={idx}
-              className="group rounded-2xl border border-borderLight bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-[0_20px_48px_rgba(22,8,64,0.10)]"
+              className="group rounded-2xl border border-borderLight bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-lg"
             >
               <div className="flex items-start justify-between gap-5">
                 <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-borderLight bg-bgMain text-brand transition duration-300 group-hover:border-brand/30 group-hover:bg-brand group-hover:text-white">
                   {item.icon}
                 </span>
-                <span className="h-2 w-2 rounded-full bg-[#F5C842]" />
+                <span className="h-2 w-2 rounded-full bg-secondary" />
               </div>
               <h3 className="mt-6 text-lg font-extrabold text-textPrimary">{item.title}</h3>
               <p className="mt-3 text-sm leading-7 text-textGray">{item.body}</p>
-              <div className="mt-5 h-px bg-gradient-to-r from-brand/30 via-[#E2D9FF] to-transparent" />
+              <div className="mt-5 h-px bg-gradient-to-r from-brand/30 via-borderLight to-transparent" />
             </article>
           ))}
         </div>

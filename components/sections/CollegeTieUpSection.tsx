@@ -21,7 +21,7 @@ export const CollegeTieUpSection: React.FC<CollegeTieUpSectionProps> = ({ onOpen
   return (
     <section id="college-tieup" className="relative overflow-hidden bg-white py-14 sm:py-16">
       <div className="container-main">
-        <div className="grid items-center gap-8 rounded-[2rem] border border-borderSoft bg-bgBody p-6 shadow-[0_24px_70px_rgba(15,10,42,0.07)] lg:grid-cols-[0.9fr_1.1fr] lg:p-8">
+        <div className="grid items-center gap-8 rounded-[2rem] border border-borderSoft bg-bgBody p-6 shadow-md lg:grid-cols-[0.9fr_1.1fr] lg:p-8">
           <div>
             <span className="inline-flex rounded-full bg-brand/10 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-brand">
               College Tie-up Program
@@ -36,7 +36,7 @@ export const CollegeTieUpSection: React.FC<CollegeTieUpSectionProps> = ({ onOpen
               <button
                 type="button"
                 onClick={onOpenEnquiry}
-                className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-brand px-5 py-3 text-sm font-black text-white shadow-[0_16px_38px_rgba(109,93,246,0.25)] transition hover:-translate-y-1 hover:bg-[#5A4AE3] cursor-pointer"
+                className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-brand px-5 py-3 text-sm font-black text-white shadow-lg shadow-brand/25 transition hover:-translate-y-1 hover:bg-brandHover cursor-pointer"
               >
                 Request College Tie-up
               </button>
@@ -49,12 +49,12 @@ export const CollegeTieUpSection: React.FC<CollegeTieUpSectionProps> = ({ onOpen
             </div>
           </div>
 
-          <div className="overflow-hidden rounded-[1.5rem] border border-borderSoft bg-white py-6 shadow-[0_16px_44px_rgba(15,10,42,0.06)]">
+          <div className="overflow-hidden rounded-[1.5rem] border border-borderSoft bg-white py-6 shadow-sm">
             <div className="flex w-max gap-4 ec-marquee">
               {[...colleges, ...colleges].map((college, idx) => (
                 <div
                   key={idx}
-                  className="flex h-20 w-52 shrink-0 items-center justify-center rounded-2xl border border-borderSoft bg-gradient-to-br from-white to-[#FAFBFF] px-5 text-center text-sm font-black text-textPrimary shadow-[0_10px_26px_rgba(15,10,42,0.05)]"
+                  className="flex h-20 w-52 shrink-0 items-center justify-center rounded-2xl border border-borderSoft bg-gradient-to-br from-white to-bgBody px-5 text-center text-sm font-black text-textPrimary shadow-sm"
                 >
                   {college}
                 </div>

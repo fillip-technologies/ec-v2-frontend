@@ -33,6 +33,10 @@ function CatalogClientContent({
   const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
   // const [selectedStatus, setSelectedStatus] = useState("all");
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const CARDS_PER_PAGE = 12;
+
   // Read URL query parameters on navigation from MegaMenu links
   useEffect(() => {
     const cId = searchParams.get("clusterId");
@@ -45,6 +49,11 @@ function CatalogClientContent({
     if (country) setSelectedCountryCode(country.toUpperCase());
     if (dur) setSelectedDuration(Number(dur));
   }, [searchParams]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedClusterId, selectedTopicId, selectedTechId, selectedDuration]);
 
   // Auto-detect visitor location on page load via Geolocation IP API (if no URL param override)
   useEffect(() => {
@@ -160,6 +169,14 @@ function CatalogClientContent({
     // selectedStatus,
   ]);
 
+  // Paginated Programs List
+  const paginatedPrograms = useMemo(() => {
+    const startIndex = (currentPage - 1) * CARDS_PER_PAGE;
+    return filteredPrograms.slice(startIndex, startIndex + CARDS_PER_PAGE);
+  }, [filteredPrograms, currentPage]);
+
+  const totalPages = Math.ceil(filteredPrograms.length / CARDS_PER_PAGE);
+
   return (
     <main className="min-h-screen bg-bgBody text-textPrimary">
       {/* Hero Banner Header */}
@@ -217,16 +234,53 @@ function CatalogClientContent({
             </div>
 
             {/* Programs Cards Grid */}
-            {filteredPrograms.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {filteredPrograms.map((program) => (
-                  <ProgramCard
-                    key={program.id}
-                    program={program}
-                    countryId={activeCountry?.id}
-                    currencyCode={activeCurrencyCode}
-                  />
-                ))}
+            {paginatedPrograms.length > 0 ? (
+              <div className="space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {paginatedPrograms.map((program) => (
+                    <ProgramCard
+                      key={program.id}
+                      program={program}
+                      countryId={activeCountry?.id}
+                      currencyCode={activeCurrencyCode}
+                    />
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-1.5 pt-4">
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="rounded-xl border border-borderLight bg-white px-3 py-2 text-xs font-bold text-textPrimary hover:bg-bgSoft disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+                    >
+                      Previous
+                    </button>
+
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`h-9 w-9 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                          currentPage === page
+                            ? 'bg-brand text-white'
+                            : 'border border-borderLight bg-white text-textPrimary hover:bg-bgSoft'
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+
+                    <button
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="rounded-xl border border-borderLight bg-white px-3 py-2 text-xs font-bold text-textPrimary hover:bg-bgSoft disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               /* Empty Results State */

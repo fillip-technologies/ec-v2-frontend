@@ -5,17 +5,17 @@ import { Send, Link2, CheckSquare, Sparkles, Loader2 } from 'lucide-react';
 
 interface TaskSubmissionModalProps {
   isOpen: boolean;
-  stepId: number;
-  stepTitle: string;
+  taskId: number;
+  taskTitle: string;
   onClose: () => void;
   onSubmitSuccess: (data: any) => void;
-  submitFn: (workspaceStepId: number, payloadUrl: string) => Promise<any>;
+  submitFn: (workspaceTaskId: number, payloadUrl: string) => Promise<any>;
 }
 
 export const TaskSubmissionModal: React.FC<TaskSubmissionModalProps> = ({
   isOpen,
-  stepId,
-  stepTitle,
+  taskId,
+  taskTitle,
   onClose,
   onSubmitSuccess,
   submitFn,
@@ -41,7 +41,7 @@ export const TaskSubmissionModal: React.FC<TaskSubmissionModalProps> = ({
     try {
       setLoading(true);
       setErrorMsg('');
-      const result = await submitFn(stepId, payloadUrl.trim());
+      const result = await submitFn(taskId, payloadUrl.trim());
       onSubmitSuccess(result);
       onClose();
     } catch (err: any) {
@@ -66,12 +66,12 @@ export const TaskSubmissionModal: React.FC<TaskSubmissionModalProps> = ({
             <span>AI Rubric Evaluation Pipeline</span>
           </div>
           <h3 className="mt-1 text-lg font-black text-textPrimary">Submit Task Deliverable</h3>
-          <p className="text-xs text-textMuted mt-0.5 max-w-md truncate">{stepTitle}</p>
+          <p className="text-xs text-textMuted mt-0.5 max-w-md truncate">{taskTitle}</p>
         </div>
 
         {/* Error Notification */}
         {errorMsg && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-bold text-red-700">
+          <div className="rounded-xl border border-dangerBorder bg-dangerLight p-3 text-xs font-bold text-dangerDark">
             {errorMsg}
           </div>
         )}
@@ -81,7 +81,7 @@ export const TaskSubmissionModal: React.FC<TaskSubmissionModalProps> = ({
           {/* Deliverable URL Input */}
           <div className="space-y-1.5">
             <label className="block text-xs font-extrabold text-textPrimary">
-              Repository / Deliverable URL <span className="text-red-500">*</span>
+              Repository / Deliverable URL <span className="text-danger">*</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-textMuted">

@@ -10,7 +10,7 @@ export const AboutPillars: React.FC = () => {
         <div className="grid gap-5 md:grid-cols-3">
           {ABOUT_DATA.pillars.map((pillar, idx) => (
             <article key={idx} className="rounded-2xl border border-borderLight bg-white p-6 shadow-sm">
-              <div className="mb-5 h-1.5 w-14 rounded-full bg-gradient-to-r from-brand to-[#F5C842]" />
+              <div className="mb-5 h-1.5 w-14 rounded-full bg-gradient-to-r from-brand to-secondary" />
               <h3 className="text-xl font-extrabold text-textPrimary">{pillar.title}</h3>
               <p className="mt-3 leading-7 text-textGray">{pillar.description}</p>
             </article>

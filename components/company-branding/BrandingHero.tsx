@@ -28,7 +28,7 @@ export const BrandingHero: React.FC = () => {
         {/* Left Content */}
         <div>
           <div className="inline-flex items-center gap-3 rounded-full border border-borderLight bg-white/80 px-4 py-2 text-xs font-bold uppercase tracking-[0.18em] text-brand shadow-sm">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#F5C842]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-secondary" />
             Audience Reach Infrastructure
           </div>
 
@@ -43,13 +43,13 @@ export const BrandingHero: React.FC = () => {
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <a
               href="#branding-enquiry"
-              className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-brand px-7 py-3.5 text-sm font-extrabold text-white shadow-[0_18px_42px_rgba(124,92,252,0.24)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#6a49f3]"
+              className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-brand px-7 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-brand/24 transition duration-300 hover:-translate-y-0.5 hover:bg-brandHover cursor-pointer"
             >
               Launch Campaign
             </a>
             <a
               href="#branding-channels"
-              className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-borderLight bg-white/90 px-7 py-3.5 text-sm font-extrabold text-textPrimary shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-brand hover:text-brand"
+              className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-borderLight bg-white/90 px-7 py-3.5 text-sm font-extrabold text-textPrimary shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-brand hover:text-brand cursor-pointer"
             >
               Explore Audience Reach
             </a>
@@ -73,14 +73,14 @@ export const BrandingHero: React.FC = () => {
 
         {/* Right Dashboard Console Preview */}
         <div className="relative">
-          <div className="absolute -left-5 top-10 hidden rounded-2xl border border-borderLight bg-white px-4 py-3 shadow-[0_18px_44px_rgba(22,8,64,0.10)] lg:block z-20">
+          <div className="absolute -left-5 top-10 hidden rounded-2xl border border-borderLight bg-white px-4 py-3 shadow-md lg:block z-20">
             <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-textMuted">
               Live audience
             </p>
             <p className="mt-1 text-xl font-extrabold text-textPrimary">48,200</p>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-borderLight bg-white shadow-[0_28px_80px_rgba(22,8,64,0.12)]">
+          <div className="overflow-hidden rounded-2xl border border-borderLight bg-white shadow-xl">
             <div className="flex items-center justify-between border-b border-borderLight px-5 py-4">
               <div>
                 <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-textMuted">

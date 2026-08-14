@@ -3,14 +3,14 @@
 import React from 'react';
 import { Project } from '@/types/catalog';
 import { Can } from '@/components/auth/Can';
-import { CheckCircle2, Circle, Lock, Play, Edit3, Plus, ExternalLink, FileText } from 'lucide-react';
+import { CheckCircle2, Circle, Lock, Play, Edit3, Plus, ExternalLink, FileText, Clock } from 'lucide-react';
 
 interface SharedProjectsViewProps {
   projects: Project[];
   activeProjectId?: number;
   onSelectProject?: (project: Project) => void;
   onEditProject?: (project: Project) => void;
-  onSubmitTaskWork?: (stepId: number, stepTitle: string) => void;
+  onSubmitTaskWork?: (taskId: number, taskTitle: string) => void;
 }
 
 export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
@@ -32,7 +32,7 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
     <div className="space-y-6">
       {projects.map((project, projIdx) => {
         const isSelected = activeProjectId ? activeProjectId === project.id : projIdx === 0;
-        const steps = project.workspaceTemplate?.steps || [];
+        const tasks = project.workspaceTemplate?.tasks || [];
         const projectStatus = (project as any).status || (projIdx === 0 ? 'Active' : 'Locked');
         const isProjectLocked = projectStatus === 'Locked';
 
@@ -84,27 +84,30 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
               </div>
             </div>
 
-            {/* Template Steps & Tasks List */}
+            {/* Template Tasks List */}
             <div className="mt-5 space-y-4">
               <div className="text-xs font-bold uppercase tracking-wider text-textMuted">
-                Blueprint Steps & Deliverables ({steps.length} Steps)
+                Blueprint Tasks & Deliverables ({tasks.length} Tasks)
               </div>
 
               <div className="grid gap-3">
-                {steps.map((step, sIdx) => {
-                  const stepStatus = (step as any).status || 'LOCKED';
-                  const isStepLocked = stepStatus === 'LOCKED' || isProjectLocked;
-                  const isStepPassed = stepStatus === 'PASSED';
-                  const isStepNeedsWork = stepStatus === 'NEEDS_WORK';
+                {tasks.map((task, tIdx) => {
+                  const taskStatus = (task as any).status || 'LOCKED';
+                  const isTaskLocked = taskStatus === 'LOCKED' || isProjectLocked;
+                  const isTaskPassed = taskStatus === 'PASSED';
+                  const isTaskNeedsWork = taskStatus === 'NEEDS_WORK';
+                  const isTaskPending = taskStatus === 'MANUAL_REVIEW';
 
                   return (
                     <div
-                      key={step.id || sIdx}
+                      key={task.id || tIdx}
                       className={`rounded-[18px] border p-4 transition-all ${
-                        isStepLocked
+                        isTaskLocked
                           ? 'border-borderLight/60 bg-gray-100/50 opacity-75'
-                          : isStepPassed
-                          ? 'border-statusPassedBorder bg-statusPassedSoftBg/40'
+                          : isTaskPassed
+                          ? 'border-statusPassedBorder bg-statusPassedBg/30'
+                          : isTaskPending
+                          ? 'border-warningBorder bg-warningLight/50'
                           : 'border-borderLight/80 bg-bgSoft/50'
                       }`}
                     >
@@ -112,35 +115,39 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                         <div className="flex items-center gap-2.5">
                           <span
                             className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
-                              isStepPassed
+                              isTaskPassed
                                 ? 'bg-statusPassedBg text-statusPassedText'
-                                : stepStatus === 'OPEN'
+                                : taskStatus === 'OPEN'
                                 ? 'bg-brand text-white'
-                                : isStepNeedsWork
-                                ? 'bg-amber-100 text-amber-800'
+                                : isTaskPending
+                                ? 'bg-statusEvaluatingBg text-statusEvaluatingText'
+                                : isTaskNeedsWork
+                                ? 'bg-statusErrorBg text-statusErrorText'
                                 : 'bg-gray-200 text-gray-500'
                             }`}
                           >
-                            {isStepPassed ? '✓' : isStepLocked ? '🔒' : sIdx + 1}
+                            {isTaskPassed ? '✓' : isTaskPending ? '⏳' : isTaskLocked ? '🔒' : tIdx + 1}
                           </span>
                           <div>
-                            <h4 className="text-xs font-bold text-textPrimary">{step.title}</h4>
+                            <h4 className="text-xs font-bold text-textPrimary">{task.title}</h4>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-3">
                           <span
                             className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase ${
-                              isStepPassed
+                              isTaskPassed
                                 ? 'bg-statusPassedBg text-statusPassedText'
-                                : stepStatus === 'OPEN'
+                                : taskStatus === 'OPEN'
                                 ? 'bg-brand text-white'
-                                : isStepNeedsWork
-                                ? 'bg-amber-100 text-amber-800'
+                                : isTaskPending
+                                ? 'bg-statusEvaluatingBg text-statusEvaluatingText'
+                                : isTaskNeedsWork
+                                ? 'bg-statusErrorBg text-statusErrorText'
                                 : 'bg-gray-200 text-gray-600'
                             }`}
                           >
-                            {isStepPassed ? '✓ PASSED' : isStepNeedsWork ? '⚠️ NEEDS WORK' : stepStatus === 'OPEN' ? '▶ OPEN' : '🔒 LOCKED'}
+                            {isTaskPassed ? '✓ PASSED' : isTaskPending ? '⏳ PENDING REVIEW' : isTaskNeedsWork ? '⚠️ NEEDS WORK' : taskStatus === 'OPEN' ? '▶ OPEN' : '🔒 LOCKED'}
                           </span>
 
                           <Can do="project:edit">
@@ -151,75 +158,63 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                         </div>
                       </div>
 
-                      <p className="mt-1 text-[11px] text-textMuted pl-8">{step.description}</p>
+                      <p className="mt-1 text-[11px] text-textMuted pl-8">{task.description}</p>
 
-                    {/* Step Tasks */}
-                    {step.tasks && step.tasks.length > 0 && (
-                      <div className="mt-3 pl-8 space-y-2">
-                        {step.tasks.map((task, tIdx) => (
-                          <div
-                            key={task.id || tIdx}
-                            className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-borderLight/60 bg-white p-2.5 text-xs"
-                          >
-                            <div className="flex items-center gap-2">
-                              <Circle className="h-3.5 w-3.5 text-textMuted" />
-                              <span className="font-medium text-textPrimary">{task.title}</span>
-                            </div>
-
-                            <div className="flex items-center gap-3">
-                              {/* Task Resources */}
-                              {task.resources && task.resources.length > 0 && (
-                                <div className="flex items-center gap-2">
-                                  {task.resources.map((res) => (
-                                    <a
-                                      key={res.id}
-                                      href={res.url}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand hover:underline"
-                                    >
-                                      {res.type === 'DOCUMENT' ? (
-                                        <FileText className="h-3 w-3" />
-                                      ) : (
-                                        <ExternalLink className="h-3 w-3" />
-                                      )}
-                                      <span>{res.title}</span>
-                                    </a>
-                                  ))}
-                                </div>
-                              )}
-
-                              {isStepPassed ? (
-                                <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-100 px-2.5 py-1 text-[11px] font-extrabold text-emerald-800">
-                                  <CheckCircle2 className="h-3 w-3 text-emerald-700" />
-                                  <span>Completed</span>
-                                </span>
+                      {/* Task Resources */}
+                      {task.resources && task.resources.length > 0 && (
+                        <div className="mt-3 pl-8 flex flex-wrap items-center gap-3">
+                          {task.resources.map((res: any) => (
+                            <a
+                              key={res.id}
+                              href={res.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1 text-[10px] font-semibold text-brand hover:underline"
+                            >
+                              {res.type === 'DOCUMENT' ? (
+                                <FileText className="h-3 w-3" />
                               ) : (
-                                <button
-                                  onClick={() => onSubmitTaskWork?.(step.id, step.title)}
-                                  disabled={isStepLocked}
-                                  className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition-all ${
-                                    isStepLocked
-                                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                      : 'bg-brand text-white hover:bg-brandHover cursor-pointer shadow-xs'
-                                  }`}
-                                >
-                                  Submit Work
-                                </button>
+                                <ExternalLink className="h-3 w-3" />
                               )}
-                            </div>
-                          </div>
-                        ))}
+                              <span>{res.title}</span>
+                            </a>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="mt-3 pl-8 flex justify-end">
+                        {isTaskPassed ? (
+                          <span className="inline-flex items-center gap-1 rounded-lg bg-statusPassedBg px-3 py-1.5 text-[11px] font-extrabold text-statusPassedText">
+                            <CheckCircle2 className="h-3 w-3 text-success" />
+                            <span>Completed</span>
+                          </span>
+                        ) : isTaskPending ? (
+                          <span className="inline-flex items-center gap-1 rounded-lg bg-statusEvaluatingBg px-3 py-1.5 text-[11px] font-extrabold text-statusEvaluatingText">
+                            <Clock className="h-3 w-3 text-warning" />
+                            <span>Awaiting Review</span>
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => onSubmitTaskWork?.(task.id ?? tIdx, task.title)}
+                            disabled={isTaskLocked}
+                            className={`rounded-lg px-3 py-1.5 text-[11px] font-bold transition-all ${
+                              isTaskLocked
+                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                : 'bg-brand text-white hover:bg-brandHover cursor-pointer shadow-xs'
+                            }`}
+                          >
+                            Submit Work
+                          </button>
+                        )}
                       </div>
-                    )}
-                  </div>
-                );
-              })}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
-        </div>
-      );
-    })}
-  </div>
-);
+        );
+      })}
+    </div>
+  );
 };

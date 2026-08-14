@@ -41,8 +41,8 @@ export const AboutStory: React.FC = () => {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-borderLight bg-gradient-to-br from-[#F5C842]/15 to-transparent p-6 shadow-sm">
-              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-[#F5C842]/25 text-textPrimary">
+            <div className="rounded-2xl border border-borderLight bg-gradient-to-br from-secondary/15 to-transparent p-6 shadow-sm">
+              <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/25 text-textPrimary">
                 <Compass className="h-5 w-5 text-textPrimary" />
               </div>
               <h3 className="text-lg font-extrabold text-textPrimary">Our Vision</h3>

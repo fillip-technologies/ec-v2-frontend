@@ -8,11 +8,11 @@ export const BrandingCta: React.FC = () => {
   return (
     <section id="branding-enquiry" className="bg-white py-16 sm:py-20">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="relative overflow-hidden rounded-2xl border border-borderLight bg-brandDark shadow-[0_24px_70px_rgba(22,8,64,0.18)]">
+        <div className="relative overflow-hidden rounded-2xl border border-borderLight bg-brandDark shadow-xl">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(255,255,255,0.16),transparent_30%),linear-gradient(120deg,rgba(37,99,235,0.28),transparent_48%)]" />
           <div className="relative grid gap-8 p-8 sm:p-12 lg:grid-cols-[1fr_auto] lg:items-center">
             <div>
-              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#F5C842]">
+              <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-secondary">
                 Campaign onboarding
               </p>
               <h2 className="mt-4 max-w-3xl text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
@@ -36,7 +36,7 @@ export const BrandingCta: React.FC = () => {
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
               <a
                 href="mailto:info@engineersclinic.com?subject=Company%20Branding%20Campaign%20Enquiry"
-                className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-[#F5C842] px-7 py-3.5 text-sm font-extrabold text-textPrimary shadow-[0_16px_34px_rgba(245,200,66,0.18)] transition hover:-translate-y-0.5 hover:bg-white"
+                className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-secondary px-7 py-3.5 text-sm font-extrabold text-textPrimary shadow-lg shadow-secondary/20 transition hover:-translate-y-0.5 hover:bg-white"
               >
                 Schedule Branding Call
               </a>

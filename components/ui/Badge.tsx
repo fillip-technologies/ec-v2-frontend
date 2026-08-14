@@ -15,18 +15,18 @@ export const Badge: React.FC<BadgeProps> = ({
 }) => {
   const variantStyles = {
     brand: "bg-bgSoft border-borderSoft text-brand",
-    emerald: "bg-[#F0FDF4] border-[#DCFCE7] text-[#16A34A]",
-    amber: "bg-[#FEFCE8] border-[#FEF08A] text-[#CA8A04]",
+    emerald: "bg-successLight border-successBorder text-successDark",
+    amber: "bg-warningLight border-warningBorder text-warningDark",
     outline: "bg-white border-borderSoft text-textPrimary",
     white: "bg-white/90 border-borderSoft text-textPrimary shadow-sm backdrop-blur-md",
   };
 
   const dotStyles = {
     brand: "bg-brand",
-    emerald: "bg-[#22C55E]",
-    amber: "bg-[#EAB308]",
+    emerald: "bg-success",
+    amber: "bg-warningMuted",
     outline: "bg-brand",
-    white: "bg-[#22C55E]",
+    white: "bg-success",
   };
 
   return (

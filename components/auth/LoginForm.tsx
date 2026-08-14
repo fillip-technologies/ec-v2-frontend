@@ -39,6 +39,7 @@ export const LoginForm: React.FC = () => {
       const res = await fetch(`${BACKEND_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           email,
           password,
@@ -52,14 +53,26 @@ export const LoginForm: React.FC = () => {
         throw new Error(data.message || "Invalid email or password");
       }
 
-      // Store JWT Token in localStorage
+      // Store JWT Tokens in localStorage
       if (data.accessToken) {
         localStorage.setItem("token", data.accessToken);
+        if (data.refreshToken) {
+          localStorage.setItem("refreshToken", data.refreshToken);
+        }
         localStorage.setItem("user", JSON.stringify(data.user));
       }
 
       setLoading(false);
-      window.location.href = "/student";
+      const rawRole = data.user?.role?.name || data.user?.role || "";
+      const userRole = typeof rawRole === "string" ? rawRole.toLowerCase() : "";
+
+      if (userRole === "super_admin" || userRole === "admin") {
+        window.location.href = "/admin";
+      } else if (userRole === "college") {
+        window.location.href = "/college";
+      } else {
+        window.location.href = "/student";
+      }
     } catch (err: any) {
       setLoading(false);
       setErrorMessage(err.message || "Something went wrong during login");
@@ -68,7 +81,7 @@ export const LoginForm: React.FC = () => {
 
   return (
     <div className="w-full">
-      <div className="rounded-[2rem] border border-white/50 bg-white/25 p-4 shadow-2xl shadow-[#7C5CFC]/10 backdrop-blur-2xl">
+      <div className="rounded-[2rem] border border-white/50 bg-white/25 p-4 shadow-2xl shadow-brand/10 backdrop-blur-2xl">
         <div className="rounded-[1.75rem] border border-white/70 bg-white/90 p-6 sm:p-8 shadow-xl backdrop-blur-xl">
           {/* Header */}
           <div>
@@ -84,7 +97,7 @@ export const LoginForm: React.FC = () => {
           </div>
 
           {errorMessage && (
-            <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <div className="mt-6 rounded-2xl border border-dangerBorder bg-dangerLight px-4 py-3 text-sm text-dangerDark font-medium">
               {errorMessage}
             </div>
           )}
@@ -102,7 +115,7 @@ export const LoginForm: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email address"
-                  className="w-full rounded-2xl border border-borderLight bg-[#F8F7FF] pl-11 pr-4 py-3.5 text-sm text-textPrimary outline-none transition placeholder:text-textMuted focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
+                  className="w-full rounded-2xl border border-borderLight bg-surface pl-11 pr-4 py-3.5 text-sm text-textPrimary outline-none transition placeholder:text-textMuted focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                 />
               </div>
             </div>
@@ -118,7 +131,7 @@ export const LoginForm: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full rounded-2xl border border-borderLight bg-[#F8F7FF] pl-11 pr-4 py-3.5 text-sm text-textPrimary outline-none transition placeholder:text-textMuted focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
+                  className="w-full rounded-2xl border border-borderLight bg-surface pl-11 pr-4 py-3.5 text-sm text-textPrimary outline-none transition placeholder:text-textMuted focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                 />
               </div>
             </div>
@@ -127,7 +140,7 @@ export const LoginForm: React.FC = () => {
             <button
               type="submit"
               disabled={loading}
-              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand to-[#9B7BFF] px-5 py-4 text-sm font-extrabold text-white shadow-lg shadow-[#7C5CFC]/25 transition hover:scale-[1.01] cursor-pointer disabled:opacity-70"
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand to-brandLight px-5 py-4 text-sm font-extrabold text-white shadow-lg shadow-brand/25 transition hover:scale-[1.01] cursor-pointer disabled:opacity-70"
             >
               <span>{loading ? "Signing in..." : `Login as ${roles[activeRole].label}`}</span>
               <ArrowRight className="h-4 w-4" />
@@ -144,7 +157,7 @@ export const LoginForm: React.FC = () => {
                     onClick={() => setActiveRole(roleKey)}
                     className={`inline-flex items-center justify-center rounded-full border px-4 py-2 text-xs font-black transition cursor-pointer ${
                       activeRole === roleKey
-                        ? "border-transparent bg-gradient-to-r from-brand to-[#9B7BFF] text-white shadow-lg shadow-[#7C5CFC]/20"
+                        ? "border-transparent bg-gradient-to-r from-brand to-brandLight text-white shadow-lg shadow-brand/20"
                         : "border-borderLight bg-white text-textGray hover:border-brand/40 hover:bg-brand/5 hover:text-textPrimary"
                     }`}
                   >

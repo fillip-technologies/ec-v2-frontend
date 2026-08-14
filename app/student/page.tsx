@@ -1,15 +1,25 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { StudentSidebar } from '@/components/student/StudentSidebar';
 import { StudentOverview } from '@/components/student/StudentOverview';
 import { StudentProgramView } from '@/components/student/StudentProgramView';
+import { StudentSubmissionsView } from '@/components/student/StudentSubmissionsView';
 import { TaskSubmissionModal } from '@/components/student/TaskSubmissionModal';
-import { SharedProjectsView } from '@/components/shared/SharedProjectsView';
-import { Can } from '@/components/auth/Can';
+import { AdminOverview } from '@/components/admin/AdminOverview';
+import { AdminCollegesView } from '@/components/admin/AdminCollegesView';
+import { AdminUsersView } from '@/components/admin/AdminUsersView';
+import { AdminProgramsView } from '@/components/admin/AdminProgramsView';
+import { AdminCouponsView } from '@/components/admin/AdminCouponsView';
+import { AdminSubmissionsView } from '@/components/admin/AdminSubmissionsView';
+import { CollegeOverview } from '@/components/college/CollegeOverview';
+import { CollegeStudentsView } from '@/components/college/CollegeStudentsView';
+import { CollegeCouponsView } from '@/components/college/CollegeCouponsView';
+import { CollegeReportsView } from '@/components/college/CollegeReportsView';
 import { Project } from '@/types/catalog';
-import { getProgramByIdOrSlug } from '@/lib/api/catalog';
+import { getProgramByIdOrSlug, getPrograms } from '@/lib/api/catalog';
 import {
   getStudentOverview,
   getStudentProfile,
@@ -19,248 +29,335 @@ import {
   getStudentRubrics,
   submitStudentTask,
 } from '@/lib/api/student';
+import {
+  getAdminOverview,
+  getAdminColleges,
+  updateCollegeStatus,
+  getAdminUsers,
+  updateUserStatus,
+} from '@/lib/api/admin';
+import {
+  getCollegeOverview,
+  getCollegeStudents,
+  getCollegeCoupons,
+  getCollegeReports,
+} from '@/lib/api/college';
 import studentData from '@/config/studentData.json';
-import { User, School, Shield } from 'lucide-react';
+import { School, Shield, Loader2, Award, CreditCard } from 'lucide-react';
 
-function StudentDashboardContent() {
-  const { user } = useAuth();
-  const [activeSlug, setActiveSlug] = useState<string>('overview');
+function DashboardContent() {
+  const { user, roleName } = useAuth();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab') || searchParams.get('slug');
+
+  const [activeSlug, setActiveSlug] = useState<string>(tabParam || 'overview');
   const [projects, setProjects] = useState<Project[]>([]);
   const [programsData, setProgramsData] = useState<any[]>([]);
+  const [catalogPrograms, setCatalogPrograms] = useState<any[]>([]);
   const [overviewData, setOverviewData] = useState<any>(null);
   const [profileData, setProfileData] = useState<any>(null);
   const [submissionsList, setSubmissionsList] = useState<any[]>(studentData.submissions);
   const [rubricsList, setRubricsList] = useState<any[]>(studentData.rubrics);
-  const [loading, setLoading] = useState<boolean>(true);
+
+  // Admin Data State
+  const [adminOverviewData, setAdminOverviewData] = useState<any>(null);
+  const [adminColleges, setAdminColleges] = useState<any[]>([]);
+  const [adminUsers, setAdminUsers] = useState<any[]>([]);
+
+  // College Data State
+  const [collegeOverviewData, setCollegeOverviewData] = useState<any>(null);
+  const [collegeStudents, setCollegeStudents] = useState<any[]>([]);
+  const [collegeCoupons, setCollegeCoupons] = useState<any[]>([]);
+  const [collegeReports, setCollegeReports] = useState<any>(null);
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedStep, setSelectedStep] = useState<{ id: number; title: string } | null>(null);
+  const [selectedTask, setSelectedTask] = useState<{ id: number; title: string } | null>(null);
 
-  const handleOpenSubmissionModal = (stepId: number, stepTitle: string) => {
-    setSelectedStep({ id: stepId, title: stepTitle });
+  const activeRole = roleName || (user as any)?.role?.name || (typeof user?.role === 'string' ? user.role : 'student');
+  const isAdmin = activeRole === 'super_admin' || activeRole === 'admin';
+  const isCollege = activeRole === 'college';
+
+  // Sync active tab when URL param changes
+  useEffect(() => {
+    if (tabParam) {
+      setActiveSlug(tabParam);
+    }
+  }, [tabParam]);
+
+  const handleOpenSubmissionModal = (taskId: number, taskTitle: string) => {
+    setSelectedTask({ id: taskId, title: taskTitle });
     setIsModalOpen(true);
   };
 
-  const handleSubmissionSuccess = (result: any) => {
-    // Re-fetch live metrics & submissions after successful evaluation
+  const handleSubmissionSuccess = () => {
     getStudentOverview().then((data) => { if (data) setOverviewData(data); });
     getStudentPrograms().then((progs) => { if (Array.isArray(progs) && progs.length > 0) setProgramsData(progs); });
     getStudentSubmissions().then((subs) => { if (Array.isArray(subs)) setSubmissionsList(subs); });
   };
 
+  // Admin College Handlers
+  const handleApproveCollege = async (id: number) => {
+    try {
+      await updateCollegeStatus(id, 'approved');
+      const updatedColleges = await getAdminColleges();
+      setAdminColleges(updatedColleges);
+      const updatedOverview = await getAdminOverview();
+      if (updatedOverview) setAdminOverviewData(updatedOverview);
+    } catch (err: any) {
+      alert(err.message || 'Failed to approve college');
+    }
+  };
+
+  const handleRejectCollege = async (id: number) => {
+    try {
+      await updateCollegeStatus(id, 'rejected');
+      const updatedColleges = await getAdminColleges();
+      setAdminColleges(updatedColleges);
+      const updatedOverview = await getAdminOverview();
+      if (updatedOverview) setAdminOverviewData(updatedOverview);
+    } catch (err: any) {
+      alert(err.message || 'Failed to reject college');
+    }
+  };
+
+  // Admin User Handlers
+  const handleUpdateUserStatus = async (id: number, status: string) => {
+    try {
+      await updateUserStatus(id, status);
+      const updatedUsers = await getAdminUsers();
+      setAdminUsers(updatedUsers);
+    } catch (err: any) {
+      alert(err.message || 'Failed to update user status');
+    }
+  };
+
   useEffect(() => {
-    // 1. Fetch live enrolled programs list for student
-    getStudentPrograms()
-      .then((progs) => {
-        if (Array.isArray(progs) && progs.length > 0) {
-          setProgramsData(progs);
-        }
-      })
-      .catch((err) => console.error('Failed to load student programs:', err));
+    if (isAdmin) {
+      // Fetch Super Admin Console Telemetry Data
+      getAdminOverview().then((data) => { if (data) setAdminOverviewData(data); });
+      getAdminColleges().then((colleges) => setAdminColleges(colleges));
+      getAdminUsers().then((users) => setAdminUsers(users));
+      getPrograms().then((progs) => setCatalogPrograms(progs));
+    } else if (isCollege) {
+      // Fetch B2B College Portal Data
+      getCollegeOverview().then((data) => { if (data) setCollegeOverviewData(data); });
+      getCollegeStudents().then((students) => setCollegeStudents(students));
+      getCollegeCoupons().then((coupons) => setCollegeCoupons(coupons));
+      getCollegeReports().then((reports) => setCollegeReports(reports));
+      getPrograms().then((progs) => setCatalogPrograms(progs));
+    } else {
+      // Fetch Student Data
+      getStudentPrograms()
+        .then((progs) => { if (Array.isArray(progs) && progs.length > 0) setProgramsData(progs); })
+        .catch((err) => console.error('Failed to load student programs:', err));
 
-    // 2. Fetch live student workspace projects (with step progress statuses)
-    getStudentWorkspace()
-      .then((wsProjects) => {
-        if (Array.isArray(wsProjects) && wsProjects.length > 0) {
-          setProjects(wsProjects);
-        } else {
-          // Fallback to catalog template projects
+      getStudentWorkspace()
+        .then((wsProjects) => {
+          if (Array.isArray(wsProjects) && wsProjects.length > 0) {
+            setProjects(wsProjects);
+          } else {
+            getProgramByIdOrSlug(studentData.defaultProgramSlug)
+              .then((data) => { if (data?.projects) setProjects(data.projects); })
+              .catch((err) => console.error('Failed to load program projects:', err));
+          }
+        })
+        .catch(() => {
           getProgramByIdOrSlug(studentData.defaultProgramSlug)
-            .then((data) => {
-              if (data?.projects) setProjects(data.projects);
-            })
+            .then((data) => { if (data?.projects) setProjects(data.projects); })
             .catch((err) => console.error('Failed to load program projects:', err));
-        }
-      })
-      .catch(() => {
-        getProgramByIdOrSlug(studentData.defaultProgramSlug)
-          .then((data) => {
-            if (data?.projects) setProjects(data.projects);
-          })
-          .catch((err) => console.error('Failed to load program projects:', err));
-      });
+        });
 
-    // 3. Fetch live student overview metrics from NestJS API
-    getStudentOverview()
-      .then((data) => {
-        if (data) setOverviewData(data);
-      })
-      .catch((err) => console.error('Failed to load student overview:', err));
+      getStudentOverview().then((data) => { if (data) setOverviewData(data); });
+      getStudentProfile().then((data) => { if (data) setProfileData(data); });
+      getStudentSubmissions().then((data) => { if (Array.isArray(data)) setSubmissionsList(data); });
+      getStudentRubrics().then((data) => { if (Array.isArray(data)) setRubricsList(data); });
+    }
+  }, [isAdmin, isCollege]);
 
-    // 3. Fetch student profile details from NestJS API
-    getStudentProfile()
-      .then((data) => {
-        if (data) setProfileData(data);
-      })
-      .catch((err) => console.error('Failed to load student profile:', err));
+  const studentObj = (user as any)?.student;
+  const firstName = studentObj?.firstName || user?.firstName || '';
+  const lastName = studentObj?.lastName || user?.lastName || '';
+  
+  const displayName = profileData?.displayName || (
+    (firstName || lastName)
+      ? `${firstName} ${lastName}`.trim()
+      : user?.email
+      ? user.email.split('@')[0]
+      : 'User Account'
+  );
 
-    // 4. Fetch submissions & rubrics
-    getStudentSubmissions()
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) setSubmissionsList(data);
-      })
-      .catch((err) => console.error('Failed to load submissions:', err));
-
-    getStudentRubrics()
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0) setRubricsList(data);
-      })
-      .catch((err) => console.error('Failed to load rubrics:', err))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const displayName = profileData?.displayName
-    ? profileData.displayName
-    : user?.firstName
-    ? `${user.firstName} ${user.lastName || ''}`.trim()
-    : 'Rahul Sharma';
-
-  const userEmail = profileData?.email || user?.email || 'student@example.com';
+  const userEmail = profileData?.email || user?.email || 'user@engineersclinic.com';
   const institutionName = profileData?.institutionName || studentData.profile.institutionName;
   const verificationStatus = profileData?.verificationStatus || studentData.profile.verificationStatus;
 
   return (
     <div className="h-screen w-screen overflow-hidden flex bg-bgSoft">
-      {/* Pinned Left Sidebar (Independent Scroll) */}
+      {/* Pinned Left Sidebar */}
       <StudentSidebar
         activeSlug={activeSlug}
         onSelectSlug={setActiveSlug}
         onOpenProfile={() => setActiveSlug('profile')}
       />
 
-      {/* Main Content Area (Independent Scroll) */}
+      {/* Main Content Area */}
       <main className="flex-1 h-full overflow-y-auto p-6 sm:p-8">
         <div className="mx-auto max-w-6xl space-y-6">
-          {activeSlug === 'overview' && (
-            <StudentOverview
-              projects={projects}
-              overviewData={overviewData}
-              onSelectSlug={setActiveSlug}
-            />
-          )}
+          {/* Super Admin Console Views */}
+          {isAdmin ? (
+            <>
+              {activeSlug === 'overview' && (
+                <AdminOverview
+                  overviewData={adminOverviewData}
+                  onApproveCollege={handleApproveCollege}
+                  onRejectCollege={handleRejectCollege}
+                  onNavigateSlug={setActiveSlug}
+                />
+              )}
 
-          {(activeSlug === 'program' || activeSlug === 'projects') && (
-            <StudentProgramView
-              programsData={programsData}
-              fallbackProjects={projects}
-              onSelectProject={(proj) => alert(`Selected ${proj.title}`)}
-              onEditProject={(proj) => alert(`Editing permissions for ${proj.title}`)}
-              onSubmitTaskWork={handleOpenSubmissionModal}
-            />
-          )}
+              {activeSlug === 'colleges' && (
+                <AdminCollegesView
+                  colleges={adminColleges}
+                  onApproveCollege={handleApproveCollege}
+                  onRejectCollege={handleRejectCollege}
+                />
+              )}
 
-          {activeSlug === 'submissions' && (
-            <div className="rounded-[24px] border border-borderLight bg-white p-8 space-y-4 shadow-xs">
-              <h2 className="text-xl font-black text-textPrimary">Task Submissions</h2>
-              <p className="text-xs text-textMuted">
-                List of student task submissions evaluated by BullMQ AI worker pipeline.
-              </p>
-              
-              <div className="space-y-3">
-                {submissionsList.map((sub: any) => (
-                  <div
-                    key={sub.id}
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-borderLight bg-bgSoft/60 p-4 text-xs font-bold text-textPrimary"
-                  >
+              {activeSlug === 'users' && (
+                <AdminUsersView
+                  users={adminUsers}
+                  onUpdateUserStatus={handleUpdateUserStatus}
+                />
+              )}
+
+              {activeSlug === 'programs' && (
+                <AdminProgramsView
+                  programs={catalogPrograms}
+                  onProgramUpdated={() => getPrograms().then((p) => setCatalogPrograms(p))}
+                />
+              )}
+
+              {activeSlug === 'submissions' && <AdminSubmissionsView />}
+              {activeSlug === 'coupons' && <AdminCouponsView />}
+            </>
+          ) : isCollege ? (
+            /* B2B College Portal Views */
+            <>
+              {activeSlug === 'overview' && (
+                <CollegeOverview
+                  overviewData={collegeOverviewData}
+                  onNavigateSlug={setActiveSlug}
+                />
+              )}
+
+              {activeSlug === 'program' && (
+                <AdminProgramsView
+                  programs={catalogPrograms}
+                />
+              )}
+
+              {activeSlug === 'students' && (
+                <CollegeStudentsView
+                  students={collegeStudents}
+                />
+              )}
+
+              {activeSlug === 'coupons' && (
+                <CollegeCouponsView
+                  coupons={collegeCoupons}
+                />
+              )}
+
+              {activeSlug === 'reports' && (
+                <CollegeReportsView
+                  reportsData={collegeReports}
+                />
+              )}
+            </>
+          ) : (
+            /* B2C Student Dashboard Views */
+            <>
+              {activeSlug === 'overview' && (
+                <StudentOverview
+                  projects={projects}
+                  overviewData={overviewData}
+                  programsData={programsData}
+                  onSelectSlug={setActiveSlug}
+                  onNavigateSlug={setActiveSlug}
+                />
+              )}
+
+              {activeSlug === 'program' && (
+                <StudentProgramView
+                  programsData={programsData}
+                  fallbackProjects={projects}
+                  projects={projects}
+                  submissions={submissionsList}
+                  onOpenSubmitModal={handleOpenSubmissionModal}
+                  onSubmitTaskWork={handleOpenSubmissionModal}
+                />
+              )}
+
+              {activeSlug === 'submissions' && (
+                <StudentSubmissionsView
+                  submissions={submissionsList}
+                  onNavigateProgram={() => setActiveSlug('program')}
+                />
+              )}
+
+              {activeSlug === 'certificate' && (
+                <div className="rounded-[24px] border border-borderLight bg-white p-8 text-center space-y-4 shadow-xs">
+                  <div className="h-14 w-14 rounded-full bg-brand/10 text-brand flex items-center justify-center mx-auto">
+                    <Award className="h-7 w-7" />
+                  </div>
+                  <h2 className="text-xl font-black text-textPrimary">Verified Internship Certificate</h2>
+                  <p className="text-xs text-textMuted max-w-md mx-auto">
+                    Complete all 3 capstone projects and pass AI evaluation rubrics to unlock your verifiable certificate and transcript badge.
+                  </p>
+                  <div className="inline-block rounded-full bg-brand/10 px-4 py-1.5 text-xs font-bold text-brand">
+                    {overviewData?.metrics?.completionPercentage || studentData.metrics.completionPercentage}% Complete
+                  </div>
+                </div>
+              )}
+
+              {activeSlug === 'payments' && (
+                <div className="rounded-[24px] border border-borderLight bg-white p-8 space-y-4 shadow-xs">
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="h-5 w-5 text-brand" />
+                    <h2 className="text-xl font-black text-textPrimary">Payment History & Invoices</h2>
+                  </div>
+                  <div className="rounded-2xl border border-borderLight bg-bgSoft/60 p-4 flex flex-wrap justify-between items-center text-xs font-bold gap-2">
                     <div>
-                      <div className="text-sm font-extrabold">{sub.taskTitle || sub.stepTitle || `Submission #${sub.id}`}</div>
-                      <div className="text-[11px] font-medium text-textMuted mt-0.5">
-                        {sub.stepTitle ? `${sub.stepTitle} • ` : ''}{sub.evaluator || 'AI Reviewer Engine'}
-                      </div>
+                      <div className="text-sm font-extrabold text-textPrimary">EC-S-1049 • Full Stack Web Engineering</div>
+                      <div className="text-[11px] font-medium text-textMuted mt-0.5">Enrolled with 100% Institutional Sponsor Grant</div>
                     </div>
-
-                    <div className="flex items-center gap-3">
-                      {sub.score !== null && sub.score !== undefined && (
-                        <span className="text-sm font-black text-emerald-700">
-                          {sub.score} / 100
-                        </span>
-                      )}
-                      <span
-                        className={`rounded-full px-3 py-1 text-[10px] font-extrabold uppercase ${
-                          sub.status === 'PASSED'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}
-                      >
-                        {sub.status}
-                      </span>
-                    </div>
+                    <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-extrabold text-emerald-800 uppercase">
+                      PAID / SPONSORED
+                    </span>
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
+              )}
+            </>
           )}
 
-          {activeSlug === 'rubrics' && (
-            <div className="rounded-[24px] border border-borderLight bg-white p-8 space-y-4 shadow-xs">
-              <h2 className="text-xl font-black text-textPrimary">AI Rubrics & Criteria</h2>
-              <p className="text-xs text-textMuted">
-                Evaluation scoring criteria and minimum pass threshold across steps.
-              </p>
-
-              <div className="space-y-4">
-                {rubricsList.map((r: any) => (
-                  <div key={r.stepId || r.id} className="rounded-2xl border border-borderLight bg-bgSoft/60 p-4 space-y-2">
-                    <div className="flex justify-between items-center text-xs font-bold text-textPrimary">
-                      <span>{r.stepTitle}</span>
-                      <span className="rounded-full bg-brand/10 px-2.5 py-0.5 text-[10px] text-brand">
-                        Pass Threshold: {r.passThreshold}/100
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-2 text-xs text-textMuted pt-1">
-                      {Array.isArray(r.criteria) ? (
-                        r.criteria.map((c: any, cIdx: number) => (
-                          <span key={cIdx} className="rounded-lg bg-white border border-borderLight px-2.5 py-1 font-semibold text-textPrimary">
-                            • {c.criterion} (Max: {c.maxScore})
-                          </span>
-                        ))
-                      ) : (
-                        <span className="rounded-lg bg-white border border-borderLight px-2.5 py-1 font-semibold text-textPrimary">
-                          • Standard Rubric Criteria Configured
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeSlug === 'certificate' && (
-            <div className="rounded-[24px] border border-borderLight bg-white p-8 text-center space-y-4 shadow-xs">
-              <h2 className="text-xl font-black text-textPrimary">Verified Certificate</h2>
-              <p className="text-xs text-textMuted max-w-md mx-auto">
-                Complete all capstone projects to unlock your QR-verifiable certificate.
-              </p>
-              <div className="inline-block rounded-full bg-brand/10 px-4 py-1.5 text-xs font-bold text-brand">
-                {overviewData?.metrics?.completionPercentage || studentData.metrics.completionPercentage}% Complete
-              </div>
-            </div>
-          )}
-
-          {activeSlug === 'payments' && (
-            <div className="rounded-[24px] border border-borderLight bg-white p-8 space-y-4 shadow-xs">
-              <h2 className="text-xl font-black text-textPrimary">Payment History & Invoices</h2>
-              <div className="rounded-xl border border-borderLight bg-bgSoft p-4 flex justify-between text-xs font-bold">
-                <span>EC-S-1049 • Full Stack Web Engineering</span>
-                <span className="text-emerald-700">PAID (INR 2,999)</span>
-              </div>
-            </div>
-          )}
-
-          {/* Student Profile View */}
+          {/* Common Profile View */}
           {activeSlug === 'profile' && (
-            <div className="rounded-[24px] border border-borderLight bg-white p-8 space-y-6 shadow-xs">
+            <div className="bg-white rounded-3xl p-8 border border-borderLight shadow-xs space-y-6">
               <div className="flex items-center gap-4 border-b border-borderLight pb-6">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand/10 text-brand font-black text-xl">
-                  <User className="h-8 w-8" />
+                <div
+                  className="h-16 w-16 rounded-2xl bg-brand/10 text-brand flex items-center justify-center font-black text-xl"
+                  suppressHydrationWarning
+                >
+                  {displayName.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h2 className="text-xl font-black text-textPrimary">{displayName}</h2>
-                  <p className="text-xs text-textMuted">{userEmail}</p>
-                  <span className="mt-1 inline-block rounded-full bg-brand/10 px-2.5 py-0.5 text-[10px] font-extrabold uppercase text-brand">
-                    {typeof user?.role === 'string' ? user.role : 'Student Account'}
+                  <h2 className="text-xl font-bold text-textPrimary" suppressHydrationWarning>{displayName}</h2>
+                  <p className="text-xs text-textMuted" suppressHydrationWarning>{userEmail}</p>
+                  <span
+                    className="mt-1 inline-block rounded-full bg-brand/10 px-2.5 py-0.5 text-[10px] font-extrabold uppercase text-brand"
+                    suppressHydrationWarning
+                  >
+                    {activeRole}
                   </span>
                 </div>
               </div>
@@ -269,9 +366,9 @@ function StudentDashboardContent() {
                 <div className="rounded-2xl border border-borderLight bg-bgSoft/50 p-4 space-y-1">
                   <div className="flex items-center gap-2 text-xs font-bold text-textMuted">
                     <School className="h-4 w-4 text-brand" />
-                    <span>Institution</span>
+                    <span>Institution / Entity</span>
                   </div>
-                  <div className="text-sm font-bold text-textPrimary">{institutionName}</div>
+                  <div className="text-sm font-bold text-textPrimary" suppressHydrationWarning>{institutionName}</div>
                 </div>
 
                 <div className="rounded-2xl border border-borderLight bg-bgSoft/50 p-4 space-y-1">
@@ -279,7 +376,7 @@ function StudentDashboardContent() {
                     <Shield className="h-4 w-4 text-brand" />
                     <span>Verification Status</span>
                   </div>
-                  <div className="text-sm font-bold text-emerald-700">{verificationStatus}</div>
+                  <div className="text-sm font-bold text-emerald-700" suppressHydrationWarning>{verificationStatus}</div>
                 </div>
               </div>
             </div>
@@ -288,11 +385,11 @@ function StudentDashboardContent() {
       </main>
 
       {/* Task Submission Modal */}
-      {selectedStep && (
+      {!isAdmin && !isCollege && selectedTask && (
         <TaskSubmissionModal
           isOpen={isModalOpen}
-          stepId={selectedStep.id}
-          stepTitle={selectedStep.title}
+          taskId={selectedTask.id}
+          taskTitle={selectedTask.title}
           onClose={() => setIsModalOpen(false)}
           onSubmitSuccess={handleSubmissionSuccess}
           submitFn={submitStudentTask}
@@ -302,10 +399,18 @@ function StudentDashboardContent() {
   );
 }
 
-export default function StudentDashboardPage() {
+export default function DashboardPage() {
   return (
     <AuthProvider>
-      <StudentDashboardContent />
+      <Suspense
+        fallback={
+          <div className="flex h-screen w-screen items-center justify-center bg-bgSoft">
+            <Loader2 className="h-8 w-8 animate-spin text-brand" />
+          </div>
+        }
+      >
+        <DashboardContent />
+      </Suspense>
     </AuthProvider>
   );
 }

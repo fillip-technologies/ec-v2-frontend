@@ -13,7 +13,7 @@ export const AboutSection: React.FC = () => {
         <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Visual Showcase */}
           <div className="relative">
-            <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-tr from-brand/15 to-[#22C55E]/15 blur-2xl" />
+            <div className="absolute inset-0 rounded-[2.5rem] bg-gradient-to-tr from-brand/15 to-success/15 blur-2xl" />
             <div className="relative overflow-hidden rounded-[2.5rem] border border-borderSoft bg-white p-6 sm:p-8 shadow-2xl">
               <div className="flex items-center justify-between border-b border-borderSoft pb-4">
                 <div className="flex items-center gap-2">
@@ -25,7 +25,7 @@ export const AboutSection: React.FC = () => {
                   </span>
                 </div>
                 <Badge variant="emerald" showDot>
-                  NEP-2020 Compliant
+                  Industry Aligned
                 </Badge>
               </div>
 
@@ -39,17 +39,17 @@ export const AboutSection: React.FC = () => {
                   {
                     title: "2. Personal Workspace Snapshot",
                     desc: "Your workspace is frozen at enrolment—admin updates never disrupt active work.",
-                    icon: <Cpu className="h-4 w-4 text-[#0EA5E9]" />,
+                    icon: <Cpu className="h-4 w-4 text-info" />,
                   },
                   {
                     title: "3. AI Evaluation Subsystem",
                     desc: "BullMQ async workers run rubric evaluation against OpenAI structured outputs.",
-                    icon: <Sparkles className="h-4 w-4 text-[#EAB308]" />,
+                    icon: <Sparkles className="h-4 w-4 text-warningMuted" />,
                   },
                   {
                     title: "4. Verifiable QR Certificate",
                     desc: "Earn a tamper-proof credential with public verification route and LinkedIn sharing.",
-                    icon: <CheckCircle2 className="h-4 w-4 text-[#22C55E]" />,
+                    icon: <CheckCircle2 className="h-4 w-4 text-success" />,
                   },
                 ].map((step, idx) => (
                   <div
@@ -86,7 +86,7 @@ export const AboutSection: React.FC = () => {
                 "Public verifiable certificate page ensuring authentic credential validation.",
               ].map((point, idx) => (
                 <div key={idx} className="flex items-start gap-3">
-                  <span className="mt-1 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#F0FDF4] text-[#22C55E]">
+                  <span className="mt-1 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-successLight text-success">
                     <CheckCircle2 className="h-3.5 w-3.5" />
                   </span>
                   <span className="text-sm font-bold text-textPrimary">{point}</span>

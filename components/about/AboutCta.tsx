@@ -11,9 +11,9 @@ export const AboutCta: React.FC<AboutCtaProps> = ({ onOpenEnquiry }) => {
   return (
     <section className="bg-white py-14 sm:py-16">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="relative overflow-hidden rounded-2xl border border-borderLight bg-gradient-to-r from-brand/8 via-white to-[#F5C842]/8 px-8 py-12 text-center shadow-sm sm:px-14 sm:py-16">
+        <div className="relative overflow-hidden rounded-2xl border border-borderLight bg-gradient-to-r from-brand/8 via-white to-secondary/8 px-8 py-12 text-center shadow-sm sm:px-14 sm:py-16">
           <div className="pointer-events-none absolute -left-12 -top-12 h-40 w-40 rounded-full bg-brand/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-12 -right-12 h-40 w-40 rounded-full bg-[#F5C842]/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-12 -right-12 h-40 w-40 rounded-full bg-secondary/10 blur-3xl" />
 
           <div className="relative">
             <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand">
@@ -29,7 +29,7 @@ export const AboutCta: React.FC<AboutCtaProps> = ({ onOpenEnquiry }) => {
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
                 href="/#courses"
-                className="inline-flex items-center justify-center rounded-2xl bg-brand px-7 py-3.5 text-sm font-extrabold text-white shadow-[0_16px_34px_rgba(124,92,252,0.20)] transition hover:bg-[#6a49f3] cursor-pointer"
+                className="inline-flex items-center justify-center rounded-2xl bg-brand px-7 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-brand/20 transition hover:bg-brandHover cursor-pointer"
               >
                 Browse Internships
               </Link>

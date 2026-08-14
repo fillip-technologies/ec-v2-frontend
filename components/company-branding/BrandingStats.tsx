@@ -13,7 +13,7 @@ export const BrandingStats: React.FC = () => {
   return (
     <section className="border-y border-borderLight bg-white py-8">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="grid gap-px overflow-hidden rounded-2xl border border-borderLight bg-[#E2D9FF] shadow-[0_18px_54px_rgba(22,8,64,0.06)] sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-px overflow-hidden rounded-2xl border border-borderLight bg-borderLight shadow-sm sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, idx) => (
             <div key={idx} className="group bg-white p-6 transition duration-300 hover:bg-bgSoft">
               <span className="mb-5 block h-1 w-10 rounded-full bg-brand/70 transition duration-300 group-hover:w-16" />

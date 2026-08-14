@@ -30,10 +30,8 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
   // College Fields
   const [collegeName, setCollegeName] = useState("");
   const [collegeEmail, setCollegeEmail] = useState("");
-  const [collegeContact, setCollegeContact] = useState("");
-  const [studentsBeginner, setStudentsBeginner] = useState<number>(0);
-  const [studentsIntermediate, setStudentsIntermediate] = useState<number>(0);
-  const [studentsAdvanced, setStudentsAdvanced] = useState<number>(0);
+  const [collegePhone, setCollegePhone] = useState("");
+  const [collegeAddress, setCollegeAddress] = useState("");
   const [collegePassword, setCollegePassword] = useState("");
   const [collegeConfirmPassword, setCollegeConfirmPassword] = useState("");
 
@@ -73,6 +71,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
         const res = await fetch(`${BACKEND_URL}/auth/register/student`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({
             name: studentName,
             email: studentEmail,
@@ -89,17 +88,41 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
 
         if (data.accessToken) {
           localStorage.setItem("token", data.accessToken);
+          if (data.refreshToken) {
+            localStorage.setItem("refreshToken", data.refreshToken);
+          }
           localStorage.setItem("user", JSON.stringify(data.user));
         }
 
         setLoading(false);
         setSuccess(true);
       } else {
-        // College registration fallback
-        setTimeout(() => {
-          setLoading(false);
-          setSuccess(true);
-        }, 1000);
+        if (collegePassword !== collegeConfirmPassword) {
+          throw new Error("Passwords do not match");
+        }
+
+        const res = await fetch(`${BACKEND_URL}/auth/register/college`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            email: collegeEmail,
+            password: collegePassword,
+            phoneNo: collegePhone || "N/A",
+            countryId: 1, // Defaulting to India
+            collegeName: collegeName,
+            address: collegeAddress || "Campus Address",
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(Array.isArray(data.message) ? data.message.join(", ") : data.message || "Registration failed");
+        }
+
+        setLoading(false);
+        setSuccess(true);
       }
     } catch (err: any) {
       setLoading(false);
@@ -150,21 +173,25 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
           </div>
 
           {errorMsg && (
-            <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-bold text-red-700">
+            <div className="mt-4 rounded-2xl border border-dangerBorder bg-dangerLight p-4 text-sm font-bold text-dangerDark">
               {errorMsg}
             </div>
           )}
 
           {success ? (
-            <div className="my-8 rounded-2xl border border-green-200 bg-green-50 p-6 text-center text-green-800">
-              <CheckCircle2 className="mx-auto h-12 w-12 text-green-600" />
-              <h3 className="mt-3 text-lg font-extrabold">Account Created Successfully!</h3>
-              <p className="mt-2 text-sm text-green-700">
-                Welcome to Engineers Clinic. Please log in to access your portal.
+            <div className="my-8 rounded-2xl border border-successBorder bg-successLight p-6 text-center text-successDark">
+              <CheckCircle2 className="mx-auto h-12 w-12 text-success" />
+              <h3 className="mt-3 text-lg font-extrabold">
+                {role === "college" ? "Registration Completed!" : "Account Created Successfully!"}
+              </h3>
+              <p className="mt-2 text-sm text-successDark font-medium">
+                {role === "college"
+                  ? "Your registration is submitted and is currently pending admin vetting. Please wait for admin approval before logging in."
+                  : "Welcome to Engineers Clinic. Please log in to access your portal."}
               </p>
               <Link
                 href="/login"
-                className="mt-5 inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-extrabold text-white shadow-md transition hover:bg-[#6a49f3]"
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-extrabold text-white shadow-md transition hover:bg-brandHover"
               >
                 Go to Login <ArrowRight className="h-4 w-4" />
               </Link>
@@ -277,114 +304,77 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
                   </div>
                 </>
               ) : (
-                /* COLLEGE FORM FIELDS */
                 <>
                   <div>
-                    <label className="text-sm font-bold text-textPrimary">College Name</label>
+                    <label className="text-sm font-bold text-textPrimary">College / Institution Name *</label>
                     <input
                       type="text"
                       required
                       value={collegeName}
                       onChange={(e) => setCollegeName(e.target.value)}
-                      placeholder="Enter institution full name"
+                      placeholder="e.g. Vellore Institute of Technology"
                       className="mt-1.5 w-full rounded-2xl border border-borderLight bg-bgSoft/50 px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                     />
                   </div>
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="text-sm font-bold text-textPrimary">Official Email</label>
+                      <label className="text-sm font-bold text-textPrimary">Official TPO / Coordinator Email *</label>
                       <input
                         type="email"
                         required
                         value={collegeEmail}
                         onChange={(e) => setCollegeEmail(e.target.value)}
-                        placeholder="e.g. tpo@university.edu.in"
+                        placeholder="e.g. coordinator@vit.ac.in"
                         className="mt-1.5 w-full rounded-2xl border border-borderLight bg-bgSoft/50 px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-bold text-textPrimary">Contact Person</label>
+                      <label className="text-sm font-bold text-textPrimary">Contact Phone Number *</label>
                       <input
                         type="text"
                         required
-                        value={collegeContact}
-                        onChange={(e) => setCollegeContact(e.target.value)}
-                        placeholder="Coordinator / TPO Name"
+                        value={collegePhone}
+                        onChange={(e) => setCollegePhone(e.target.value)}
+                        placeholder="e.g. +91 9876543210"
                         className="mt-1.5 w-full rounded-2xl border border-borderLight bg-bgSoft/50 px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                       />
                     </div>
                   </div>
 
-                  {/* Level-Wise Student Count Group */}
-                  <div className="rounded-2xl border border-borderLight bg-bgSoft/40 p-4">
-                    <p className="text-sm font-bold text-textPrimary">
-                      Number of Students (Level-wise)
-                    </p>
-                    <p className="text-xs text-textMuted">
-                      How many students do you plan to enroll at each level?
-                    </p>
-                    <div className="mt-3 grid grid-cols-3 gap-3">
-                      <div>
-                        <label className="mb-1 flex items-center gap-1.5 text-xs font-bold text-textPrimary">
-                          <span className="h-2 w-2 rounded-full bg-emerald-500" /> Beginner
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={studentsBeginner}
-                          onChange={(e) => setStudentsBeginner(Number(e.target.value))}
-                          className="w-full rounded-xl border border-borderLight bg-white px-3 py-2 text-sm font-extrabold text-textPrimary outline-none focus:border-brand"
-                        />
-                      </div>
-                      <div>
-                        <label className="mb-1 flex items-center gap-1.5 text-xs font-bold text-textPrimary">
-                          <span className="h-2 w-2 rounded-full bg-blue-500" /> Intermediate
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={studentsIntermediate}
-                          onChange={(e) => setStudentsIntermediate(Number(e.target.value))}
-                          className="w-full rounded-xl border border-borderLight bg-white px-3 py-2 text-sm font-extrabold text-textPrimary outline-none focus:border-brand"
-                        />
-                      </div>
-                      <div>
-                        <label className="mb-1 flex items-center gap-1.5 text-xs font-bold text-textPrimary">
-                          <span className="h-2 w-2 rounded-full bg-violet-500" /> Advanced
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          value={studentsAdvanced}
-                          onChange={(e) => setStudentsAdvanced(Number(e.target.value))}
-                          className="w-full rounded-xl border border-borderLight bg-white px-3 py-2 text-sm font-extrabold text-textPrimary outline-none focus:border-brand"
-                        />
-                      </div>
-                    </div>
+                  <div>
+                    <label className="text-sm font-bold text-textPrimary">Physical Campus Address *</label>
+                    <input
+                      type="text"
+                      required
+                      value={collegeAddress}
+                      onChange={(e) => setCollegeAddress(e.target.value)}
+                      placeholder="e.g. Katpadi, Vellore, Tamil Nadu 632014"
+                      className="mt-1.5 w-full rounded-2xl border border-borderLight bg-bgSoft/50 px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
+                    />
                   </div>
 
                   {/* Password Grid */}
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="text-sm font-bold text-textPrimary">Password</label>
+                      <label className="text-sm font-bold text-textPrimary">Password *</label>
                       <input
                         type="password"
                         required
                         value={collegePassword}
                         onChange={(e) => setCollegePassword(e.target.value)}
-                        placeholder="Create a password"
+                        placeholder="Create a secure password"
                         className="mt-1.5 w-full rounded-2xl border border-borderLight bg-bgSoft/50 px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-bold text-textPrimary">Confirm Password</label>
+                      <label className="text-sm font-bold text-textPrimary">Confirm Password *</label>
                       <input
                         type="password"
                         required
                         value={collegeConfirmPassword}
                         onChange={(e) => setCollegeConfirmPassword(e.target.value)}
-                        placeholder="Confirm password"
+                        placeholder="Confirm secure password"
                         className="mt-1.5 w-full rounded-2xl border border-borderLight bg-bgSoft/50 px-4 py-3 text-sm text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                       />
                     </div>
@@ -396,7 +386,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
               <button
                 type="submit"
                 disabled={loading}
-                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand to-[#F5C842] px-5 py-4 text-sm font-black text-white shadow-lg transition hover:scale-[1.01] cursor-pointer disabled:opacity-70"
+                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand to-secondary px-5 py-4 text-sm font-black text-white shadow-lg transition hover:scale-[1.01] cursor-pointer disabled:opacity-70"
               >
                 <span>
                   {loading

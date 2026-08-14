@@ -31,9 +31,9 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
     );
 
   const levelConfigs: Record<string, { badge: string; color: string }> = {
-    Beginner: { badge: "45 Days • 3 Projects", color: "from-brand to-[#8B5CF6]" },
-    Intermediate: { badge: "75 Days • 6 Projects", color: "from-[#0EA5E9] to-brand" },
-    Advanced: { badge: "90 Days • 9 Projects", color: "from-[#22C55E] to-[#0EA5E9]" },
+    Beginner: { badge: "45 Days • 3 Projects", color: "from-brand to-brandLight" },
+    Intermediate: { badge: "75 Days • 6 Projects", color: "from-info to-brand" },
+    Advanced: { badge: "90 Days • 9 Projects", color: "from-success to-info" },
   };
 
   return (
@@ -41,7 +41,7 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
       {/* Background Lighting */}
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute left-1/4 top-1/4 h-[32rem] w-[32rem] rounded-full bg-brand/8 blur-3xl" />
-        <div className="absolute right-10 bottom-10 h-[28rem] w-[28rem] rounded-full bg-[#22C55E]/8 blur-3xl" />
+        <div className="absolute right-10 bottom-10 h-[28rem] w-[28rem] rounded-full bg-success/8 blur-3xl" />
       </div>
 
       <Container size="wide">
@@ -92,7 +92,7 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
               <span className="inline-flex items-center gap-1.5 rounded-full bg-bgSoft px-4 py-2 text-xs font-bold text-brand">
                 <Clock className="h-3.5 w-3.5" /> {currentLevelData.duration}
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F0FDF4] px-4 py-2 text-xs font-bold text-[#22C55E]">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-successLight px-4 py-2 text-xs font-bold text-success">
                 <FolderCheck className="h-3.5 w-3.5" /> {currentLevelData.projects}
               </span>
             </div>
@@ -104,9 +104,9 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => setSelectedCategory("All")}
-              className={`rounded-full px-4 py-2 text-xs font-bold transition ${
+              className={`rounded-full px-4 py-2 text-xs font-bold transition cursor-pointer ${
                 selectedCategory === "All"
-                  ? "bg-[#161326] text-white"
+                  ? "bg-surfaceDark text-white"
                   : "bg-white border border-borderSoft text-textGray hover:border-brand"
               }`}
             >
@@ -116,7 +116,7 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
               <button
                 key={cat.name}
                 onClick={() => setSelectedCategory(cat.name)}
-                className={`rounded-full px-4 py-2 text-xs font-bold transition ${
+                className={`rounded-full px-4 py-2 text-xs font-bold transition cursor-pointer ${
                   selectedCategory === cat.name
                     ? "bg-brand text-white"
                     : "bg-white border border-borderSoft text-textGray hover:border-brand"
@@ -168,7 +168,7 @@ export const LevelModulesSection: React.FC<LevelModulesSectionProps> = ({ onOpen
                     </div>
                     <div className="flex items-center justify-between">
                       <span>Evaluation:</span>
-                      <span className="font-bold text-[#22C55E]">AI Rubric Scoring</span>
+                      <span className="font-bold text-success">AI Rubric Scoring</span>
                     </div>
                   </div>
                 </div>

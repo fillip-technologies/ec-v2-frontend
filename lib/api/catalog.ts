@@ -1,5 +1,6 @@
 import { BACKEND_URL } from "@/config/api";
 import { Cluster, Country, Program, Technology, Topic } from "@/types/catalog";
+import { apiClient as fetch } from "./client";
 
 const DEFAULT_COUNTRIES: Country[] = [
   { id: 1, isoCode: "IN", name: "India", defaultLocal: "en-IN", timezone: "Asia/Kolkata", currencyCode: "INR", isActive: true },
@@ -104,6 +105,28 @@ export async function getClusters(): Promise<Cluster[]> {
 }
 
 /**
+ * POST /catalog/clusters
+ * Create a new Cluster
+ */
+export async function createCluster(payload: { name: string; slug: string; description?: string }): Promise<Cluster> {
+  const res = await fetch(`${BACKEND_URL}/catalog/clusters`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || "Failed to create cluster");
+  }
+
+  return await res.json();
+}
+
+/**
  * Fetch all topics
  */
 export async function getTopics(): Promise<Topic[]> {
@@ -143,4 +166,119 @@ export async function getTechnologies(): Promise<Technology[]> {
     console.warn("API getTechnologies error:", error);
     return [];
   }
+}
+
+/**
+ * POST /catalog/topics
+ * Create a new Topic
+ */
+export async function createTopic(payload: { clusterId: number; name: string; slug: string; isActive?: boolean }): Promise<Topic> {
+  const res = await fetch(`${BACKEND_URL}/catalog/topics`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || "Failed to create topic");
+  }
+
+  return await res.json();
+}
+
+/**
+ * POST /catalog/technologies
+ * Create a new Technology
+ */
+export async function createTechnology(payload: { name: string; slug: string; isActive?: boolean }): Promise<Technology> {
+  const res = await fetch(`${BACKEND_URL}/catalog/technologies`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || "Failed to create technology");
+  }
+
+  return await res.json();
+}
+
+function getAuthHeader(): Record<string, string> {
+  if (typeof window === "undefined") return {};
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+/**
+ * POST /catalog/programs
+ * Create a new catalog program with pricings, topics, and technologies
+ */
+export async function createProgram(payload: any) {
+  const res = await fetch(`${BACKEND_URL}/catalog/programs`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || "Failed to create program");
+  }
+
+  return await res.json();
+}
+
+/**
+ * PATCH /catalog/programs/:id
+ * Update an existing catalog program with pricings, topics, technologies, projects, etc.
+ */
+export async function updateProgram(id: number, payload: any) {
+  const res = await fetch(`${BACKEND_URL}/catalog/programs/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || "Failed to update program");
+  }
+
+  return await res.json();
+}
+
+/**
+ * DELETE /catalog/programs/:id
+ * Delete a catalog program by ID
+ */
+export async function deleteProgram(id: number) {
+  const res = await fetch(`${BACKEND_URL}/catalog/programs/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      ...getAuthHeader(),
+    },
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || "Failed to delete program");
+  }
+
+  return await res.json();
 }

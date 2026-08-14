@@ -52,7 +52,6 @@ export const HowWorkSection: React.FC = () => {
         <div className="mt-12 grid gap-10 lg:grid-cols-6 lg:gap-12">
           {steps.map((item, index) => {
             const active = !!item.active;
-            const tone = active ? "#6D5DF6" : "#22C997";
             const isLast = index === steps.length - 1;
 
             return (
@@ -62,17 +61,20 @@ export const HowWorkSection: React.FC = () => {
                   active ? "ec-pipeline-card-active" : ""
                 } group relative z-10 rounded-xl border p-5 text-center transition duration-300 hover:-translate-y-1`}
               >
-                <p className="text-xs font-black tracking-[0.14em]" style={{ color: tone }}>
+                <p
+                  className={`text-xs font-black tracking-[0.14em] ${
+                    active ? "text-brand" : "text-pipelineGreen"
+                  }`}
+                >
                   {item.step}
                 </p>
 
                 <span
-                  className="ec-pipeline-icon mx-auto mt-4 grid h-14 w-14 place-items-center rounded-full text-2xl"
-                  style={{
-                    background: `${tone}18`,
-                    color: tone,
-                    boxShadow: `0 0 24px ${tone}35`,
-                  }}
+                  className={`ec-pipeline-icon mx-auto mt-4 grid h-14 w-14 place-items-center rounded-full text-2xl ${
+                    active
+                      ? "bg-brand/15 text-brand shadow-brand/35"
+                      : "bg-pipelineGreen/15 text-pipelineGreen shadow-pipelineGreen/35"
+                  }`}
                 >
                   {item.icon}
                 </span>

@@ -62,7 +62,7 @@ export const BrandingProcess: React.FC = () => {
           {steps.map((step, idx) => (
             <article
               key={idx}
-              className="group relative rounded-2xl border border-borderLight bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-[0_18px_44px_rgba(22,8,64,0.10)]"
+              className="group relative rounded-2xl border border-borderLight bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-lg"
             >
               <div className="flex items-center justify-between gap-4">
                 <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-borderLight bg-white text-brand shadow-sm transition duration-300 group-hover:border-brand/30 group-hover:bg-brand group-hover:text-white">
@@ -75,7 +75,7 @@ export const BrandingProcess: React.FC = () => {
               <h3 className="mt-6 text-lg font-extrabold text-textPrimary">{step.title}</h3>
               <p className="mt-3 text-sm leading-7 text-textGray">{step.body}</p>
               <div className="mt-6 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-textMuted">
-                <span className="h-px flex-1 bg-[#E2D9FF]" />
+                <span className="h-px flex-1 bg-borderLight" />
                 <span>Ops step</span>
               </div>
             </article>

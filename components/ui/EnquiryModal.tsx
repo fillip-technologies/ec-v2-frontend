@@ -65,7 +65,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
 
         {submitted ? (
           <div className="py-8 text-center">
-            <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-[#F0FDF4] text-[#22C55E]">
+            <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-successLight text-success">
               <CheckCircle2 className="h-10 w-10" />
             </div>
             <h3 className="mt-6 text-2xl font-black text-textPrimary">Enquiry Submitted!</h3>
@@ -102,7 +102,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
                   placeholder="e.g. Rahul Sharma"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="mt-1.5 w-full rounded-2xl border border-borderSoft bg-bgBody px-4 py-3 text-sm font-medium text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-[#6D5DF6]/20"
+                  className="mt-1.5 w-full rounded-2xl border border-borderSoft bg-bgBody px-4 py-3 text-sm font-medium text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
                 />
               </div>
 
@@ -117,7 +117,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
                     placeholder="student@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="mt-1.5 w-full rounded-2xl border border-borderSoft bg-bgBody px-4 py-3 text-sm font-medium text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-[#6D5DF6]/20"
+                    className="mt-1.5 w-full rounded-2xl border border-borderSoft bg-bgBody px-4 py-3 text-sm font-medium text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
                 <div>
@@ -130,7 +130,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
                     placeholder="+91 98765 43210"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="mt-1.5 w-full rounded-2xl border border-borderSoft bg-bgBody px-4 py-3 text-sm font-medium text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-[#6D5DF6]/20"
+                    className="mt-1.5 w-full rounded-2xl border border-borderSoft bg-bgBody px-4 py-3 text-sm font-medium text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
               </div>
@@ -145,7 +145,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
                     placeholder="Your College Name"
                     value={formData.college}
                     onChange={(e) => setFormData({ ...formData, college: e.target.value })}
-                    className="mt-1.5 w-full rounded-2xl border border-borderSoft bg-bgBody px-4 py-3 text-sm font-medium text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-[#6D5DF6]/20"
+                    className="mt-1.5 w-full rounded-2xl border border-borderSoft bg-bgBody px-4 py-3 text-sm font-medium text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
                   />
                 </div>
                 <div>
@@ -155,7 +155,7 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
                   <select
                     value={formData.level}
                     onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-                    className="mt-1.5 w-full rounded-2xl border border-borderSoft bg-bgBody px-4 py-3 text-sm font-medium text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-[#6D5DF6]/20"
+                    className="mt-1.5 w-full rounded-2xl border border-borderSoft bg-bgBody px-4 py-3 text-sm font-medium text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
                   >
                     <option value="Beginner (45 Days)">Beginner (45 Days)</option>
                     <option value="Intermediate (75 Days)">Intermediate (75 Days)</option>

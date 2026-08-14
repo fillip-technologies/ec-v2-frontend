@@ -12,7 +12,7 @@ export default function LoginPage() {
       <Navbar />
 
       <main className="flex-grow">
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#F8F7FF] via-white to-[#F4F0FF] px-4 py-12 sm:px-8 lg:px-14 lg:py-16">
+        <section className="relative overflow-hidden bg-gradient-to-br from-surface via-white to-bgMain px-4 py-12 sm:px-8 lg:px-14 lg:py-16">
           {/* Ambient Glow Orbs */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(124,92,252,0.18),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(124,92,252,0.12),_transparent_38%)]" />
           <div className="pointer-events-none absolute left-0 top-20 h-72 w-72 rounded-full bg-brand/20 blur-3xl" />

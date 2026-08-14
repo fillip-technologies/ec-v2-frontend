@@ -33,7 +33,7 @@ export const AboutImpactStats: React.FC = () => {
 
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="mb-10 text-center">
-          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#A78BFA]">
+          <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brandLight">
             Impact & Reach
           </p>
           <h2 className="mx-auto mt-4 max-w-2xl text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
@@ -48,7 +48,7 @@ export const AboutImpactStats: React.FC = () => {
               className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
             >
               <p className="text-3xl font-black text-white">{stat.value}</p>
-              <p className="mt-2 text-sm font-extrabold text-[#A78BFA]">{stat.label}</p>
+              <p className="mt-2 text-sm font-extrabold text-brandLight">{stat.label}</p>
               <p className="mt-2 text-xs leading-5 text-white/60">{stat.desc}</p>
             </div>
           ))}

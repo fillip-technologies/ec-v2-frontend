@@ -13,10 +13,10 @@ export const StatSection: React.FC = () => {
   return (
     <section className="bg-bgBody py-14 sm:py-16 lg:py-20">
       <div className="container-main">
-        <div className="overflow-hidden rounded-[2rem] border border-borderSoft bg-white shadow-[0_24px_80px_rgba(15,10,42,0.08)]">
+        <div className="overflow-hidden rounded-[2rem] border border-borderSoft bg-white shadow-lg">
           <div className="grid lg:grid-cols-[0.82fr_1.18fr]">
-            <div className="relative isolate bg-gradient-to-br from-white to-[#F5F3FF] p-6 sm:p-8 lg:p-10">
-              <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_22%,rgba(109,93,246,0.12),transparent_32%),radial-gradient(circle_at_85%_78%,rgba(168,85,247,0.10),transparent_30%)]" />
+            <div className="relative isolate bg-gradient-to-br from-white to-surface p-6 sm:p-8 lg:p-10">
+              <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_18%_22%,rgba(124,92,252,0.12),transparent_32%),radial-gradient(circle_at_85%_78%,rgba(167,139,250,0.10),transparent_30%)]" />
               <span className="inline-flex rounded-full bg-bgSoft px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-brand">
                 Success Numbers
               </span>

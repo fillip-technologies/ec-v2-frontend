@@ -17,22 +17,22 @@ export const StatsCounterSection: React.FC = () => {
       value: "320+",
       label: "Project Templates",
       desc: "Industry-aligned across 5 disciplines",
-      icon: <FolderCheck className="h-6 w-6 text-[#0EA5E9]" />,
-      bgTone: "bg-[#F0F9FF]",
+      icon: <FolderCheck className="h-6 w-6 text-info" />,
+      bgTone: "bg-infoLight",
     },
     {
       value: "98%",
       label: "Completion Rate",
       desc: "Guided step-by-step milestone progression",
-      icon: <Award className="h-6 w-6 text-[#22C55E]" />,
-      bgTone: "bg-[#F0FDF4]",
+      icon: <Award className="h-6 w-6 text-success" />,
+      bgTone: "bg-successLight",
     },
     {
       value: "150+",
       label: "College Partners",
       desc: "Bulk internship seat distribution channels",
-      icon: <Building className="h-6 w-6 text-[#EAB308]" />,
-      bgTone: "bg-[#FEFCE8]",
+      icon: <Building className="h-6 w-6 text-warningMuted" />,
+      bgTone: "bg-warningLight",
     },
   ];
 

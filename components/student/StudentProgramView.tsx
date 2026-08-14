@@ -23,19 +23,33 @@ interface ProgramDetail {
 
 interface StudentProgramViewProps {
   programsData?: ProgramDetail[];
-  fallbackProjects: Project[];
+  fallbackProjects?: Project[];
+  projects?: Project[];
+  submissions?: any[];
   onSelectProject?: (project: Project) => void;
   onEditProject?: (project: Project) => void;
-  onSubmitTaskWork?: (stepId: number, stepTitle: string) => void;
+  onSubmitTaskWork?: (taskId: number, taskTitle: string) => void;
+  onOpenSubmitModal?: (taskId: number, taskTitle: string) => void;
 }
 
 export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
   programsData,
-  fallbackProjects,
+  fallbackProjects = [],
+  projects = [],
+  submissions,
   onSelectProject,
   onEditProject,
   onSubmitTaskWork,
+  onOpenSubmitModal,
 }) => {
+  const effectiveProjects = Array.isArray(fallbackProjects) && fallbackProjects.length > 0
+    ? fallbackProjects
+    : Array.isArray(projects)
+    ? projects
+    : [];
+
+  const handleSubmitTask = onSubmitTaskWork || onOpenSubmitModal;
+
   // Default mock programs list if no multi-program data passed
   const programs: ProgramDetail[] = Array.isArray(programsData) && programsData.length > 0
     ? programsData
@@ -55,7 +69,7 @@ export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
           completionPercentage: 33,
           projectsDone: 1,
           totalProjects: 3,
-          projects: fallbackProjects,
+          projects: effectiveProjects,
         },
         {
           id: 2,
@@ -72,7 +86,7 @@ export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
           completionPercentage: 0,
           projectsDone: 0,
           totalProjects: 3,
-          projects: fallbackProjects.map((p, idx) => ({
+          projects: effectiveProjects.map((p, idx) => ({
             ...p,
             id: p.id + 100,
             title: idx === 0
@@ -84,8 +98,20 @@ export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
         },
       ];
 
-  const [activeProgramId, setActiveProgramId] = useState<number>(programs[0].id);
-  const selectedProgram = programs.find((p) => p.id === activeProgramId) || programs[0];
+  const [activeProgramId, setActiveProgramId] = useState<number>(programs[0]?.id || 1);
+  const selectedProgram = programs.find((p) => p.id === activeProgramId) || programs[0] || {
+    id: 1,
+    title: 'Internship Program',
+    slug: 'internship-program',
+    durationHours: 120,
+    description: '',
+    status: 'ACTIVE',
+    hoursLogged: 0,
+    completionPercentage: 0,
+    projectsDone: 0,
+    totalProjects: 0,
+    projects: [],
+  };
 
   return (
     <div className="space-y-6">
@@ -134,7 +160,7 @@ export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
               <span className="rounded-full bg-bgSoft px-3 py-1 text-xs font-bold text-textMuted border border-borderLight/60">
                 {selectedProgram.durationHours} Hours Internship
               </span>
-              <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800 uppercase">
+              <span className="rounded-full bg-statusPassedBg px-3 py-1 text-xs font-bold text-statusPassedText uppercase">
                 {selectedProgram.status}
               </span>
             </div>
@@ -195,16 +221,16 @@ export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
             </h3>
           </div>
           <span className="text-xs font-medium text-textMuted">
-            All 3 capstone projects live inside this programme
+            All capstone projects live inside this programme
           </span>
         </div>
 
         {/* Render nested capstone projects */}
         <SharedProjectsView
-          projects={selectedProgram.projects}
+          projects={selectedProgram.projects || []}
           onSelectProject={onSelectProject}
           onEditProject={onEditProject}
-          onSubmitTaskWork={onSubmitTaskWork}
+          onSubmitTaskWork={handleSubmitTask}
         />
       </div>
     </div>

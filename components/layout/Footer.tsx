@@ -34,64 +34,64 @@ export const Footer: React.FC<FooterProps> = ({ className = "mt-16" }) => {
               className="h-12 w-auto object-contain"
             />
 
-            <p className="mt-5 max-w-sm text-sm leading-7 text-[#EEF5FF]/80">
+            <p className="mt-5 max-w-sm text-sm leading-7 text-bgSoft/80">
               A practical internship operating system for students, colleges, and career-focused learning teams.
             </p>
 
-            <div className="mt-6 space-y-3 text-sm text-[#EEF5FF]/75">
+            <div className="mt-6 space-y-3 text-sm text-bgSoft/75">
               <a
                 href="mailto:info@engineersclinic.com"
-                className="flex items-start gap-3 transition hover:text-[#F5C842]"
+                className="flex items-start gap-3 transition hover:text-secondary"
               >
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F5C842]" />
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary" />
                 <span className="break-all">info@engineersclinic.com</span>
               </a>
               <a
                 href="tel:+917545999990"
-                className="flex items-start gap-3 transition hover:text-[#F5C842]"
+                className="flex items-start gap-3 transition hover:text-secondary"
               >
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F5C842]" />
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary" />
                 <span>+91-75459-99990</span>
               </a>
               <a
                 href="tel:+917979030298"
-                className="flex items-start gap-3 transition hover:text-[#F5C842]"
+                className="flex items-start gap-3 transition hover:text-secondary"
               >
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F5C842]" />
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary" />
                 <span>+91-79790-30298</span>
               </a>
             </div>
 
             <div className="mt-8">
-              <h3 className="text-xs font-black uppercase tracking-[0.16em] text-[#A78BFA]">
+              <h3 className="text-xs font-black uppercase tracking-[0.16em] text-brandLight">
                 Our Verticals
               </h3>
-              <div className="mt-4 space-y-2 text-sm text-[#EEF5FF]/75">
+              <div className="mt-4 space-y-2 text-sm text-bgSoft/75">
                 <a
                   href="https://fillipskillacademy.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-start gap-3 transition hover:text-[#F5C842]"
+                  className="flex items-start gap-3 transition hover:text-secondary"
                 >
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F5C842]" />
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary" />
                   <span>Fillip Skill Academy</span>
                 </a>
                 <a
                   href="https://filliptechnologies.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-start gap-3 transition hover:text-[#F5C842]"
+                  className="flex items-start gap-3 transition hover:text-secondary"
                 >
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F5C842]" />
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary" />
                   <span>Fillip Technologies</span>
                 </a>
                 <a
                   href="https://technosysmanagement.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-start gap-3 transition hover:text-[#F5C842]"
+                  className="flex items-start gap-3 transition hover:text-secondary"
                 >
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F5C842]" />
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-secondary" />
                   <span>Technosys Management</span>
                 </a>
               </div>
@@ -100,7 +100,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "mt-16" }) => {
 
           {/* Column 2: Internship Tracks Grid */}
           <div>
-            <h3 className="text-xs font-black uppercase tracking-[0.16em] text-[#A78BFA]">
+            <h3 className="text-xs font-black uppercase tracking-[0.16em] text-brandLight">
               Internship Tracks
             </h3>
 
@@ -119,7 +119,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "mt-16" }) => {
                         <a
                           key={topic.slug}
                           href="#courses"
-                          className="block text-sm leading-6 text-[#EEF5FF]/75 transition hover:text-[#F5C842]"
+                          className="block text-sm leading-6 text-bgSoft/75 transition hover:text-secondary"
                         >
                           {topic.title}
                         </a>
@@ -133,7 +133,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "mt-16" }) => {
 
           {/* Column 3: Platform Links & Contact */}
           <div>
-            <h3 className="text-xs font-black uppercase tracking-[0.16em] text-[#A78BFA]">
+            <h3 className="text-xs font-black uppercase tracking-[0.16em] text-brandLight">
               Platform
             </h3>
             <ul className="mt-5 space-y-2">
@@ -141,7 +141,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "mt-16" }) => {
                 <li key={idx}>
                   <a
                     href={link.href}
-                    className="text-sm text-[#EEF5FF]/75 transition hover:text-[#F5C842]"
+                    className="text-sm text-bgSoft/75 transition hover:text-secondary"
                   >
                     {link.label}
                   </a>
@@ -151,7 +151,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "mt-16" }) => {
 
             <a
               href="mailto:info@engineersclinic.com"
-              className="mt-7 inline-flex min-h-12 items-center justify-center rounded-2xl bg-white/10 px-5 py-3 text-sm font-bold text-white transition hover:bg-white/20 hover:text-[#F5C842]"
+              className="mt-7 inline-flex min-h-12 items-center justify-center rounded-2xl bg-white/10 px-5 py-3 text-sm font-bold text-white transition hover:bg-white/20 hover:text-secondary"
             >
               Contact Us
             </a>
@@ -159,15 +159,15 @@ export const Footer: React.FC<FooterProps> = ({ className = "mt-16" }) => {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-center text-sm text-[#EEF5FF]/65 md:flex-row md:text-left">
+        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-center text-sm text-bgSoft/65 md:flex-row md:text-left">
           <p className="text-white">
             &copy; {new Date().getFullYear()} Engineers Clinic. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <a href="#privacy" className="transition hover:text-[#F5C842]">
+            <a href="#privacy" className="transition hover:text-secondary">
               Privacy
             </a>
-            <a href="#refund" className="transition hover:text-[#F5C842]">
+            <a href="#refund" className="transition hover:text-secondary">
               Refund Policy
             </a>
           </div>
@@ -179,7 +179,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "mt-16" }) => {
             href="https://filliptechnologies.com/"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-semibold text-white underline-offset-4 transition hover:underline"
+            className="font-bold underline decoration-brandLight underline-offset-4 hover:text-secondary"
           >
             Fillip Technologies
           </a>

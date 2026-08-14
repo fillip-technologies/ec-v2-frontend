@@ -75,17 +75,17 @@ export const HeroStatsCounterSection: React.FC = () => {
   return (
     <section ref={sectionRef} className="relative bg-bgBody pb-8 pt-0">
       <div className="container-main">
-        <div className="grid gap-4 rounded-[2rem] border border-borderSoft bg-white/80 p-4 shadow-[0_24px_70px_rgba(15,10,42,0.08)] backdrop-blur-2xl sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 rounded-[2rem] border border-borderSoft bg-white/80 p-4 shadow-lg backdrop-blur-2xl sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat, idx) => (
             <div
               key={idx}
-              className="group rounded-[1.5rem] border border-borderSoft bg-gradient-to-br from-white to-[#FAFBFF] p-5 transition duration-300 hover:scale-[1.02] hover:border-brand hover:bg-[#FCFBFF] hover:shadow-[0_18px_45px_rgba(109,93,246,0.14)]"
+              className="group rounded-[1.5rem] border border-borderSoft bg-gradient-to-br from-white to-bgBody p-5 transition duration-300 hover:scale-[1.02] hover:border-brand hover:bg-surface hover:shadow-lg"
             >
               <div className="flex items-start justify-between gap-4">
-                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-bgSoft text-xl text-brand transition duration-300 group-hover:scale-105 group-hover:bg-[#EEE9FF] group-hover:text-[#5A4AE3]">
+                <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-bgSoft text-xl text-brand transition duration-300 group-hover:scale-105 group-hover:bg-bgSoft group-hover:text-brandHover">
                   {stat.icon}
                 </span>
-                <span className="rounded-full bg-[#22C55E]/10 px-2.5 py-1 text-[11px] font-black text-[#22C55E]">
+                <span className="rounded-full bg-success/10 px-2.5 py-1 text-[11px] font-black text-success">
                   Verified
                 </span>
               </div>

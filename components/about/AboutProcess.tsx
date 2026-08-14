@@ -14,19 +14,19 @@ export const AboutProcess: React.FC = () => {
       step: "02",
       title: "Learn by Doing",
       desc: "Dive into structured modules with real-world projects. Each task is designed to build a specific, demonstrable skill.",
-      gradient: "from-blue-500/12 to-blue-400/5",
+      gradient: "from-info/15 to-info/5",
     },
     {
       step: "03",
       title: "Get Mentored",
       desc: "Receive code reviews, feedback sessions, and career guidance from mentors who understand industry expectations.",
-      gradient: "from-emerald-500/12 to-emerald-400/5",
+      gradient: "from-success/15 to-success/5",
     },
     {
       step: "04",
       title: "Earn & Advance",
       desc: "Complete your track, earn a verifiable certificate, build a portfolio of real work, and step into your career with confidence.",
-      gradient: "from-[#F5C842]/20 to-[#F5C842]/5",
+      gradient: "from-secondary/20 to-secondary/5",
     },
   ];
 
@@ -52,7 +52,7 @@ export const AboutProcess: React.FC = () => {
               className={`relative rounded-2xl border border-borderLight bg-gradient-to-b ${step.gradient} p-6 shadow-sm`}
             >
               {idx < 3 && (
-                <div className="pointer-events-none absolute right-0 top-1/2 hidden h-px w-5 -translate-y-1/2 translate-x-full bg-[#E2D9FF] lg:block" />
+                <div className="pointer-events-none absolute right-0 top-1/2 hidden h-px w-5 -translate-y-1/2 translate-x-full bg-borderLight lg:block" />
               )}
 
               <span className="text-3xl font-black text-brand/30">{step.step}</span>

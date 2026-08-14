@@ -25,7 +25,7 @@ export const CollegeServices: React.FC = () => {
       <div className="relative mx-auto max-w-7xl px-6">
         <div className="grid gap-8 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
           <div className="max-w-md">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#A78BFA]">
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brandLight">
               Beyond Learning
             </p>
 
@@ -33,7 +33,7 @@ export const CollegeServices: React.FC = () => {
               Modern services and solutions.
             </h2>
 
-            <p className="mt-4 text-base leading-8 text-[#EEF5FF]">
+            <p className="mt-4 text-base leading-8 text-bgSoft">
               Alongside internships and practical learning, Engineers Clinic is expanding into AI-powered services, automation, and modern digital solutions.
             </p>
           </div>
@@ -42,11 +42,11 @@ export const CollegeServices: React.FC = () => {
             {services.map((service, idx) => (
               <article
                 key={idx}
-                className="rounded-2xl border border-white/10 bg-white/[0.07] p-5 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-[#A78BFA]/35 hover:bg-white/[0.1]"
+                className="rounded-2xl border border-white/10 bg-white/[0.07] p-5 backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-brandLight/35 hover:bg-white/[0.1]"
               >
-                <div className="mb-5 h-px w-10 bg-gradient-to-r from-[#F5C842] to-transparent" />
+                <div className="mb-5 h-px w-10 bg-gradient-to-r from-secondary to-transparent" />
                 <h3 className="text-lg font-extrabold text-white">{service.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[#EEF5FF]">{service.copy}</p>
+                <p className="mt-3 text-sm leading-7 text-bgSoft">{service.copy}</p>
               </article>
             ))}
           </div>

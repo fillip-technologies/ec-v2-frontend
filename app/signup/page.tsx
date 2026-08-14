@@ -29,11 +29,11 @@ export default function SignupPage() {
       <Navbar />
 
       <main className="flex-grow">
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#F8F7FF] via-white to-[#EEF5FF] px-4 py-12 sm:px-8 lg:px-14 lg:py-16">
+        <section className="relative overflow-hidden bg-gradient-to-br from-surface via-white to-bgSoft px-4 py-12 sm:px-8 lg:px-14 lg:py-16">
           {/* Ambient Glow Orbs */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(124,92,252,0.18),_transparent_32%),radial-gradient(circle_at_bottom_right,_rgba(245,200,66,0.14),_transparent_36%)]" />
           <div className="pointer-events-none absolute left-0 top-20 h-72 w-72 rounded-full bg-brand/15 blur-3xl" />
-          <div className="pointer-events-none absolute right-0 top-1/3 h-80 w-80 rounded-full bg-[#F5C842]/20 blur-3xl" />
+          <div className="pointer-events-none absolute right-0 top-1/3 h-80 w-80 rounded-full bg-secondary/20 blur-3xl" />
 
           <div className="relative mx-auto max-w-7xl">
             <Suspense

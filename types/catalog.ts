@@ -56,26 +56,29 @@ export interface Resource {
 }
 
 export interface TemplateTask {
-  id: number;
-  stepId: number;
+  id?: number;
+  workspaceTemplateId?: number;
+  stepId?: number;
   orderIndex: number;
   title: string;
   description?: string;
+  rubric?: Rubric;
   resources?: Resource[];
 }
 
 export interface Rubric {
-  id: number;
-  stepId: number;
-  version: number;
+  id?: number;
+  taskId?: number;
+  stepId?: number;
+  version?: number;
   criteria: any;
   maxScore: number;
   passThreshold: number;
 }
 
 export interface TemplateStep {
-  id: number;
-  workspaceTemplateId: number;
+  id?: number;
+  workspaceTemplateId?: number;
   orderIndex: number;
   title: string;
   description?: string;
@@ -85,10 +88,11 @@ export interface TemplateStep {
 }
 
 export interface WorkspaceTemplate {
-  id: number;
-  projectId: number;
+  id?: number;
+  projectId?: number;
   version: number;
   isActive: boolean;
+  tasks?: TemplateTask[];
   steps?: TemplateStep[];
 }
 
@@ -151,3 +155,17 @@ export interface CatalogFilterState {
   durationHours: number | null;
   status: string;
 }
+
+export type ProgramTestimonialForm = Partial<ProgramTestimonial> & {
+  authorName: string;
+  quote: string;
+};
+
+export type ProgramFaqForm = Partial<ProgramFaq> & {
+  question: string;
+  answer: string;
+};
+
+export type DomainCluster = Cluster;
+export type ProgramTopic = Topic;
+

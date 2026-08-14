@@ -45,7 +45,7 @@ export const CollegeProcess: React.FC = () => {
                 <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-bgMain text-sm font-extrabold text-brand">
                   {step.label}
                 </span>
-                <div className="hidden h-px flex-1 bg-[#E2D9FF] lg:block" />
+                <div className="hidden h-px flex-1 bg-borderLight lg:block" />
               </div>
               <h3 className="mt-7 text-lg font-extrabold text-textPrimary">{step.title}</h3>
               <p className="mt-3 text-sm leading-7 text-textGray">{step.body}</p>

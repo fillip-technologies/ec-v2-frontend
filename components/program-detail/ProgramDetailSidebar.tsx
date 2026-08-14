@@ -64,7 +64,7 @@ export const ProgramDetailSidebar: React.FC<ProgramDetailSidebarProps> = ({
         <div className="text-2xl font-black text-brand">
           {formatPrice(activeAmount, activeCurrency)}
         </div>
-        <div className="mt-1 flex items-center gap-1.5 text-xs font-bold text-emerald-700">
+        <div className="mt-1 flex items-center gap-1.5 text-xs font-bold text-successDark">
           <ShieldCheck className="h-3.5 w-3.5" />
           <span>Verified Industry Internship</span>
         </div>
@@ -90,23 +90,23 @@ export const ProgramDetailSidebar: React.FC<ProgramDetailSidebarProps> = ({
 
         <div className="space-y-2 text-xs font-bold text-textSecondary">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
             <span>Guided IDE Browser Workspace</span>
           </div>
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
             <span>Automated AI Rubric Code Evaluation</span>
           </div>
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
             <span>Task-Level Reference Guides & Docs</span>
           </div>
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
             <span>Verified Certificate</span>
           </div>
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
             <span>Dedicated Mentor Review Support</span>
           </div>
         </div>

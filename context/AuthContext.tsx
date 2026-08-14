@@ -1,6 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { BACKEND_URL } from '@/config/api';
+import { apiClient, refreshTokenSilently } from '@/lib/api/client';
 
 export interface UserPermissions {
   id: number;
@@ -9,6 +11,7 @@ export interface UserPermissions {
   firstName?: string;
   lastName?: string;
   permissions?: string[];
+  [key: string]: any;
 }
 
 export function getUserRoleName(role: any): string {
@@ -24,7 +27,8 @@ interface AuthContextType {
   hasPermission: (permissionSlug: string) => boolean;
   hasRole: (roles: string | string[]) => boolean;
   roleName: string;
-  logout: () => void;
+  refreshSession: () => Promise<string | null>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,17 +36,75 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<UserPermissions | null>(null);
 
-  useEffect(() => {
-    // Read user session from localStorage or API response if available
+  // Sync state from storage
+  const syncLocalSession = useCallback(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        const parsed = JSON.parse(storedUser);
+        setUser(parsed);
       } catch {
         setUser(null);
       }
+    } else {
+      setUser(null);
     }
   }, []);
+
+  // Validate session against backend and silently refresh if token is expired
+  const validateSession = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+
+    if (!token && !storedUser) return;
+
+    try {
+      const res = await apiClient('/auth/profile');
+      if (res.ok) {
+        const profile = await res.json();
+        setUser(profile);
+        localStorage.setItem('user', JSON.stringify(profile));
+      } else {
+        console.warn('[AUTH-CONTEXT] ⚠️ Session validation returned status:', res.status);
+      }
+    } catch (err) {
+      console.warn('[AUTH-CONTEXT] Session validation error:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    syncLocalSession();
+    validateSession();
+
+    // Listen to token refresh and logout events dispatched from apiClient
+    const handleTokenRefreshed = (e: any) => {
+      if (e.detail?.user) {
+        setUser(e.detail.user);
+      } else {
+        syncLocalSession();
+      }
+    };
+
+    const handleLogoutEvent = () => {
+      setUser(null);
+    };
+
+    window.addEventListener('auth:token_refreshed', handleTokenRefreshed);
+    window.addEventListener('auth:logout', handleLogoutEvent);
+
+    // Proactive refresh timer: refresh every 10 minutes (before 15m access token expires)
+    const interval = setInterval(() => {
+      if (localStorage.getItem('token')) {
+        refreshTokenSilently();
+      }
+    }, 10 * 60 * 1000);
+
+    return () => {
+      window.removeEventListener('auth:token_refreshed', handleTokenRefreshed);
+      window.removeEventListener('auth:logout', handleLogoutEvent);
+      clearInterval(interval);
+    };
+  }, [syncLocalSession, validateSession]);
 
   const roleName = getUserRoleName(user?.role);
 
@@ -58,8 +120,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return allowedRoles.map((r) => r.toLowerCase()).includes(roleName);
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      const storedRefreshToken = localStorage.getItem('refreshToken');
+      await fetch(`${BACKEND_URL}/auth/logout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ refreshToken: storedRefreshToken }),
+      });
+    } catch (e) {
+      console.warn('[AuthContext] Logout request failed:', e);
+    }
+
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     localStorage.removeItem('activeRole');
     setUser(null);
@@ -67,7 +142,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, hasPermission, hasRole, roleName, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        setUser,
+        hasPermission,
+        hasRole,
+        roleName,
+        refreshSession: refreshTokenSilently,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
