@@ -92,6 +92,7 @@ export interface WorkspaceTemplate {
   projectId?: number;
   version: number;
   isActive: boolean;
+  repoUrl?: string;
   tasks?: TemplateTask[];
   steps?: TemplateStep[];
 }
@@ -104,6 +105,8 @@ export interface Project {
   orderIndex: number;
   status?: string;
   hours?: number;
+  workspaceId?: number;
+  repoUrl?: string;
   workspaceTemplate?: WorkspaceTemplate;
   resources?: Resource[];
 }

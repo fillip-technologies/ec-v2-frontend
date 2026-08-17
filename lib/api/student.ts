@@ -145,21 +145,52 @@ export async function getStudentSubmissions() {
 }
 
 /**
- * Submit Task Deliverable for a Workspace Step
+ * Link or Update Project Workspace GitHub Repository URL
  */
-export async function submitStudentTask(workspaceTaskId: number, payloadUrl: string) {
-  const res = await fetch(`${BACKEND_URL}/student/submissions`, {
-    method: "POST",
+export async function updateProjectWorkspaceRepo(workspaceId: number, repoUrl: string) {
+  const res = await fetch(`${BACKEND_URL}/student/workspace/${workspaceId}/repo`, {
+    method: 'PATCH',
     headers: {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       ...getAuthHeader(),
     },
-    body: JSON.stringify({ workspaceTaskId, payloadUrl }),
+    body: JSON.stringify({ repoUrl }),
   });
 
   if (!res.ok) {
     const errData = await res.json().catch(() => ({}));
-    throw new Error(errData.message || "Failed to submit task deliverable");
+    throw new Error(errData.message || 'Failed to update GitHub repository link');
+  }
+
+  return await res.json();
+}
+
+/**
+ * Submit Task Deliverable for a Workspace Step (Commit Hash or Payload URL)
+ */
+export async function submitStudentTask(
+  workspaceTaskId: number,
+  submission: string | { commitHash?: string; payloadUrl?: string }
+) {
+  const bodyPayload =
+    typeof submission === 'string'
+      ? submission.startsWith('http')
+        ? { workspaceTaskId, payloadUrl: submission }
+        : { workspaceTaskId, commitHash: submission }
+      : { workspaceTaskId, ...submission };
+
+  const res = await fetch(`${BACKEND_URL}/student/submissions`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeader(),
+    },
+    body: JSON.stringify(bodyPayload),
+  });
+
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || 'Failed to submit task deliverable');
   }
 
   return await res.json();

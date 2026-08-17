@@ -28,8 +28,9 @@ interface StudentProgramViewProps {
   submissions?: any[];
   onSelectProject?: (project: Project) => void;
   onEditProject?: (project: Project) => void;
-  onSubmitTaskWork?: (taskId: number, taskTitle: string) => void;
-  onOpenSubmitModal?: (taskId: number, taskTitle: string) => void;
+  onSubmitTaskWork?: (taskId: number, taskTitle: string, repoUrl?: string, workspaceId?: number) => void;
+  onOpenSubmitModal?: (taskId: number, taskTitle: string, repoUrl?: string, workspaceId?: number) => void;
+  onRepoUpdated?: () => void;
 }
 
 export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
@@ -41,6 +42,7 @@ export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
   onEditProject,
   onSubmitTaskWork,
   onOpenSubmitModal,
+  onRepoUpdated,
 }) => {
   const effectiveProjects = Array.isArray(fallbackProjects) && fallbackProjects.length > 0
     ? fallbackProjects
@@ -231,6 +233,7 @@ export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
           onSelectProject={onSelectProject}
           onEditProject={onEditProject}
           onSubmitTaskWork={handleSubmitTask}
+          onRepoUpdated={onRepoUpdated}
         />
       </div>
     </div>

@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Filter,
   FileCheck2,
+  GitCommit,
 } from 'lucide-react';
 
 export function AdminSubmissionsView() {
@@ -391,17 +392,27 @@ export function AdminSubmissionsView() {
                           </div>
                         </td>
 
-                        {/* Deliverable URL */}
+                        {/* Deliverable URL & Commit Hash */}
                         <td className="py-4 px-4">
-                          <a
-                            href={sub.payloadUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:underline"
-                          >
-                            <ExternalLink className="h-3.5 w-3.5 shrink-0" />
-                            <span className="truncate max-w-[180px]">View Submission</span>
-                          </a>
+                          <div className="flex flex-col items-start gap-1">
+                            {sub.commitHash && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-bgSoft border border-borderLight text-[10px] font-mono font-bold text-textPrimary">
+                                <GitCommit className="h-3 w-3 text-brand" />
+                                <span>#{sub.commitHash.substring(0, 8)}</span>
+                              </span>
+                            )}
+                            <a
+                              href={sub.payloadUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:underline"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5 shrink-0" />
+                              <span className="truncate max-w-[180px]">
+                                {sub.commitHash ? 'Inspect Commit' : 'View Submission'}
+                              </span>
+                            </a>
+                          </div>
                         </td>
 
                         {/* Score Badge (Dynamic against passThreshold & maxScore) */}

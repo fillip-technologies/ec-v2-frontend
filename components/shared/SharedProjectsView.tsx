@@ -3,13 +3,10 @@
 import React, { useState } from 'react';
 import { Project } from '@/types/catalog';
 import { Can } from '@/components/auth/Can';
+import { updateProjectWorkspaceRepo } from '@/lib/api/student';
 import {
   CheckCircle2,
-  Circle,
-  Lock,
-  Play,
   Edit3,
-  Plus,
   ExternalLink,
   FileText,
   Clock,
@@ -18,6 +15,11 @@ import {
   ChevronDown,
   ChevronUp,
   RefreshCw,
+  GitBranch,
+  Code2,
+  Link2,
+  Loader2,
+  X,
 } from 'lucide-react';
 
 interface SharedProjectsViewProps {
@@ -25,7 +27,13 @@ interface SharedProjectsViewProps {
   activeProjectId?: number;
   onSelectProject?: (project: Project) => void;
   onEditProject?: (project: Project) => void;
-  onSubmitTaskWork?: (taskId: number, taskTitle: string) => void;
+  onSubmitTaskWork?: (
+    taskId: number,
+    taskTitle: string,
+    repoUrl?: string,
+    workspaceId?: number
+  ) => void;
+  onRepoUpdated?: () => void;
 }
 
 export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
@@ -34,14 +42,56 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
   onSelectProject,
   onEditProject,
   onSubmitTaskWork,
+  onRepoUpdated,
 }) => {
   const [expandedFeedbackTaskIds, setExpandedFeedbackTaskIds] = useState<Record<number, boolean>>({});
+
+  // Repo Setup Modal State
+  const [repoModalProject, setRepoModalProject] = useState<Project | null>(null);
+  const [repoInput, setRepoInput] = useState<string>('');
+  const [savingRepo, setSavingRepo] = useState<boolean>(false);
+  const [repoError, setRepoError] = useState<string>('');
 
   const toggleFeedback = (taskId: number) => {
     setExpandedFeedbackTaskIds((prev) => ({
       ...prev,
       [taskId]: !prev[taskId],
     }));
+  };
+
+  const handleOpenRepoModal = (project: Project) => {
+    setRepoModalProject(project);
+    setRepoInput(project.repoUrl || '');
+    setRepoError('');
+  };
+
+  const handleSaveRepo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!repoModalProject) return;
+
+    const workspaceId = repoModalProject.workspaceId;
+    if (!workspaceId) {
+      setRepoError('No active workspace ID found for this project.');
+      return;
+    }
+
+    const clean = repoInput.trim();
+    if (!clean || !clean.includes('github.com')) {
+      setRepoError('Please enter a valid GitHub repository URL (e.g., https://github.com/username/repo).');
+      return;
+    }
+
+    try {
+      setSavingRepo(true);
+      setRepoError('');
+      await updateProjectWorkspaceRepo(workspaceId, clean);
+      setRepoModalProject(null);
+      if (onRepoUpdated) onRepoUpdated();
+    } catch (err: any) {
+      setRepoError(err.message || 'Failed to update repository link.');
+    } finally {
+      setSavingRepo(false);
+    }
   };
 
   if (!projects || projects.length === 0) {
@@ -61,6 +111,7 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
 
         // Extract tasks from workspaceTemplate or directly
         const tasks = project.workspaceTemplate?.tasks || [];
+        const projectRepoUrl = project.repoUrl || project.workspaceTemplate?.repoUrl;
 
         return (
           <div
@@ -111,6 +162,49 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                   </button>
                 </Can>
               </div>
+            </div>
+
+            {/* GitHub Repository Bar for this Project */}
+            <div className="mt-4 rounded-2xl bg-bgSoft/80 p-3.5 border border-borderLight flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              {projectRepoUrl ? (
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-textPrimary text-white">
+                    <Code2 className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-extrabold uppercase tracking-wider text-textMuted">
+                      Project GitHub Repository
+                    </div>
+                    <a
+                      href={projectRepoUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-mono font-bold text-brand hover:underline truncate block"
+                    >
+                      {projectRepoUrl.replace(/^https?:\/\//, '')} ↗
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-xs font-bold text-textMuted">
+                  <GitBranch className="h-4 w-4 text-brand shrink-0" />
+                  <span>⚡ Link your GitHub repository for this project to start submitting task commit hashes.</span>
+                </div>
+              )}
+
+              {project.workspaceId && (
+                <button
+                  type="button"
+                  onClick={() => handleOpenRepoModal(project)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer ${
+                    projectRepoUrl
+                      ? 'border border-borderLight bg-white text-textPrimary hover:bg-bgSoft'
+                      : 'bg-brand text-white hover:bg-brandDark shadow-xs'
+                  }`}
+                >
+                  {projectRepoUrl ? 'Change Repo' : 'Connect GitHub Repo'}
+                </button>
+              )}
             </div>
 
             {/* Template Tasks List */}
@@ -343,7 +437,9 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                           </span>
                         ) : isTaskNeedsWork ? (
                           <button
-                            onClick={() => onSubmitTaskWork?.(taskId, task.title)}
+                            onClick={() =>
+                              onSubmitTaskWork?.(taskId, task.title, projectRepoUrl, project.workspaceId)
+                            }
                             className="inline-flex items-center gap-1.5 rounded-xl bg-danger px-4 py-2 text-xs font-black text-white hover:bg-dangerDark transition-all cursor-pointer shadow-xs"
                           >
                             <RefreshCw className="h-3.5 w-3.5" />
@@ -351,7 +447,9 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                           </button>
                         ) : (
                           <button
-                            onClick={() => onSubmitTaskWork?.(taskId, task.title)}
+                            onClick={() =>
+                              onSubmitTaskWork?.(taskId, task.title, projectRepoUrl, project.workspaceId)
+                            }
                             disabled={isTaskLocked}
                             className={`rounded-xl px-4 py-2 text-xs font-black transition-all ${
                               isTaskLocked
@@ -371,6 +469,84 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
           </div>
         );
       })}
+
+      {/* GitHub Repository Connection Modal */}
+      {repoModalProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-md rounded-[28px] border border-borderLight bg-white p-6 sm:p-7 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between border-b border-borderLight pb-3">
+              <div className="flex items-center gap-2 text-textPrimary">
+                <Code2 className="h-5 w-5 text-brand" />
+                <h3 className="text-base font-black">Link GitHub Repository</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setRepoModalProject(null)}
+                className="p-1 rounded-full text-textMuted hover:bg-bgSoft hover:text-textPrimary transition-all cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-textMuted font-medium">
+              Configure the GitHub repository for <strong>{repoModalProject.title}</strong>. All task submissions will reference this repository.
+            </p>
+
+            {repoError && (
+              <div className="rounded-xl border border-dangerBorder bg-dangerLight p-2.5 text-xs font-bold text-dangerDark flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 shrink-0 text-danger" />
+                <span>{repoError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSaveRepo} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-extrabold text-textPrimary">
+                  GitHub Repository URL <span className="text-danger">*</span>
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-textMuted">
+                    <Link2 className="h-4 w-4" />
+                  </div>
+                  <input
+                    type="url"
+                    required
+                    placeholder="https://github.com/username/capstone-repo"
+                    value={repoInput}
+                    onChange={(e) => setRepoInput(e.target.value)}
+                    className="w-full rounded-xl border border-borderLight bg-bgSoft/50 py-2.5 pl-10 pr-3.5 text-xs font-semibold text-textPrimary placeholder:text-textMuted focus:border-brand focus:bg-white focus:outline-none transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-borderLight">
+                <button
+                  type="button"
+                  onClick={() => setRepoModalProject(null)}
+                  disabled={savingRepo}
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold text-textMuted hover:bg-bgSoft hover:text-textPrimary transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingRepo || !repoInput.trim()}
+                  className="px-5 py-2 rounded-xl bg-brand text-xs font-black text-white hover:bg-brandDark shadow-xs transition-all cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                >
+                  {savingRepo ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span>Linking Repo...</span>
+                    </>
+                  ) : (
+                    <span>Save Repository</span>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

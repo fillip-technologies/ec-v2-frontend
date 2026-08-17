@@ -7,6 +7,7 @@ import { UserSidebar } from '@/components/shared/UserSidebar';
 import { StudentOverview } from '@/components/student/StudentOverview';
 import { StudentProgramView } from '@/components/student/StudentProgramView';
 import { StudentSubmissionsView } from '@/components/student/StudentSubmissionsView';
+import { StudentRubricsView } from '@/components/student/StudentRubricsView';
 import { TaskSubmissionModal } from '@/components/student/TaskSubmissionModal';
 import { AdminOverview } from '@/components/admin/AdminOverview';
 import { AdminCollegesView } from '@/components/admin/AdminCollegesView';
@@ -72,7 +73,12 @@ function DashboardContent() {
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedTask, setSelectedTask] = useState<{ id: number; title: string } | null>(null);
+  const [selectedTask, setSelectedTask] = useState<{
+    id: number;
+    title: string;
+    repoUrl?: string;
+    workspaceId?: number;
+  } | null>(null);
 
   const activeRole = roleName || (user as any)?.role?.name || (typeof user?.role === 'string' ? user.role : 'student');
   const isAdmin = activeRole === 'super_admin' || activeRole === 'admin';
@@ -85,8 +91,13 @@ function DashboardContent() {
     }
   }, [tabParam]);
 
-  const handleOpenSubmissionModal = (taskId: number, taskTitle: string) => {
-    setSelectedTask({ id: taskId, title: taskTitle });
+  const handleOpenSubmissionModal = (
+    taskId: number,
+    taskTitle: string,
+    repoUrl?: string,
+    workspaceId?: number
+  ) => {
+    setSelectedTask({ id: taskId, title: taskTitle, repoUrl, workspaceId });
     setIsModalOpen(true);
   };
 
@@ -295,6 +306,11 @@ function DashboardContent() {
                   submissions={submissionsList}
                   onOpenSubmitModal={handleOpenSubmissionModal}
                   onSubmitTaskWork={handleOpenSubmissionModal}
+                  onRepoUpdated={() => {
+                    getStudentPrograms().then((progs) => {
+                      if (Array.isArray(progs) && progs.length > 0) setProgramsData(progs);
+                    });
+                  }}
                 />
               )}
 
@@ -320,63 +336,22 @@ function DashboardContent() {
                 </div>
               )}
 
-              {activeSlug === 'payments' && (
-                <div className="rounded-[24px] border border-borderLight bg-white p-8 space-y-4 shadow-xs">
-                  <div className="flex items-center gap-2">
-                    <CreditCard className="h-5 w-5 text-brand" />
-                    <h2 className="text-xl font-black text-textPrimary">Payment History & Invoices</h2>
-                  </div>
-                  <div className="rounded-2xl border border-borderLight bg-bgSoft/60 p-4 flex flex-wrap justify-between items-center text-xs font-bold gap-2">
-                    <div>
-                      <div className="text-sm font-extrabold text-textPrimary">EC-S-1049 • Full Stack Web Engineering</div>
-                      <div className="text-[11px] font-medium text-textMuted mt-0.5">Enrolled with 100% Institutional Sponsor Grant</div>
-                    </div>
-                    <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-extrabold text-emerald-800 uppercase">
-                      PAID / SPONSORED
-                    </span>
-                  </div>
-                </div>
-              )}
+              {activeSlug === 'rubrics' && <StudentRubricsView rubrics={rubricsList} />}
             </>
           )}
 
-          {/* Common Profile View */}
+          {/* Profile & Institution Details Tab */}
           {activeSlug === 'profile' && (
-            <div className="bg-white rounded-3xl p-8 border border-borderLight shadow-xs space-y-6">
-              <div className="flex items-center gap-4 border-b border-borderLight pb-6">
-                <div
-                  className="h-16 w-16 rounded-2xl bg-brand/10 text-brand flex items-center justify-center font-black text-xl"
-                  suppressHydrationWarning
-                >
-                  {displayName.charAt(0).toUpperCase()}
-                </div>
+            <div className="rounded-[28px] border border-borderLight bg-white p-6 sm:p-8 shadow-xs space-y-6">
+              <div className="flex items-center justify-between border-b border-borderLight pb-4">
                 <div>
-                  <h2 className="text-xl font-bold text-textPrimary" suppressHydrationWarning>{displayName}</h2>
-                  <p className="text-xs text-textMuted" suppressHydrationWarning>{userEmail}</p>
-                  <span
-                    className="mt-1 inline-block rounded-full bg-brand/10 px-2.5 py-0.5 text-[10px] font-extrabold uppercase text-brand"
-                    suppressHydrationWarning
-                  >
+                  <h2 className="text-xl font-black text-textPrimary">User & Institution Profile</h2>
+                  <p className="text-xs text-textMuted">Account credentials and verification status</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-bold text-brand uppercase tracking-wider">
                     {activeRole}
                   </span>
-                </div>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-2xl border border-borderLight bg-bgSoft/50 p-4 space-y-1">
-                  <div className="flex items-center gap-2 text-xs font-bold text-textMuted">
-                    <School className="h-4 w-4 text-brand" />
-                    <span>Institution / Entity</span>
-                  </div>
-                  <div className="text-sm font-bold text-textPrimary" suppressHydrationWarning>{institutionName}</div>
-                </div>
-
-                <div className="rounded-2xl border border-borderLight bg-bgSoft/50 p-4 space-y-1">
-                  <div className="flex items-center gap-2 text-xs font-bold text-textMuted">
-                    <Shield className="h-4 w-4 text-brand" />
-                    <span>Verification Status</span>
-                  </div>
-                  <div className="text-sm font-bold text-emerald-700" suppressHydrationWarning>{verificationStatus}</div>
                 </div>
               </div>
             </div>
@@ -390,6 +365,8 @@ function DashboardContent() {
           isOpen={isModalOpen}
           taskId={selectedTask.id}
           taskTitle={selectedTask.title}
+          repoUrl={selectedTask.repoUrl}
+          workspaceId={selectedTask.workspaceId}
           onClose={() => setIsModalOpen(false)}
           onSubmitSuccess={handleSubmissionSuccess}
           submitFn={submitStudentTask}
