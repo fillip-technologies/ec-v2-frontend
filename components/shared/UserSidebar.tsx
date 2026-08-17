@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import roleSidebarConfig from '@/config/roleSidebarConfig.json';
 import { useAuth } from '@/context/AuthContext';
 import {
@@ -92,16 +93,24 @@ export const UserSidebar: React.FC<UserSidebarProps> = ({
   return (
     <aside className="w-64 h-full shrink-0 border-r border-borderLight bg-white p-5 flex flex-col justify-between overflow-y-auto selection:bg-brand selection:text-white">
       <div className="space-y-6">
-        {/* Portal Header / Brand Title */}
-        <div className="px-2 pt-1">
+        {/* Portal Header / Brand Logo */}
+        <div className="px-1 pt-1">
           <Link
             href="/"
-            className="text-base font-black tracking-tight text-textPrimary hover:text-brand transition-all"
+            className="block transition-opacity hover:opacity-85"
+            aria-label="Engineers Clinic Home"
           >
-            Engineers Clinic
+            <Image
+              src="/images/Engineers-clinic-logo-black.png"
+              alt="Engineers Clinic"
+              width={220}
+              height={56}
+              priority
+              className="h-12 w-auto max-w-full object-contain"
+            />
           </Link>
           <div
-            className="text-[10px] font-bold text-textMuted uppercase tracking-widest mt-0.5"
+            className="text-[10px] font-extrabold text-textMuted uppercase tracking-widest mt-2 px-1"
             suppressHydrationWarning
           >
             {roleConfig.roleName || 'Student Portal'}
