@@ -16,6 +16,7 @@ import {
   ChevronUp,
   RefreshCw,
   GitBranch,
+  GitCommit,
   Code2,
   Link2,
   Loader2,
@@ -213,7 +214,7 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                 Blueprint Tasks & Deliverables ({tasks.length} Tasks)
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid gap-3.5">
                 {tasks.map((task: any, tIdx: number) => {
                   const taskId = task.id ?? tIdx;
                   const taskStatus = task.status || 'LOCKED';
@@ -221,13 +222,23 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                   const isTaskPassed = taskStatus === 'PASSED';
                   const isTaskNeedsWork = taskStatus === 'NEEDS_WORK';
                   const isTaskPending = taskStatus === 'MANUAL_REVIEW' || taskStatus === 'EVALUATING';
+                  const isTaskOpen = taskStatus === 'OPEN';
                   const review = task.latestReview;
+                  const submission = task.latestSubmission;
                   const isFeedbackOpen = expandedFeedbackTaskIds[taskId] ?? isTaskNeedsWork;
+
+                  // Combined Commit URL for Passed Task
+                  const commitHash = submission?.commitHash;
+                  const resolvedCommitUrl =
+                    submission?.payloadUrl ||
+                    (projectRepoUrl && commitHash
+                      ? `${projectRepoUrl.replace(/\.git\/?$/, '').replace(/\/+$/, '')}/commit/${commitHash}`
+                      : projectRepoUrl);
 
                   return (
                     <div
                       key={taskId}
-                      className={`rounded-[20px] border p-4 transition-all ${
+                      className={`rounded-[22px] border p-4 sm:p-5 transition-all ${
                         isTaskLocked
                           ? 'border-borderLight/60 bg-gray-100/50 opacity-75'
                           : isTaskPassed
@@ -239,13 +250,13 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                           : 'border-borderLight/80 bg-bgSoft/50'
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5 min-w-0">
                           <span
                             className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold shrink-0 ${
                               isTaskPassed
                                 ? 'bg-statusPassedBg text-statusPassedText'
-                                : taskStatus === 'OPEN'
+                                : isTaskOpen
                                 ? 'bg-brand text-white'
                                 : isTaskPending
                                 ? 'bg-statusEvaluatingBg text-statusEvaluatingText'
@@ -256,12 +267,12 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                           >
                             {isTaskPassed ? '✓' : isTaskPending ? '⏳' : isTaskNeedsWork ? '✕' : isTaskLocked ? '🔒' : tIdx + 1}
                           </span>
-                          <div>
-                            <h4 className="text-xs font-bold text-textPrimary">{task.title}</h4>
+                          <div className="min-w-0">
+                            <h4 className="text-xs font-bold text-textPrimary truncate">{task.title}</h4>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2.5">
+                        <div className="flex items-center gap-2 shrink-0">
                           {review?.score !== undefined && review?.score !== null && (
                             <span
                               className={`rounded-lg px-2 py-0.5 text-[10px] font-black ${
@@ -278,7 +289,7 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                             className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase ${
                               isTaskPassed
                                 ? 'bg-statusPassedBg text-statusPassedText'
-                                : taskStatus === 'OPEN'
+                                : isTaskOpen
                                 ? 'bg-brand text-white'
                                 : isTaskPending
                                 ? 'bg-statusEvaluatingBg text-statusEvaluatingText'
@@ -293,7 +304,7 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                               ? '⏳ PENDING REVIEW'
                               : isTaskNeedsWork
                               ? '⚠️ NEEDS WORK'
-                              : taskStatus === 'OPEN'
+                              : isTaskOpen
                               ? '▶ OPEN'
                               : '🔒 LOCKED'}
                           </span>
@@ -306,7 +317,7 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                         </div>
                       </div>
 
-                      <p className="mt-1 text-[11px] text-textMuted pl-8">{task.description}</p>
+                      <p className="mt-1.5 text-[11px] text-textMuted pl-8">{task.description}</p>
 
                       {/* Task Resources */}
                       {task.resources && task.resources.length > 0 && (
@@ -330,7 +341,88 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                         </div>
                       )}
 
-                      {/* Evaluator Review Feedback Box (For NEEDS_WORK or Passed feedback) */}
+                      {/* 1. Passed Task Combined Repository + Commit Hash Deliverable Link */}
+                      {isTaskPassed && (resolvedCommitUrl || commitHash) && (
+                        <div className="mt-3 ml-8 rounded-2xl border border-statusPassedBorder/70 bg-white/90 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shadow-2xs">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-statusPassedBg text-statusPassedText border border-statusPassedBorder">
+                              <GitCommit className="h-4 w-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-[10px] font-extrabold uppercase tracking-wider text-statusPassedText flex items-center gap-1.5">
+                                <span>Verified Passed Deliverable</span>
+                                {commitHash && (
+                                  <span className="font-mono font-black text-textPrimary bg-bgSoft px-1.5 py-0.5 rounded border border-borderLight">
+                                    #{commitHash.substring(0, 8)}
+                                  </span>
+                                )}
+                              </div>
+                              {resolvedCommitUrl && (
+                                <a
+                                  href={resolvedCommitUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-xs font-mono font-bold text-brand hover:underline truncate block mt-0.5"
+                                >
+                                  {resolvedCommitUrl.replace(/^https?:\/\//, '')} ↗
+                                </a>
+                              )}
+                            </div>
+                          </div>
+
+                          {resolvedCommitUrl && (
+                            <a
+                              href={resolvedCommitUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-statusPassedBg border border-statusPassedBorder text-xs font-bold text-statusPassedText hover:bg-statusPassedBg/70 transition-all shrink-0 cursor-pointer shadow-2xs"
+                            >
+                              <span>Inspect Diff</span>
+                              <ExternalLink className="h-3 w-3" />
+                            </a>
+                          )}
+                        </div>
+                      )}
+
+                      {/* 2. Open Task: Rubric Criteria Breakdown & Standards Preview */}
+                      {isTaskOpen && task.rubric && Array.isArray(task.rubric.criteria) && task.rubric.criteria.length > 0 && (
+                        <div className="mt-3 ml-8 rounded-2xl border border-brand/20 bg-brand/5 p-3.5 space-y-2 text-xs">
+                          <div className="flex items-center justify-between gap-2 border-b border-brand/10 pb-2">
+                            <div className="flex items-center gap-1.5 font-black text-xs text-brand">
+                              <ShieldCheck className="h-4 w-4 shrink-0 text-brand" />
+                              <span>Evaluation Rubric Criteria & Standards</span>
+                            </div>
+                            <div className="text-[10px] font-extrabold text-textMuted">
+                              Pass Threshold: ≥{task.rubric.passThreshold || 60} / {task.rubric.maxScore || 100} pts
+                            </div>
+                          </div>
+
+                          <div className="grid gap-2 sm:grid-cols-2 pt-1">
+                            {task.rubric.criteria.map((crit: any, cIdx: number) => (
+                              <div
+                                key={cIdx}
+                                className="rounded-xl bg-white border border-brand/15 p-2.5 space-y-0.5 shadow-2xs"
+                              >
+                                <div className="flex items-center justify-between font-bold text-textPrimary text-xs">
+                                  <span className="truncate mr-2 font-black">
+                                    {crit.name || crit.criterion || `Criterion ${cIdx + 1}`}
+                                  </span>
+                                  <span className="text-brand shrink-0 font-black text-[10px] bg-brand/10 px-1.5 py-0.5 rounded-md">
+                                    {crit.maxScore || crit.weight || 25} pts
+                                  </span>
+                                </div>
+                                {crit.description && (
+                                  <p className="text-[10px] text-textMuted leading-snug">
+                                    {crit.description}
+                                  </p>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* 3. Evaluator Review Feedback Box (For NEEDS_WORK or Passed feedback) */}
                       {review && (review.feedback || (review.criteriaBreakdown && review.criteriaBreakdown.length > 0)) && (
                         <div className="mt-3 ml-8 space-y-2">
                           {isTaskPassed && (
@@ -424,7 +516,7 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                       )}
 
                       {/* Action Submission Buttons */}
-                      <div className="mt-3 pl-8 flex items-center justify-end gap-2">
+                      <div className="mt-3.5 pl-8 flex items-center justify-end gap-2">
                         {isTaskPassed ? (
                           <span className="inline-flex items-center gap-1 rounded-xl bg-statusPassedBg px-3 py-1.5 text-[11px] font-extrabold text-statusPassedText border border-statusPassedBorder">
                             <CheckCircle2 className="h-3.5 w-3.5 text-success" />

@@ -117,6 +117,8 @@ export const UserSidebar: React.FC<UserSidebarProps> = ({
           </div>
         </div>
 
+        <hr className="border-borderLight/60" />
+
         {/* Dynamic Navigation Groups from JSON */}
         {roleConfig.groups?.map((group: any) => (
           <div key={group.id} className="space-y-1.5">

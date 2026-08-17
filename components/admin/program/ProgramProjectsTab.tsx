@@ -93,106 +93,209 @@ export const ProgramProjectsTab: React.FC<ProgramProjectsTabProps> = ({
   };
 
   const handleProjectFieldChange = (pIdx: number, field: string, value: any) => {
-    setProjects((prev) => {
-      const updated = [...prev];
-      updated[pIdx] = { ...updated[pIdx], [field]: value };
-      return updated;
-    });
+    setProjects((prev) =>
+      prev.map((proj, i) => (i === pIdx ? { ...proj, [field]: value } : proj))
+    );
   };
 
   // Project Resources
   const handleAddProjectResource = (pIdx: number) => {
-    setProjects((prev) => {
-      const updated = [...prev];
-      updated[pIdx].resources.push({ type: 'DOCUMENTATION', title: '', url: '' });
-      return [...updated];
-    });
+    setProjects((prev) =>
+      prev.map((proj, i) =>
+        i === pIdx
+          ? {
+              ...proj,
+              resources: [...proj.resources, { type: 'DOCUMENTATION', title: '', url: '' }],
+            }
+          : proj
+      )
+    );
   };
 
   const handleRemoveProjectResource = (pIdx: number, rIdx: number) => {
-    setProjects((prev) => {
-      const updated = [...prev];
-      updated[pIdx].resources = updated[pIdx].resources.filter((_, i) => i !== rIdx);
-      return [...updated];
-    });
+    setProjects((prev) =>
+      prev.map((proj, i) =>
+        i === pIdx
+          ? {
+              ...proj,
+              resources: proj.resources.filter((_, idx) => idx !== rIdx),
+            }
+          : proj
+      )
+    );
   };
 
   const handleProjectResourceChange = (pIdx: number, rIdx: number, field: string, value: string) => {
-    setProjects((prev) => {
-      const updated = [...prev];
-      updated[pIdx].resources[rIdx] = { ...updated[pIdx].resources[rIdx], [field]: value };
-      return [...updated];
-    });
+    setProjects((prev) =>
+      prev.map((proj, i) =>
+        i === pIdx
+          ? {
+              ...proj,
+              resources: proj.resources.map((res, idx) =>
+                idx === rIdx ? { ...res, [field]: value } : res
+              ),
+            }
+          : proj
+      )
+    );
   };
 
   // Task Handlers
   const handleAddTask = (pIdx: number) => {
-    setProjects((prev) => {
-      const updated = [...prev];
-      const taskCount = updated[pIdx].workspaceTemplate.tasks.length;
-      updated[pIdx].workspaceTemplate.tasks.push({
-        title: '',
-        description: '',
-        orderIndex: taskCount,
-        resources: [],
-        rubric: {
-          maxScore: 100,
-          passThreshold: 60,
-          criteria: [{ criterion: '', maxScore: 100 }],
-        },
-      });
-      return [...updated];
-    });
+    setProjects((prev) =>
+      prev.map((proj, i) =>
+        i === pIdx
+          ? {
+              ...proj,
+              workspaceTemplate: {
+                ...proj.workspaceTemplate,
+                tasks: [
+                  ...proj.workspaceTemplate.tasks,
+                  {
+                    title: '',
+                    description: '',
+                    orderIndex: proj.workspaceTemplate.tasks.length,
+                    resources: [],
+                    rubric: {
+                      maxScore: 100,
+                      passThreshold: 60,
+                      criteria: [{ criterion: '', maxScore: 100 }],
+                    },
+                  },
+                ],
+              },
+            }
+          : proj
+      )
+    );
   };
 
   const handleRemoveTask = (pIdx: number, tIdx: number) => {
-    setProjects((prev) => {
-      const updated = [...prev];
-      updated[pIdx].workspaceTemplate.tasks = updated[pIdx].workspaceTemplate.tasks.filter((_, i) => i !== tIdx);
-      return [...updated];
-    });
+    setProjects((prev) =>
+      prev.map((proj, i) =>
+        i === pIdx
+          ? {
+              ...proj,
+              workspaceTemplate: {
+                ...proj.workspaceTemplate,
+                tasks: proj.workspaceTemplate.tasks.filter((_, idx) => idx !== tIdx),
+              },
+            }
+          : proj
+      )
+    );
   };
 
   const handleTaskFieldChange = (pIdx: number, tIdx: number, field: string, value: any) => {
-    setProjects((prev) => {
-      const updated = [...prev];
-      updated[pIdx].workspaceTemplate.tasks[tIdx] = {
-        ...updated[pIdx].workspaceTemplate.tasks[tIdx],
-        [field]: value,
-      };
-      return [...updated];
-    });
+    setProjects((prev) =>
+      prev.map((proj, i) =>
+        i === pIdx
+          ? {
+              ...proj,
+              workspaceTemplate: {
+                ...proj.workspaceTemplate,
+                tasks: proj.workspaceTemplate.tasks.map((task, idx) =>
+                  idx === tIdx
+                    ? {
+                        ...task,
+                        [field]: value,
+                      }
+                    : task
+                ),
+              },
+            }
+          : proj
+      )
+    );
   };
 
   // Task Rubric Criteria Handlers
   const handleAddCriteria = (pIdx: number, tIdx: number) => {
-    setProjects((prev) => {
-      const updated = [...prev];
-      updated[pIdx].workspaceTemplate.tasks[tIdx].rubric.criteria.push({
-        criterion: '',
-        maxScore: 20,
-      });
-      return [...updated];
-    });
+    setProjects((prev) =>
+      prev.map((proj, i) =>
+        i === pIdx
+          ? {
+              ...proj,
+              workspaceTemplate: {
+                ...proj.workspaceTemplate,
+                tasks: proj.workspaceTemplate.tasks.map((task, idx) =>
+                  idx === tIdx
+                    ? {
+                        ...task,
+                        rubric: {
+                          ...task.rubric,
+                          criteria: [
+                            ...task.rubric.criteria,
+                            { criterion: '', maxScore: 20 },
+                          ],
+                        },
+                      }
+                    : task
+                ),
+              },
+            }
+          : proj
+      )
+    );
   };
 
   const handleRemoveCriteria = (pIdx: number, tIdx: number, cIdx: number) => {
-    setProjects((prev) => {
-      const updated = [...prev];
-      updated[pIdx].workspaceTemplate.tasks[tIdx].rubric.criteria = updated[pIdx].workspaceTemplate.tasks[tIdx].rubric.criteria.filter((_, i) => i !== cIdx);
-      return [...updated];
-    });
+    setProjects((prev) =>
+      prev.map((proj, i) =>
+        i === pIdx
+          ? {
+              ...proj,
+              workspaceTemplate: {
+                ...proj.workspaceTemplate,
+                tasks: proj.workspaceTemplate.tasks.map((task, idx) =>
+                  idx === tIdx
+                    ? {
+                        ...task,
+                        rubric: {
+                          ...task.rubric,
+                          criteria: task.rubric.criteria.filter((_, critIdx) => critIdx !== cIdx),
+                        },
+                      }
+                    : task
+                ),
+              },
+            }
+          : proj
+      )
+    );
   };
 
   const handleCriteriaChange = (pIdx: number, tIdx: number, cIdx: number, field: string, value: any) => {
-    setProjects((prev) => {
-      const updated = [...prev];
-      updated[pIdx].workspaceTemplate.tasks[tIdx].rubric.criteria[cIdx] = {
-        ...updated[pIdx].workspaceTemplate.tasks[tIdx].rubric.criteria[cIdx],
-        [field]: field === 'maxScore' ? Number(value) : value,
-      };
-      return [...updated];
-    });
+    setProjects((prev) =>
+      prev.map((proj, i) =>
+        i === pIdx
+          ? {
+              ...proj,
+              workspaceTemplate: {
+                ...proj.workspaceTemplate,
+                tasks: proj.workspaceTemplate.tasks.map((task, idx) =>
+                  idx === tIdx
+                    ? {
+                        ...task,
+                        rubric: {
+                          ...task.rubric,
+                          criteria: task.rubric.criteria.map((crit, critIdx) =>
+                            critIdx === cIdx
+                              ? {
+                                  ...crit,
+                                  [field]: field === 'maxScore' ? Number(value) : value,
+                                }
+                              : crit
+                          ),
+                        },
+                      }
+                    : task
+                ),
+              },
+            }
+          : proj
+      )
+    );
   };
 
   return (

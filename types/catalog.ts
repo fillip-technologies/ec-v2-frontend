@@ -62,8 +62,23 @@ export interface TemplateTask {
   orderIndex: number;
   title: string;
   description?: string;
+  status?: string;
   rubric?: Rubric;
   resources?: Resource[];
+  latestSubmission?: {
+    id?: number;
+    commitHash?: string;
+    payloadUrl?: string;
+    submittedAt?: string;
+  };
+  latestReview?: {
+    score?: number;
+    maxScore?: number;
+    passThreshold?: number;
+    feedback?: string;
+    criteriaBreakdown?: any;
+    submittedAt?: string;
+  };
 }
 
 export interface Rubric {
