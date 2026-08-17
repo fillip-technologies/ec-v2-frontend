@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Lock, Mail, ArrowRight } from "lucide-react";
 import { login } from "@/lib/api/auth";
+import { showToast } from "@/lib/toast";
 
 export const LoginForm: React.FC = () => {
   const [activeRole, setActiveRole] = useState<"student" | "college" | "admin">("student");
@@ -54,6 +55,13 @@ export const LoginForm: React.FC = () => {
       setLoading(false);
       const rawRole = data.user?.role?.name || data.user?.role || "";
       const userRole = typeof rawRole === "string" ? rawRole.toLowerCase() : "";
+      const userName = data.user?.firstName ? `${data.user.firstName}` : data.user?.email || 'User';
+
+      showToast.flash(
+        'success',
+        `Welcome back, ${userName}! Logged in successfully.`,
+        'Authenticated'
+      );
 
       if (userRole === "super_admin" || userRole === "admin") {
         window.location.href = "/admin";
@@ -64,7 +72,9 @@ export const LoginForm: React.FC = () => {
       }
     } catch (err: any) {
       setLoading(false);
-      setErrorMessage(err.message || "Something went wrong during login");
+      const msg = err.message || "Something went wrong during login";
+      setErrorMessage(msg);
+      showToast.error(msg, "Login Failed");
     }
   };
 

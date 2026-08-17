@@ -44,6 +44,7 @@ import {
   getCollegeReports,
 } from '@/lib/api/college';
 import studentData from '@/config/studentData.json';
+import { showToast } from '@/lib/toast';
 import { School, Shield, Loader2, Award, CreditCard } from 'lucide-react';
 
 function DashboardContent() {
@@ -115,8 +116,9 @@ function DashboardContent() {
       setAdminColleges(updatedColleges);
       const updatedOverview = await getAdminOverview();
       if (updatedOverview) setAdminOverviewData(updatedOverview);
+      showToast.success('College account approved successfully.', 'College Approved');
     } catch (err: any) {
-      alert(err.message || 'Failed to approve college');
+      showToast.error(err.message || 'Failed to approve college', 'Action Failed');
     }
   };
 
@@ -127,8 +129,9 @@ function DashboardContent() {
       setAdminColleges(updatedColleges);
       const updatedOverview = await getAdminOverview();
       if (updatedOverview) setAdminOverviewData(updatedOverview);
+      showToast.info('College account has been marked as rejected.', 'College Rejected');
     } catch (err: any) {
-      alert(err.message || 'Failed to reject college');
+      showToast.error(err.message || 'Failed to reject college', 'Action Failed');
     }
   };
 
@@ -138,8 +141,9 @@ function DashboardContent() {
       await updateUserStatus(id, status);
       const updatedUsers = await getAdminUsers();
       setAdminUsers(updatedUsers);
+      showToast.success(`User status updated to "${status}".`, 'Status Updated');
     } catch (err: any) {
-      alert(err.message || 'Failed to update user status');
+      showToast.error(err.message || 'Failed to update user status', 'Action Failed');
     }
   };
 

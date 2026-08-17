@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { User, Mail, Building, Lock, CheckCircle2, ArrowRight } from "lucide-react";
 import { registerStudent, registerCollege } from "@/lib/api/auth";
+import { showToast } from "@/lib/toast";
 
 interface SignupFormProps {
   initialRole?: "student" | "college";
@@ -85,6 +86,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
 
         setLoading(false);
         setSuccess(true);
+        showToast.success("Student account created successfully! Welcome to Engineers Clinic.", "Registration Complete");
       } else {
         if (collegePassword !== collegeConfirmPassword) {
           throw new Error("Passwords do not match");
@@ -101,10 +103,13 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
 
         setLoading(false);
         setSuccess(true);
+        showToast.success("College registration submitted! An administrator will review your account.", "Registration Submitted");
       }
     } catch (err: any) {
       setLoading(false);
-      setErrorMsg(err.message || "An error occurred during registration");
+      const msg = err.message || "An error occurred during registration";
+      setErrorMsg(msg);
+      showToast.error(msg, "Registration Failed");
     }
   };
 

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Send, GitCommit, GitBranch, Sparkles, Loader2, ExternalLink, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { showToast } from '@/lib/toast';
 
 interface TaskSubmissionModalProps {
   isOpen: boolean;
@@ -65,10 +66,16 @@ export const TaskSubmissionModal: React.FC<TaskSubmissionModalProps> = ({
         payloadUrl: previewCommitUrl || cleanHash,
       });
 
+      showToast.success(
+        `Commit #${cleanHash.substring(0, 8)} deliverable submitted for evaluation!`,
+        'Task Submitted'
+      );
       onSubmitSuccess(result);
       onClose();
     } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to submit work. Please try again.');
+      const msg = err.message || 'Failed to submit work. Please try again.';
+      setErrorMsg(msg);
+      showToast.error(msg, 'Submission Error');
     } finally {
       setLoading(false);
     }

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Project } from '@/types/catalog';
 import { Can } from '@/components/auth/Can';
 import { updateProjectWorkspaceRepo } from '@/lib/api/student';
+import { showToast } from '@/lib/toast';
 import {
   CheckCircle2,
   Edit3,
@@ -87,9 +88,12 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
       setRepoError('');
       await updateProjectWorkspaceRepo(workspaceId, clean);
       setRepoModalProject(null);
+      showToast.success('GitHub repository connected successfully!', 'Repository Linked');
       if (onRepoUpdated) onRepoUpdated();
     } catch (err: any) {
-      setRepoError(err.message || 'Failed to update repository link.');
+      const msg = err.message || 'Failed to update repository link.';
+      setRepoError(msg);
+      showToast.error(msg, 'Connection Failed');
     } finally {
       setSavingRepo(false);
     }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import { ToastNotificationContainer } from "@/components/shared/ToastNotification";
 
 export const metadata: Metadata = {
   title: "Engineers Clinic | Build real projects. Prove you are job-ready.",
@@ -34,6 +35,7 @@ export default function RootLayout({
         <AuthProvider>
           {children}
         </AuthProvider>
+        <ToastNotificationContainer />
       </body>
     </html>
   );

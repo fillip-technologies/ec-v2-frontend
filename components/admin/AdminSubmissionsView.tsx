@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { getAdminSubmissions, reviewSubmission } from '@/lib/api/admin';
+import { showToast } from '@/lib/toast';
 import {
   Search,
   ExternalLink,
@@ -135,8 +136,13 @@ export function AdminSubmissionsView() {
         )
       );
       setReviewingSub(null);
+      showToast.success(
+        `Submission #${reviewingSub.id} graded as ${statusDecision} (${finalScore}/${reviewingSub.maxScore || 100}).`,
+        'Evaluation Saved'
+      );
     } catch (err: any) {
-      alert(err.message || 'Failed to submit review');
+      const msg = err.message || 'Failed to submit review';
+      showToast.error(msg, 'Review Failed');
     } finally {
       setSubmittingReview(false);
     }
