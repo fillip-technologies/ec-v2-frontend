@@ -3,7 +3,7 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
-import { StudentSidebar } from '@/components/student/StudentSidebar';
+import { UserSidebar } from '@/components/shared/UserSidebar';
 import { AdminCreateProgramView } from '@/components/admin/AdminCreateProgramView';
 import { Loader2 } from 'lucide-react';
 
@@ -53,7 +53,7 @@ function AdminProgramContent() {
   return (
     <div className="h-screen w-screen overflow-hidden flex bg-bgSoft">
       {/* Pinned Left Sidebar */}
-      <StudentSidebar
+      <UserSidebar
         activeSlug="programs"
         onSelectSlug={(slug) => {
           router.push(`/admin?tab=${slug}`);

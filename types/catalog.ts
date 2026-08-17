@@ -102,6 +102,8 @@ export interface Project {
   title: string;
   description?: string;
   orderIndex: number;
+  status?: string;
+  hours?: number;
   workspaceTemplate?: WorkspaceTemplate;
   resources?: Resource[];
 }

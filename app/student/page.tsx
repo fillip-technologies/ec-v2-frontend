@@ -3,7 +3,7 @@
 import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
-import { StudentSidebar } from '@/components/student/StudentSidebar';
+import { UserSidebar } from '@/components/shared/UserSidebar';
 import { StudentOverview } from '@/components/student/StudentOverview';
 import { StudentProgramView } from '@/components/student/StudentProgramView';
 import { StudentSubmissionsView } from '@/components/student/StudentSubmissionsView';
@@ -194,7 +194,7 @@ function DashboardContent() {
   return (
     <div className="h-screen w-screen overflow-hidden flex bg-bgSoft">
       {/* Pinned Left Sidebar */}
-      <StudentSidebar
+      <UserSidebar
         activeSlug={activeSlug}
         onSelectSlug={setActiveSlug}
         onOpenProfile={() => setActiveSlug('profile')}
