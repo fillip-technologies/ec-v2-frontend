@@ -204,3 +204,55 @@ export async function getAdminOrders() {
     return [];
   }
 }
+
+/**
+ * GET /admin/students/:id
+ * Fetch 360-degree student portfolio, academic profile, enrollment tracks,
+ * workspace progression, orders & billing audit, and certificates (Admin / Super Admin)
+ */
+export async function getAdminStudentDetail(id: number) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/admin/students/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `Failed to fetch student details (HTTP ${res.status})`);
+    }
+
+    return await res.json();
+  } catch (error: any) {
+    console.error("API getAdminStudentDetail error:", error);
+    throw error;
+  }
+}
+
+/**
+ * GET /admin/students
+ * Fetch all registered student accounts with academic & enrollment stats
+ */
+export async function getAdminStudents() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/admin/students`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return [];
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("API getAdminStudents error:", error);
+    return [];
+  }
+}

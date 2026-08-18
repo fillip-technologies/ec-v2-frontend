@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
-  Users,
+  GraduationCap,
   Search,
   Filter,
   ArrowUpDown,
@@ -10,37 +10,62 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  ExternalLink,
   Eye,
+  Mail,
+  Building,
+  BookOpen,
+  Award,
+  RefreshCw,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { CustomDropdown } from '@/components/shared/CustomDropdown';
+import { getAdminStudents } from '@/lib/api/admin';
+import { showToast } from '@/lib/toast';
 
-interface AdminUsersViewProps {
-  users: any[];
-  onUpdateUserStatus: (id: number, status: string) => void;
-  onViewStudentDetail?: (id: number) => void;
+interface AdminStudentsListViewProps {
+  onSelectStudent: (studentId: number) => void;
 }
 
-type UserSortField = 'displayName' | 'email' | 'roleName' | 'countryName' | 'status';
+type StudentSortField = 'name' | 'email' | 'collegeName' | 'usn' | 'enrollmentCount' | 'createdAt';
 type SortOrder = 'asc' | 'desc';
 
-export const AdminUsersView: React.FC<AdminUsersViewProps> = ({
-  users,
-  onUpdateUserStatus,
-  onViewStudentDetail,
+export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
+  onSelectStudent,
 }) => {
-  const router = useRouter();
+  const [students, setStudents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [roleFilter, setRoleFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   // DataTable State
-  const [sortField, setSortField] = useState<UserSortField>('email');
-  const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
+  const [sortField, setSortField] = useState<StudentSortField>('createdAt');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  const handleSort = (field: UserSortField) => {
+  const fetchStudentsList = async (isManual = false) => {
+    if (isManual) setRefreshing(true);
+    else setLoading(true);
+
+    try {
+      const data = await getAdminStudents();
+      setStudents(Array.isArray(data) ? data : []);
+      if (isManual) {
+        showToast.success('Students directory refreshed', 'Synced');
+      }
+    } catch (err: any) {
+      showToast.error(err.message || 'Failed to fetch students list', 'Error');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudentsList();
+  }, []);
+
+  const handleSort = (field: StudentSortField) => {
     if (sortField === field) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
@@ -49,17 +74,29 @@ export const AdminUsersView: React.FC<AdminUsersViewProps> = ({
     }
   };
 
-  // 1. Filtered & Sorted Users
-  const filteredAndSortedUsers = useMemo(() => {
-    let result = users.filter((u) => {
+  // 1. Filtered and Sorted Students
+  const filteredAndSortedStudents = useMemo(() => {
+    let result = students.filter((s) => {
+      const name = s.name || `${s.firstName || ''} ${s.lastName || ''}`.trim();
+      const email = s.email || '';
+      const phone = s.phoneNo || '';
+      const usn = s.usn || '';
+      const college = s.collegeName || '';
+      const branch = s.branch || '';
+
+      const query = searchTerm.toLowerCase().trim();
       const matchesSearch =
-        u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (u.displayName && u.displayName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (u.phoneNo && u.phoneNo.includes(searchTerm));
+        !query ||
+        name.toLowerCase().includes(query) ||
+        email.toLowerCase().includes(query) ||
+        phone.includes(query) ||
+        usn.toLowerCase().includes(query) ||
+        college.toLowerCase().includes(query) ||
+        branch.toLowerCase().includes(query);
 
-      const matchesRole = roleFilter === 'all' || u.roleName === roleFilter;
+      const matchesStatus = statusFilter === 'all' || s.status === statusFilter;
 
-      return matchesSearch && matchesRole;
+      return matchesSearch && matchesStatus;
     });
 
     result.sort((a, b) => {
@@ -75,13 +112,13 @@ export const AdminUsersView: React.FC<AdminUsersViewProps> = ({
     });
 
     return result;
-  }, [users, searchTerm, roleFilter, sortField, sortOrder]);
+  }, [students, searchTerm, statusFilter, sortField, sortOrder]);
 
   // 2. Pagination Calculations
-  const totalEntries = filteredAndSortedUsers.length;
+  const totalEntries = filteredAndSortedStudents.length;
   const totalPages = Math.ceil(totalEntries / pageSize) || 1;
   const startIndex = (currentPage - 1) * pageSize;
-  const paginatedUsers = filteredAndSortedUsers.slice(startIndex, startIndex + pageSize);
+  const paginatedStudents = filteredAndSortedStudents.slice(startIndex, startIndex + pageSize);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -95,13 +132,22 @@ export const AdminUsersView: React.FC<AdminUsersViewProps> = ({
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-[24px] border border-borderLight shadow-xs">
         <div>
           <h1 className="text-xl font-black text-textPrimary flex items-center gap-2">
-            <Users className="h-6 w-6 text-brand" />
-            Platform Users Management
+            <GraduationCap className="h-6 w-6 text-brand" />
+            Students Detailes
           </h1>
           <p className="text-xs text-textMuted mt-1">
-            Super Admin user accounts governance, RBAC role inspection, and account status enforcement.
+            Browse complete student cohorts, monitor academic tracks, and inspect 360-degree dossiers.
           </p>
         </div>
+
+        <button
+          onClick={() => fetchStudentsList(true)}
+          disabled={refreshing}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-borderLight text-xs font-bold text-textPrimary hover:bg-bgSoft transition cursor-pointer shadow-2xs"
+        >
+          <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin text-brand' : 'text-textMuted'}`} />
+          <span>{refreshing ? 'Refreshing...' : 'Refresh Directory'}</span>
+        </button>
       </div>
 
       {/* Datatable Controls Bar */}
@@ -111,7 +157,7 @@ export const AdminUsersView: React.FC<AdminUsersViewProps> = ({
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-textMuted" />
           <input
             type="text"
-            placeholder="Search email, name, phone..."
+            placeholder="Search student name, email, USN, college..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -121,24 +167,24 @@ export const AdminUsersView: React.FC<AdminUsersViewProps> = ({
           />
         </div>
 
-        {/* Role Filters & Rows Per Page */}
+        {/* Filters & Rows per page */}
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
           <div className="flex items-center gap-1.5 overflow-x-auto">
             <Filter className="h-4 w-4 text-textMuted shrink-0 mr-1" />
-            {['all', 'student', 'college', 'admin', 'super_admin'].map((role) => (
+            {['all', 'active', 'pending', 'disabled'].map((st) => (
               <button
-                key={role}
+                key={st}
                 onClick={() => {
-                  setRoleFilter(role);
+                  setStatusFilter(st);
                   setCurrentPage(1);
                 }}
                 className={`px-3 py-1.5 rounded-xl text-xs font-extrabold capitalize transition-all cursor-pointer ${
-                  roleFilter === role
+                  statusFilter === st
                     ? 'bg-brand text-white shadow-xs'
                     : 'bg-bgSoft text-textPrimary hover:bg-borderLight'
                 }`}
               >
-                {role.replace('_', ' ')}
+                {st}
               </button>
             ))}
           </div>
@@ -147,7 +193,7 @@ export const AdminUsersView: React.FC<AdminUsersViewProps> = ({
             <span>Rows:</span>
             <div className="w-20">
               <CustomDropdown
-                options={[10, 25, 50]}
+                options={[10, 25, 50, 100]}
                 value={pageSize}
                 onChange={(val) => {
                   setPageSize(Number(val));
@@ -166,128 +212,123 @@ export const AdminUsersView: React.FC<AdminUsersViewProps> = ({
             <thead>
               <tr className="bg-bgSoft/80 border-b border-borderLight text-[11px] font-extrabold uppercase tracking-wider text-textMuted select-none">
                 <th
-                  onClick={() => handleSort('email')}
+                  onClick={() => handleSort('name')}
                   className="py-4 px-5 cursor-pointer hover:text-brand transition-all"
                 >
                   <div className="flex items-center gap-1.5">
-                    <span>User Details</span>
+                    <span>Student Profile</span>
                     <ArrowUpDown className="h-3 w-3 text-textMuted" />
                   </div>
                 </th>
                 <th
-                  onClick={() => handleSort('roleName')}
+                  onClick={() => handleSort('collegeName')}
                   className="py-4 px-4 cursor-pointer hover:text-brand transition-all"
                 >
                   <div className="flex items-center gap-1.5">
-                    <span>RBAC Role</span>
+                    <span>College / Campus</span>
                     <ArrowUpDown className="h-3 w-3 text-textMuted" />
                   </div>
+                </th>
+                <th className="py-4 px-4">
+                  <span>Branch & USN</span>
                 </th>
                 <th
-                  onClick={() => handleSort('countryName')}
-                  className="py-4 px-4 cursor-pointer hover:text-brand transition-all"
+                  onClick={() => handleSort('enrollmentCount')}
+                  className="py-4 px-4 text-center cursor-pointer hover:text-brand transition-all"
                 >
-                  <div className="flex items-center gap-1.5">
-                    <span>Country & Phone</span>
+                  <div className="flex items-center justify-center gap-1.5">
+                    <span>Programs & Steps</span>
                     <ArrowUpDown className="h-3 w-3 text-textMuted" />
                   </div>
                 </th>
-                <th
-                  onClick={() => handleSort('status')}
-                  className="py-4 px-4 cursor-pointer hover:text-brand transition-all"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span>Status</span>
-                    <ArrowUpDown className="h-3 w-3 text-textMuted" />
-                  </div>
+                <th className="py-4 px-4">
+                  <span>Status</span>
                 </th>
-                <th className="py-4 px-6 text-right whitespace-nowrap min-w-[200px]">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-borderLight/60 text-xs">
-              {paginatedUsers.length === 0 ? (
+              {loading ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-textMuted font-bold">
-                    No users found matching criteria.
+                  <td colSpan={6} className="py-12 text-center text-textMuted font-bold">
+                    <RefreshCw className="h-6 w-6 animate-spin text-brand mx-auto mb-2" />
+                    Loading student cohort directory...
+                  </td>
+                </tr>
+              ) : paginatedStudents.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-textMuted font-bold">
+                    No students found matching your search.
                   </td>
                 </tr>
               ) : (
-                paginatedUsers.map((u) => (
-                  <tr key={u.id} className="hover:bg-bgSoft/40 transition-all">
+                paginatedStudents.map((s) => (
+                  <tr
+                    key={s.id}
+                    className="hover:bg-bgSoft/40 transition-all group cursor-pointer"
+                    onClick={() => onSelectStudent(s.id)}
+                  >
+                    {/* Student Info */}
                     <td className="py-4 px-5">
-                      <div className="font-black text-textPrimary">{u.displayName || u.email}</div>
-                      <div className="text-[10px] text-textMuted">{u.email}</div>
+                      <div className="font-black text-textPrimary flex items-center gap-2">
+                        <span>{s.name || 'Student Intern'}</span>
+                        <span className="rounded-md bg-brand/10 px-1.5 py-0.5 text-[10px] font-mono font-bold text-brand">
+                          #ID-{s.id}
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-textMuted mt-0.5 flex items-center gap-1">
+                        <Mail className="h-3 w-3 shrink-0" />
+                        <span>{s.email}</span>
+                      </div>
                     </td>
+
+                    {/* College */}
+                    <td className="py-4 px-4">
+                      <div className="font-extrabold text-textPrimary flex items-center gap-1">
+                        <Building className="h-3 w-3 text-brand shrink-0" />
+                        <span className="truncate max-w-[200px]">{s.collegeName || 'N/A'}</span>
+                      </div>
+                      <div className="text-[10px] text-textMuted mt-0.5">
+                        {s.countryName || 'India'}
+                      </div>
+                    </td>
+
+                    {/* Branch & USN */}
+                    <td className="py-4 px-4">
+                      <div className="font-mono font-bold text-brand uppercase">
+                        {s.usn || 'N/A'}
+                      </div>
+                      <div className="text-[10px] text-textMuted mt-0.5 font-bold">
+                        {s.branch ? `${s.branch} ${s.graduationYear ? `(${s.graduationYear})` : ''}` : 'Specialization N/A'}
+                      </div>
+                    </td>
+
+                    {/* Programs & Steps */}
+                    <td className="py-4 px-4 text-center">
+                      <div className="inline-flex items-center gap-3">
+                        <div className="flex items-center gap-1 font-black text-textPrimary" title="Enrolled Programs">
+                          <BookOpen className="h-3.5 w-3.5 text-brand" />
+                          <span>{s.enrollmentCount || 0}</span>
+                        </div>
+                        <div className="flex items-center gap-1 font-bold text-emerald-600" title="Submissions">
+                          <Award className="h-3.5 w-3.5 text-amber-500" />
+                          <span>{s.certificateCount || 0}</span>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Status */}
                     <td className="py-4 px-4">
                       <span
-                        className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                          u.roleName === 'super_admin'
-                            ? 'bg-brand/10 text-brand'
-                            : u.roleName === 'admin'
-                            ? 'bg-brand/15 text-brandDark'
-                            : u.roleName === 'college'
-                            ? 'bg-warningLight text-warningDark'
-                            : 'bg-infoLight text-infoDark'
-                        }`}
-                      >
-                        {u.roleName}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4 font-medium text-textPrimary">
-                      {u.countryName}
-                      <div className="text-[10px] text-textMuted">{u.phoneNo || 'N/A'}</div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                          u.status === 'active'
+                        className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                          s.status === 'active'
                             ? 'bg-statusPassedBg text-statusPassedText'
-                            : u.status === 'disabled'
+                            : s.status === 'disabled'
                             ? 'bg-statusErrorBg text-statusErrorText'
                             : 'bg-statusEvaluatingBg text-statusEvaluatingText'
                         }`}
                       >
-                        {u.status}
+                        {s.status}
                       </span>
-                    </td>
-                    <td className="py-4 px-6 text-right whitespace-nowrap min-w-[200px]">
-                      <div className="inline-flex items-center justify-end gap-2">
-                        {(u.roleName?.toLowerCase() === 'student' || Boolean(u.student)) && (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              if (onViewStudentDetail) {
-                                onViewStudentDetail(u.id);
-                              } else {
-                                router.push(`/admin/studentdetail/${u.id}`);
-                              }
-                            }}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand/10 text-brand hover:bg-brand hover:text-white font-extrabold text-xs transition cursor-pointer shadow-2xs shrink-0"
-                            title="View Student Dossier"
-                          >
-                            <Eye className="h-3.5 w-3.5" />
-                            <span>Dossier</span>
-                          </button>
-                        )}
-                        {u.status !== 'active' && (
-                          <button
-                            type="button"
-                            onClick={() => onUpdateUserStatus(u.id, 'active')}
-                            className="px-3 py-1.5 rounded-xl bg-success text-white hover:bg-successDark font-extrabold text-xs transition cursor-pointer shadow-2xs shrink-0"
-                          >
-                            Activate
-                          </button>
-                        )}
-                        {u.status !== 'disabled' && u.roleName !== 'super_admin' && (
-                          <button
-                            type="button"
-                            onClick={() => onUpdateUserStatus(u.id, 'disabled')}
-                            className="px-3 py-1.5 rounded-xl bg-dangerLight text-danger hover:bg-danger hover:text-white font-extrabold text-xs transition cursor-pointer shadow-2xs shrink-0"
-                          >
-                            Disable
-                          </button>
-                        )}
-                      </div>
                     </td>
                   </tr>
                 ))
@@ -301,7 +342,7 @@ export const AdminUsersView: React.FC<AdminUsersViewProps> = ({
           <div>
             Showing <span className="text-textPrimary font-black">{totalEntries > 0 ? startIndex + 1 : 0}</span> to{' '}
             <span className="text-textPrimary font-black">{Math.min(startIndex + pageSize, totalEntries)}</span> of{' '}
-            <span className="text-textPrimary font-black">{totalEntries}</span> entries
+            <span className="text-textPrimary font-black">{totalEntries}</span> students
           </div>
 
           <div className="flex items-center gap-1.5">

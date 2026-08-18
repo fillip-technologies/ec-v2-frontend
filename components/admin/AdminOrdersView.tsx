@@ -1035,10 +1035,23 @@ export const AdminOrdersView: React.FC = () => {
 
               {/* Student Intern Information */}
               <div className="p-4 rounded-2xl border border-borderLight/80 bg-bgSoft/30 space-y-3">
-                <h4 className="text-xs font-bold text-textMuted uppercase tracking-wider flex items-center gap-1.5">
-                  <User className="h-3.5 w-3.5 text-brand" />
-                  <span>Student Intern Information</span>
-                </h4>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-textMuted uppercase tracking-wider flex items-center gap-1.5">
+                    <User className="h-3.5 w-3.5 text-brand" />
+                    <span>Student Intern Information</span>
+                  </h4>
+                  {selectedOrder.student?.userid && (
+                    <a
+                      href={`/admin/studentdetail/${selectedOrder.student.userid}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] font-bold text-brand hover:underline"
+                    >
+                      <span>Full Dossier</span>
+                      <ExternalLink className="h-3 w-3" />
+                    </a>
+                  )}
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                   <div className="min-w-0">
                     <span className="text-textMuted block text-[11px]">Full Name:</span>

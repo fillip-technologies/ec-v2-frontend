@@ -17,6 +17,8 @@ import { AdminProgramsView } from '@/components/admin/AdminProgramsView';
 import { AdminCouponsView } from '@/components/admin/AdminCouponsView';
 import { AdminSubmissionsView } from '@/components/admin/AdminSubmissionsView';
 import { AdminOrdersView } from '@/components/admin/AdminOrdersView';
+import { AdminStudentDetailView } from '@/components/admin/AdminStudentDetailView';
+import { AdminStudentsListView } from '@/components/admin/AdminStudentsListView';
 import { CollegeOverview } from '@/components/college/CollegeOverview';
 import { CollegeStudentsView } from '@/components/college/CollegeStudentsView';
 import { CollegeCouponsView } from '@/components/college/CollegeCouponsView';
@@ -53,8 +55,10 @@ function DashboardContent() {
   const { user, roleName } = useAuth();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab') || searchParams.get('slug');
+  const idParam = searchParams.get('id');
 
   const [activeSlug, setActiveSlug] = useState<string>(tabParam || 'overview');
+  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(idParam ? Number(idParam) : null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [programsData, setProgramsData] = useState<any[]>([]);
   const [catalogPrograms, setCatalogPrograms] = useState<any[]>([]);
@@ -87,13 +91,24 @@ function DashboardContent() {
   const isAdmin = activeRole === 'super_admin' || activeRole === 'admin';
   const isCollege = activeRole === 'college';
 
-  const handleNavigateSlug = (slug: string) => {
+  const handleNavigateSlug = (slug: string, sId?: number | null) => {
     setActiveSlug(slug);
+    setSelectedStudentId(sId !== undefined ? sId : null);
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
       url.searchParams.set('tab', slug);
+      if (sId) {
+        url.searchParams.set('id', String(sId));
+      } else {
+        url.searchParams.delete('id');
+      }
       window.history.pushState({}, '', url.pathname + '?' + url.searchParams.toString());
     }
+  };
+
+  const handleViewStudentDetail = (id: number) => {
+    setSelectedStudentId(id);
+    handleNavigateSlug('students', id);
   };
 
   // Sync active tab when URL param changes or on browser back/forward
@@ -107,17 +122,24 @@ function DashboardContent() {
         window.history.replaceState({}, '', url.pathname + '?' + url.searchParams.toString());
       }
     }
+    if (idParam) {
+      setSelectedStudentId(Number(idParam));
+    } else {
+      setSelectedStudentId(null);
+    }
 
     const onPopState = () => {
       if (typeof window !== 'undefined') {
         const currentParams = new URLSearchParams(window.location.search);
         const currentTab = currentParams.get('tab') || currentParams.get('slug') || 'overview';
+        const currentId = currentParams.get('id');
         setActiveSlug(currentTab);
+        setSelectedStudentId(currentId ? Number(currentId) : null);
       }
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
-  }, [tabParam]);
+  }, [tabParam, idParam]);
 
   const handleOpenSubmissionModal = (
     taskId: number,
@@ -257,6 +279,26 @@ function DashboardContent() {
                 />
               )}
 
+              {activeSlug === 'students' && (
+                selectedStudentId ? (
+                  <AdminStudentDetailView
+                    studentId={selectedStudentId}
+                    onBack={() => handleNavigateSlug('students')}
+                  />
+                ) : (
+                  <AdminStudentsListView
+                    onSelectStudent={(id) => handleNavigateSlug('students', id)}
+                  />
+                )
+              )}
+
+              {activeSlug === 'studentdetail' && selectedStudentId && (
+                <AdminStudentDetailView
+                  studentId={selectedStudentId}
+                  onBack={() => handleNavigateSlug('students')}
+                />
+              )}
+
               {activeSlug === 'colleges' && (
                 <AdminCollegesView
                   colleges={adminColleges}
@@ -269,6 +311,7 @@ function DashboardContent() {
                 <AdminUsersView
                   users={adminUsers}
                   onUpdateUserStatus={handleUpdateUserStatus}
+                  onViewStudentDetail={handleViewStudentDetail}
                 />
               )}
 

@@ -17,6 +17,8 @@ import {
   Users,
   User,
   LogOut,
+  GraduationCap,
+  School,
 } from 'lucide-react';
 
 export interface UserSidebarProps {
@@ -65,8 +67,10 @@ export const UserSidebar: React.FC<UserSidebarProps> = ({
       case 'reports':
         return <BarChart3 className="h-4 w-4" />;
       case 'students':
-      case 'users':
+        return <GraduationCap className="h-4 w-4" />;
       case 'colleges':
+        return <School className="h-4 w-4" />;
+      case 'users':
         return <Users className="h-4 w-4" />;
       case 'profile':
         return <User className="h-4 w-4" />;
