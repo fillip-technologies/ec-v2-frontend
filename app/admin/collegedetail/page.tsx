@@ -48,7 +48,7 @@ function CollegeDetailPageQueryContent() {
           onSelectSlug={(slug) => router.push(`/admin?tab=${slug}`)}
           onOpenProfile={() => router.push('/admin?tab=profile')}
         />
-        <main className="flex-1 h-full overflow-y-auto p-6 sm:p-8 flex items-center justify-center">
+        <main className="flex-1 h-full overflow-y-auto p-4 pt-16 sm:p-6 md:p-8 flex items-center justify-center">
           <div className="bg-white rounded-3xl p-8 border border-borderLight text-center space-y-4 max-w-md">
             <h3 className="text-base font-black text-textPrimary">Missing College ID Parameter</h3>
             <p className="text-xs text-textMuted">Please specify a valid college ID (e.g. <code>?id=1</code>).</p>
@@ -74,7 +74,7 @@ function CollegeDetailPageQueryContent() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 h-full overflow-y-auto p-6 sm:p-8">
+      <main className="flex-1 h-full overflow-y-auto p-4 pt-16 sm:p-6 md:p-8">
         <div className="mx-auto max-w-6xl">
           <AdminCollegeDetailView
             collegeId={collegeId}

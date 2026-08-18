@@ -49,7 +49,7 @@ function StudentDetailPageContent() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 h-full overflow-y-auto p-6 sm:p-8">
+      <main className="flex-1 h-full overflow-y-auto p-4 pt-16 sm:p-6 md:p-8">
         <div className="mx-auto max-w-6xl">
           <AdminStudentDetailView
             studentId={studentId}
