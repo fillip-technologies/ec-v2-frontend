@@ -598,16 +598,17 @@ export const CollegeCouponsView: React.FC<CollegeCouponsViewProps> = () => {
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-textPrimary">
-                    Estimated PO Amount (₹)
+                  <label className="text-xs font-bold text-textPrimary flex items-center justify-between">
+                    <span>Estimated PO Amount (₹)</span>
+                    <span className="text-[10px] text-textMuted font-medium">(Auto-calculated)</span>
                   </label>
                   <input
                     type="number"
-                    min={0}
                     value={customAmount}
-                    onChange={(e) => setCustomAmount(e.target.value === '' ? '' : Number(e.target.value))}
-                    placeholder="e.g. 50000"
-                    className="mt-1.5 w-full rounded-xl border border-borderLight bg-bgBody px-3.5 py-2.5 text-xs font-bold text-textPrimary focus:border-brand"
+                    readOnly
+                    tabIndex={-1}
+                    placeholder="Auto-calculated from seats"
+                    className="mt-1.5 w-full rounded-xl border border-borderLight bg-bgSoft/80 px-3.5 py-2.5 text-xs font-black text-textPrimary cursor-not-allowed select-none focus:outline-none"
                   />
                   {customAmount !== '' && (
                     <div className="text-[10px] text-brand font-extrabold mt-1">

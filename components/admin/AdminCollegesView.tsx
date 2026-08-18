@@ -13,6 +13,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  Eye,
 } from 'lucide-react';
 import { CustomDropdown } from '@/components/shared/CustomDropdown';
 
@@ -20,6 +21,7 @@ interface AdminCollegesViewProps {
   colleges: any[];
   onApproveCollege: (id: number) => void;
   onRejectCollege: (id: number) => void;
+  onSelectCollege?: (id: number) => void;
 }
 
 type SortField = 'name' | 'address' | 'countryName' | 'status' | 'studentCount' | 'memberCount';
@@ -29,6 +31,7 @@ export const AdminCollegesView: React.FC<AdminCollegesViewProps> = ({
   colleges,
   onApproveCollege,
   onRejectCollege,
+  onSelectCollege,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -209,7 +212,7 @@ export const AdminCollegesView: React.FC<AdminCollegesViewProps> = ({
                     <ArrowUpDown className="h-3 w-3 text-textMuted" />
                   </div>
                 </th>
-                <th className="py-4 px-6 text-right whitespace-nowrap min-w-[220px]">Actions</th>
+                <th className="py-4 px-5 text-right whitespace-nowrap min-w-[110px]">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-borderLight/60 text-xs">
@@ -221,9 +224,15 @@ export const AdminCollegesView: React.FC<AdminCollegesViewProps> = ({
                 </tr>
               ) : (
                 paginatedColleges.map((c) => (
-                  <tr key={c.id} className="hover:bg-bgSoft/40 transition-all">
+                  <tr
+                    key={c.id}
+                    className="hover:bg-bgSoft/40 transition-all cursor-pointer group"
+                    onClick={() => onSelectCollege && onSelectCollege(c.id)}
+                  >
                     <td className="py-4 px-5">
-                      <div className="font-black text-textPrimary">{c.name}</div>
+                      <div className="font-black text-textPrimary group-hover:text-brand transition-colors">
+                        {c.name}
+                      </div>
                       <div className="text-[10px] text-textMuted">ID: #{c.id}</div>
                     </td>
                     <td className="py-4 px-4 font-medium text-textPrimary">
@@ -252,26 +261,37 @@ export const AdminCollegesView: React.FC<AdminCollegesViewProps> = ({
                     <td className="py-4 px-4 text-center font-black text-textPrimary">
                       {c.memberCount || 0}
                     </td>
-                    <td className="py-4 px-6 text-right whitespace-nowrap min-w-[220px]">
-                      <div className="inline-flex items-center justify-end gap-2">
+                    <td
+                      className="py-4 px-5 text-right whitespace-nowrap min-w-[110px]"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="inline-flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => onSelectCollege && onSelectCollege(c.id)}
+                          className="inline-flex items-center justify-center h-8 w-8 rounded-xl bg-brand/10 text-brand hover:bg-brand hover:text-white transition-all cursor-pointer shadow-2xs shrink-0"
+                          title="View College Dossier"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
                         {c.status !== 'approved' && (
                           <button
                             type="button"
                             onClick={() => onApproveCollege(c.id)}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-extrabold text-xs transition-all cursor-pointer shadow-2xs shrink-0"
+                            className="inline-flex items-center justify-center h-8 w-8 rounded-xl bg-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-2xs shrink-0"
+                            title="Approve College"
                           >
-                            <CheckCircle2 className="h-3.5 w-3.5" />
-                            <span>Approve</span>
+                            <CheckCircle2 className="h-4 w-4" />
                           </button>
                         )}
                         {c.status !== 'rejected' && (
                           <button
                             type="button"
                             onClick={() => onRejectCollege(c.id)}
-                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-600 hover:text-white hover:border-rose-600 font-extrabold text-xs transition-all cursor-pointer shadow-2xs shrink-0"
+                            className="inline-flex items-center justify-center h-8 w-8 rounded-xl bg-rose-100 text-rose-700 hover:bg-rose-600 hover:text-white transition-all cursor-pointer shadow-2xs shrink-0"
+                            title="Reject College"
                           >
-                            <XCircle className="h-3.5 w-3.5" />
-                            <span>Reject</span>
+                            <XCircle className="h-4 w-4" />
                           </button>
                         )}
                       </div>

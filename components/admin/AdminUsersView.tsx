@@ -12,6 +12,8 @@ import {
   ChevronsRight,
   ExternalLink,
   Eye,
+  CheckCircle2,
+  Ban,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { CustomDropdown } from '@/components/shared/CustomDropdown';
@@ -20,6 +22,7 @@ interface AdminUsersViewProps {
   users: any[];
   onUpdateUserStatus: (id: number, status: string) => void;
   onViewStudentDetail?: (id: number) => void;
+  onViewCollegeDetail?: (id: number) => void;
 }
 
 type UserSortField = 'displayName' | 'email' | 'roleName' | 'countryName' | 'status';
@@ -29,6 +32,7 @@ export const AdminUsersView: React.FC<AdminUsersViewProps> = ({
   users,
   onUpdateUserStatus,
   onViewStudentDetail,
+  onViewCollegeDetail,
 }) => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
@@ -201,7 +205,7 @@ export const AdminUsersView: React.FC<AdminUsersViewProps> = ({
                     <ArrowUpDown className="h-3 w-3 text-textMuted" />
                   </div>
                 </th>
-                <th className="py-4 px-6 text-right whitespace-nowrap min-w-[200px]">Actions</th>
+                <th className="py-4 px-5 text-right whitespace-nowrap min-w-[100px]">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-borderLight/60 text-xs">
@@ -250,9 +254,9 @@ export const AdminUsersView: React.FC<AdminUsersViewProps> = ({
                         {u.status}
                       </span>
                     </td>
-                    <td className="py-4 px-6 text-right whitespace-nowrap min-w-[200px]">
-                      <div className="inline-flex items-center justify-end gap-2">
-                        {(u.roleName?.toLowerCase() === 'student' || Boolean(u.student)) && (
+                    <td className="py-4 px-5 text-right whitespace-nowrap min-w-[100px]">
+                      <div className="inline-flex items-center justify-end gap-1.5">
+                        {u.roleName?.toLowerCase() === 'student' && (
                           <button
                             type="button"
                             onClick={() => {
@@ -262,29 +266,47 @@ export const AdminUsersView: React.FC<AdminUsersViewProps> = ({
                                 router.push(`/admin/studentdetail/${u.id}`);
                               }
                             }}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand/10 text-brand hover:bg-brand hover:text-white font-extrabold text-xs transition cursor-pointer shadow-2xs shrink-0"
+                            className="inline-flex items-center justify-center h-8 w-8 rounded-xl bg-brand/10 text-brand hover:bg-brand hover:text-white transition-all cursor-pointer shadow-2xs shrink-0"
                             title="View Student Dossier"
                           >
-                            <Eye className="h-3.5 w-3.5" />
-                            <span>Dossier</span>
+                            <Eye className="h-4 w-4" />
+                          </button>
+                        )}
+                        {u.roleName?.toLowerCase() === 'college' && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const cId = u.collegeId || u.id;
+                              if (onViewCollegeDetail) {
+                                onViewCollegeDetail(cId);
+                              } else {
+                                router.push(`/admin/collegedetail/${cId}`);
+                              }
+                            }}
+                            className="inline-flex items-center justify-center h-8 w-8 rounded-xl bg-amber-500/10 text-amber-600 hover:bg-amber-600 hover:text-white transition-all cursor-pointer shadow-2xs shrink-0"
+                            title="View College Dossier"
+                          >
+                            <Eye className="h-4 w-4" />
                           </button>
                         )}
                         {u.status !== 'active' && (
                           <button
                             type="button"
                             onClick={() => onUpdateUserStatus(u.id, 'active')}
-                            className="px-3 py-1.5 rounded-xl bg-success text-white hover:bg-successDark font-extrabold text-xs transition cursor-pointer shadow-2xs shrink-0"
+                            className="inline-flex items-center justify-center h-8 w-8 rounded-xl bg-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-2xs shrink-0"
+                            title="Activate Account"
                           >
-                            Activate
+                            <CheckCircle2 className="h-4 w-4" />
                           </button>
                         )}
                         {u.status !== 'disabled' && u.roleName !== 'super_admin' && (
                           <button
                             type="button"
                             onClick={() => onUpdateUserStatus(u.id, 'disabled')}
-                            className="px-3 py-1.5 rounded-xl bg-dangerLight text-danger hover:bg-danger hover:text-white font-extrabold text-xs transition cursor-pointer shadow-2xs shrink-0"
+                            className="inline-flex items-center justify-center h-8 w-8 rounded-xl bg-rose-100 text-rose-700 hover:bg-rose-600 hover:text-white transition-all cursor-pointer shadow-2xs shrink-0"
+                            title="Disable Account"
                           >
-                            Disable
+                            <Ban className="h-4 w-4" />
                           </button>
                         )}
                       </div>

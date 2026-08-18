@@ -229,9 +229,6 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
                     <ArrowUpDown className="h-3 w-3 text-textMuted" />
                   </div>
                 </th>
-                <th className="py-4 px-4">
-                  <span>Branch & USN</span>
-                </th>
                 <th
                   onClick={() => handleSort('enrollmentCount')}
                   className="py-4 px-4 text-center cursor-pointer hover:text-brand transition-all"
@@ -244,6 +241,7 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
                 <th className="py-4 px-4">
                   <span>Status</span>
                 </th>
+                <th className="py-4 px-6 text-right whitespace-nowrap min-w-[80px]">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-borderLight/60 text-xs">
@@ -285,20 +283,10 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
                     <td className="py-4 px-4">
                       <div className="font-extrabold text-textPrimary flex items-center gap-1">
                         <Building className="h-3 w-3 text-brand shrink-0" />
-                        <span className="truncate max-w-[200px]">{s.collegeName || 'N/A'}</span>
+                        <span className="truncate max-w-[500px]">{s.collegeName || 'N/A'}</span>
                       </div>
                       <div className="text-[10px] text-textMuted mt-0.5">
                         {s.countryName || 'India'}
-                      </div>
-                    </td>
-
-                    {/* Branch & USN */}
-                    <td className="py-4 px-4">
-                      <div className="font-mono font-bold text-brand uppercase">
-                        {s.usn || 'N/A'}
-                      </div>
-                      <div className="text-[10px] text-textMuted mt-0.5 font-bold">
-                        {s.branch ? `${s.branch} ${s.graduationYear ? `(${s.graduationYear})` : ''}` : 'Specialization N/A'}
                       </div>
                     </td>
 
@@ -329,6 +317,21 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
                       >
                         {s.status}
                       </span>
+                    </td>
+
+                    {/* Action */}
+                    <td
+                      className="py-4 px-6 text-right whitespace-nowrap min-w-[80px]"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => onSelectStudent(s.id)}
+                        className="inline-flex items-center justify-center h-8 w-8 rounded-xl bg-brand/10 text-brand hover:bg-brand hover:text-white transition-all cursor-pointer shadow-2xs shrink-0"
+                        title="View Student Dossier"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
                     </td>
                   </tr>
                 ))

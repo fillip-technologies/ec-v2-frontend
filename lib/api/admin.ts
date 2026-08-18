@@ -83,6 +83,32 @@ export async function updateCollegeStatus(id: number, status: string) {
 }
 
 /**
+ * GET /admin/colleges/:id
+ * Fetch 360-degree college dossier, B2B seat orders, coupon batches, and student cohorts
+ */
+export async function getAdminCollegeDetail(id: number) {
+  try {
+    const res = await fetch(`${BACKEND_URL}/admin/colleges/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `Failed to fetch college details (HTTP ${res.status})`);
+    }
+
+    return await res.json();
+  } catch (error: any) {
+    console.error("API getAdminCollegeDetail error:", error);
+    throw error;
+  }
+}
+
+/**
  * GET /admin/users
  * Fetch list of platform users
  */

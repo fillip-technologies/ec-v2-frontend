@@ -142,16 +142,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
                   >
                     AI Tools
                   </a>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setMoreOpen(false);
-                      onOpenEnquiry?.();
-                    }}
-                    className="mt-1 w-full text-left block rounded-[14px] px-4 py-3 text-sm font-semibold text-textSecondary transition hover:bg-bgSoft hover:text-brand cursor-pointer"
-                  >
-                    Refer & Earn
-                  </button>
                   <Link
                     href="/about"
                     onClick={() => setMoreOpen(false)}
@@ -167,18 +157,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
 
         {/* Right CTA Actions */}
         <div className="flex items-center gap-3">
-          {/* Refer & Earn Button */}
-          <button
-            type="button"
-            onClick={onOpenEnquiry}
-            className="group relative hidden items-center gap-2 overflow-hidden rounded-full border border-secondary/50 bg-secondarySoft px-4 py-2.5 text-sm font-black text-textPrimary shadow-[0_10px_28px_rgba(245,200,66,0.22)] transition hover:-translate-y-0.5 hover:border-secondary hover:bg-secondary lg:inline-flex cursor-pointer"
-          >
-            <span className="absolute inset-0 animate-ping rounded-full bg-secondary/25 opacity-40" />
-            <span className="relative grid h-5 w-5 place-items-center rounded-full bg-white text-brand shadow-sm">
-              <Gift className="h-3.5 w-3.5" />
-            </span>
-            <span className="relative">Refer & Earn</span>
-          </button>
 
           {/* User Profile Dropdown or Login Button */}
           {user ? (

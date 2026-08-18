@@ -19,6 +19,7 @@ import { AdminSubmissionsView } from '@/components/admin/AdminSubmissionsView';
 import { AdminOrdersView } from '@/components/admin/AdminOrdersView';
 import { AdminStudentDetailView } from '@/components/admin/AdminStudentDetailView';
 import { AdminStudentsListView } from '@/components/admin/AdminStudentsListView';
+import { AdminCollegeDetailView } from '@/components/admin/AdminCollegeDetailView';
 import { CollegeOverview } from '@/components/college/CollegeOverview';
 import { CollegeStudentsView } from '@/components/college/CollegeStudentsView';
 import { CollegeCouponsView } from '@/components/college/CollegeCouponsView';
@@ -58,7 +59,12 @@ function DashboardContent() {
   const idParam = searchParams.get('id');
 
   const [activeSlug, setActiveSlug] = useState<string>(tabParam || 'overview');
-  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(idParam ? Number(idParam) : null);
+  const [selectedStudentId, setSelectedStudentId] = useState<number | null>(
+    (tabParam === 'students' || tabParam === 'studentdetail') && idParam ? Number(idParam) : null
+  );
+  const [selectedCollegeId, setSelectedCollegeId] = useState<number | null>(
+    (tabParam === 'colleges' || tabParam === 'collegedetail') && idParam ? Number(idParam) : null
+  );
   const [projects, setProjects] = useState<Project[]>([]);
   const [programsData, setProgramsData] = useState<any[]>([]);
   const [catalogPrograms, setCatalogPrograms] = useState<any[]>([]);
@@ -91,14 +97,24 @@ function DashboardContent() {
   const isAdmin = activeRole === 'super_admin' || activeRole === 'admin';
   const isCollege = activeRole === 'college';
 
-  const handleNavigateSlug = (slug: string, sId?: number | null) => {
+  const handleNavigateSlug = (slug: string, itemId?: number | null) => {
     setActiveSlug(slug);
-    setSelectedStudentId(sId !== undefined ? sId : null);
+    if (slug === 'students' || slug === 'studentdetail') {
+      setSelectedStudentId(itemId !== undefined ? itemId : null);
+      setSelectedCollegeId(null);
+    } else if (slug === 'colleges' || slug === 'collegedetail') {
+      setSelectedCollegeId(itemId !== undefined ? itemId : null);
+      setSelectedStudentId(null);
+    } else {
+      setSelectedStudentId(null);
+      setSelectedCollegeId(null);
+    }
+
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
       url.searchParams.set('tab', slug);
-      if (sId) {
-        url.searchParams.set('id', String(sId));
+      if (itemId) {
+        url.searchParams.set('id', String(itemId));
       } else {
         url.searchParams.delete('id');
       }
@@ -109,6 +125,11 @@ function DashboardContent() {
   const handleViewStudentDetail = (id: number) => {
     setSelectedStudentId(id);
     handleNavigateSlug('students', id);
+  };
+
+  const handleViewCollegeDetail = (id: number) => {
+    setSelectedCollegeId(id);
+    handleNavigateSlug('colleges', id);
   };
 
   // Sync active tab when URL param changes or on browser back/forward
@@ -123,9 +144,16 @@ function DashboardContent() {
       }
     }
     if (idParam) {
-      setSelectedStudentId(Number(idParam));
+      if (tabParam === 'colleges' || tabParam === 'collegedetail') {
+        setSelectedCollegeId(Number(idParam));
+        setSelectedStudentId(null);
+      } else if (tabParam === 'students' || tabParam === 'studentdetail') {
+        setSelectedStudentId(Number(idParam));
+        setSelectedCollegeId(null);
+      }
     } else {
       setSelectedStudentId(null);
+      setSelectedCollegeId(null);
     }
 
     const onPopState = () => {
@@ -134,7 +162,16 @@ function DashboardContent() {
         const currentTab = currentParams.get('tab') || currentParams.get('slug') || 'overview';
         const currentId = currentParams.get('id');
         setActiveSlug(currentTab);
-        setSelectedStudentId(currentId ? Number(currentId) : null);
+        if (currentTab === 'colleges' || currentTab === 'collegedetail') {
+          setSelectedCollegeId(currentId ? Number(currentId) : null);
+          setSelectedStudentId(null);
+        } else if (currentTab === 'students' || currentTab === 'studentdetail') {
+          setSelectedStudentId(currentId ? Number(currentId) : null);
+          setSelectedCollegeId(null);
+        } else {
+          setSelectedStudentId(null);
+          setSelectedCollegeId(null);
+        }
       }
     };
     window.addEventListener('popstate', onPopState);
@@ -300,10 +337,27 @@ function DashboardContent() {
               )}
 
               {activeSlug === 'colleges' && (
-                <AdminCollegesView
-                  colleges={adminColleges}
-                  onApproveCollege={handleApproveCollege}
-                  onRejectCollege={handleRejectCollege}
+                selectedCollegeId ? (
+                  <AdminCollegeDetailView
+                    collegeId={selectedCollegeId}
+                    onBack={() => handleNavigateSlug('colleges')}
+                    onSelectStudent={(sId) => handleNavigateSlug('students', sId)}
+                  />
+                ) : (
+                  <AdminCollegesView
+                    colleges={adminColleges}
+                    onApproveCollege={handleApproveCollege}
+                    onRejectCollege={handleRejectCollege}
+                    onSelectCollege={(cId) => handleNavigateSlug('colleges', cId)}
+                  />
+                )
+              )}
+
+              {activeSlug === 'collegedetail' && selectedCollegeId && (
+                <AdminCollegeDetailView
+                  collegeId={selectedCollegeId}
+                  onBack={() => handleNavigateSlug('colleges')}
+                  onSelectStudent={(sId) => handleNavigateSlug('students', sId)}
                 />
               )}
 
@@ -312,6 +366,7 @@ function DashboardContent() {
                   users={adminUsers}
                   onUpdateUserStatus={handleUpdateUserStatus}
                   onViewStudentDetail={handleViewStudentDetail}
+                  onViewCollegeDetail={handleViewCollegeDetail}
                 />
               )}
 
