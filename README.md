@@ -179,5 +179,5 @@ npm start
 
 ## 📄 License & Attribution
 
-Proprietary software owned by **Technosys IT Management Pvt. Ltd.**  
+Proprietary software owned by **Fillip Technologies Pvt. Ltd.**  
 Engineered for the **Engineers Clinic Platform**.
