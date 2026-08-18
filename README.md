@@ -169,15 +169,3 @@ npm start
 
 ---
 
-## 🎨 Design System & Aesthetics
-
-- **Tailwind Tokens**: Semantic color mappings (`brand`, `brandHover`, `bgSoft`, `bgBody`, `textPrimary`, `textMuted`, `statusPassedBg`, `statusEvaluatingBg`, `statusErrorBg`).
-- **Typography**: Inter / Geist modern sans-serif with tracked font weights.
-- **Accessibility**: ARIA labels, semantic landmark elements, keyboard navigation, and visible focus rings.
-
----
-
-## 📄 License & Attribution
-
-Proprietary software owned by **Fillip Technologies Pvt. Ltd.**  
-Engineered for the **Engineers Clinic Platform**.
