@@ -16,6 +16,7 @@ import { AdminUsersView } from '@/components/admin/AdminUsersView';
 import { AdminProgramsView } from '@/components/admin/AdminProgramsView';
 import { AdminCouponsView } from '@/components/admin/AdminCouponsView';
 import { AdminSubmissionsView } from '@/components/admin/AdminSubmissionsView';
+import { AdminOrdersView } from '@/components/admin/AdminOrdersView';
 import { CollegeOverview } from '@/components/college/CollegeOverview';
 import { CollegeStudentsView } from '@/components/college/CollegeStudentsView';
 import { CollegeCouponsView } from '@/components/college/CollegeCouponsView';
@@ -280,6 +281,7 @@ function DashboardContent() {
 
               {activeSlug === 'submissions' && <AdminSubmissionsView />}
               {activeSlug === 'coupons' && <AdminCouponsView />}
+              {activeSlug === 'orders' && <AdminOrdersView />}
             </>
           ) : isCollege ? (
             /* B2B College Portal Views */

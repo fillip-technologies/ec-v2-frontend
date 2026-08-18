@@ -179,3 +179,28 @@ export async function reviewSubmission(id: number, status: "PASSED" | "NEEDS_WOR
 
   return await res.json();
 }
+
+/**
+ * GET /orders
+ * Fetch all student orders and payment attempts (Admin / Super Admin)
+ */
+export async function getAdminOrders() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/orders`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return [];
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("API getAdminOrders error:", error);
+    return [];
+  }
+}

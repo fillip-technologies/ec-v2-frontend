@@ -209,7 +209,7 @@ export const AdminCollegesView: React.FC<AdminCollegesViewProps> = ({
                     <ArrowUpDown className="h-3 w-3 text-textMuted" />
                   </div>
                 </th>
-                <th className="py-4 px-5 text-right">Actions</th>
+                <th className="py-4 px-6 text-right whitespace-nowrap min-w-[220px]">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-borderLight/60 text-xs">
@@ -252,23 +252,29 @@ export const AdminCollegesView: React.FC<AdminCollegesViewProps> = ({
                     <td className="py-4 px-4 text-center font-black text-textPrimary">
                       {c.memberCount || 0}
                     </td>
-                    <td className="py-4 px-5 text-right space-x-2">
-                      {c.status !== 'approved' && (
-                        <button
-                          onClick={() => onApproveCollege(c.id)}
-                          className="px-3.5 py-1.5 rounded-xl bg-success text-white hover:bg-successDark font-extrabold text-[11px] transition-all cursor-pointer shadow-xs"
-                        >
-                          Approve
-                        </button>
-                      )}
-                      {c.status !== 'rejected' && (
-                        <button
-                          onClick={() => onRejectCollege(c.id)}
-                          className="px-3 py-1.5 rounded-xl bg-dangerLight text-danger hover:bg-danger hover:text-white font-extrabold text-[11px] transition-all cursor-pointer"
-                        >
-                          Reject
-                        </button>
-                      )}
+                    <td className="py-4 px-6 text-right whitespace-nowrap min-w-[220px]">
+                      <div className="inline-flex items-center justify-end gap-2">
+                        {c.status !== 'approved' && (
+                          <button
+                            type="button"
+                            onClick={() => onApproveCollege(c.id)}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 font-extrabold text-xs transition-all cursor-pointer shadow-2xs shrink-0"
+                          >
+                            <CheckCircle2 className="h-3.5 w-3.5" />
+                            <span>Approve</span>
+                          </button>
+                        )}
+                        {c.status !== 'rejected' && (
+                          <button
+                            type="button"
+                            onClick={() => onRejectCollege(c.id)}
+                            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 hover:bg-rose-600 hover:text-white hover:border-rose-600 font-extrabold text-xs transition-all cursor-pointer shadow-2xs shrink-0"
+                          >
+                            <XCircle className="h-3.5 w-3.5" />
+                            <span>Reject</span>
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))

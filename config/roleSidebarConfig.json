@@ -61,6 +61,7 @@
         "id": "admin_ops",
         "label": "ADMINISTRATION",
         "items": [
+          { "id": "orders", "label": "Student Orders", "slug": "orders", "enabled": true },
           { "id": "colleges", "label": "Colleges & Seats", "slug": "colleges", "enabled": true },
           { "id": "users", "label": "Platform Users", "slug": "users", "enabled": true },
           { "id": "submissions", "label": "Review Submissions", "slug": "submissions", "enabled": true },
@@ -84,6 +85,7 @@
         "id": "admin_ops",
         "label": "ADMINISTRATION",
         "items": [
+          { "id": "orders", "label": "Student Orders", "slug": "orders", "enabled": true },
           { "id": "colleges", "label": "Colleges & Seats", "slug": "colleges", "enabled": true },
           { "id": "users", "label": "Platform Users", "slug": "users", "enabled": true },
           { "id": "submissions", "label": "Review Submissions", "slug": "submissions", "enabled": true },

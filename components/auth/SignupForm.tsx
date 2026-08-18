@@ -78,6 +78,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
   // UI States
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [submittedRole, setSubmittedRole] = useState<"student" | "college">("student");
   const [errorMsg, setErrorMsg] = useState("");
   const [countries, setCountries] = useState<Country[]>([]);
   const [dbColleges, setDbColleges] = useState<PublicCollegeItem[]>([]);
@@ -188,6 +189,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
         }
 
         setLoading(false);
+        setSubmittedRole("student");
         setSuccess(true);
         showToast.success(
           "Student account created successfully! Welcome to Engineers Clinic.",
@@ -212,6 +214,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
         });
 
         setLoading(false);
+        setSubmittedRole("college");
         setSuccess(true);
         showToast.success(
           "College registration submitted! An administrator will review and verify your account.",
@@ -235,38 +238,52 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
             <div>
               <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand flex items-center gap-1.5">
                 <Sparkles className="h-3.5 w-3.5" />
-                <span>{role === "student" ? "Student Intern" : "Partner College"} Registration</span>
+                <span>
+                  {success
+                    ? submittedRole === "college"
+                      ? "College Partnership Application"
+                      : "Student Intern Registration"
+                    : role === "student"
+                    ? "Student Intern Registration"
+                    : "Partner College Registration"}
+                </span>
               </p>
               <h2 className="mt-1 text-2xl sm:text-3xl font-black text-textPrimary tracking-tight">
-                Create your account
+                {success
+                  ? submittedRole === "college"
+                    ? "Application Received"
+                    : "Welcome to the Platform"
+                  : "Create your account"}
               </h2>
             </div>
 
-            {/* Role Toggle Switch */}
-            <div className="inline-flex rounded-full bg-bgSoft p-1 border border-borderLight self-start sm:self-auto">
-              <button
-                type="button"
-                onClick={() => handleRoleSwitch("student")}
-                className={`rounded-full px-5 py-2 text-xs font-black transition cursor-pointer ${
-                  role === "student"
-                    ? "bg-brand text-white shadow-md"
-                    : "text-textSecondary hover:text-brand"
-                }`}
-              >
-                Student Intern
-              </button>
-              <button
-                type="button"
-                onClick={() => handleRoleSwitch("college")}
-                className={`rounded-full px-5 py-2 text-xs font-black transition cursor-pointer ${
-                  role === "college"
-                    ? "bg-brand text-white shadow-md"
-                    : "text-textSecondary hover:text-brand"
-                }`}
-              >
-                College Partner
-              </button>
-            </div>
+            {/* Role Toggle Switch (Only visible before submission) */}
+            {!success && (
+              <div className="inline-flex rounded-full bg-bgSoft p-1 border border-borderLight self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => handleRoleSwitch("student")}
+                  className={`rounded-full px-5 py-2 text-xs font-black transition cursor-pointer ${
+                    role === "student"
+                      ? "bg-brand text-white shadow-md"
+                      : "text-textSecondary hover:text-brand"
+                  }`}
+                >
+                  Student Intern
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleRoleSwitch("college")}
+                  className={`rounded-full px-5 py-2 text-xs font-black transition cursor-pointer ${
+                    role === "college"
+                      ? "bg-brand text-white shadow-md"
+                      : "text-textSecondary hover:text-brand"
+                  }`}
+                >
+                  College Partner
+                </button>
+              </div>
+            )}
           </div>
 
           {errorMsg && (
@@ -282,17 +299,17 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
               </div>
               <div>
                 <h3 className="text-xl font-black">
-                  {role === "college" ? "Institutional Registration Submitted!" : "Welcome to Engineers Clinic!"}
+                  {submittedRole === "college" ? "Institutional Registration Submitted!" : "Welcome to Engineers Clinic!"}
                 </h3>
                 <p className="mt-2 text-xs font-medium text-emerald-800 max-w-md mx-auto">
-                  {role === "college"
+                  {submittedRole === "college"
                     ? "Your college partner application has been recorded. Our administrative team will verify your institutional credentials and notify you upon activation."
                     : "Your student profile is now configured. You can start exploring programs, redeem college coupons, and unlock industry projects."}
                 </p>
               </div>
 
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-                {role === "student" ? (
+                {submittedRole === "student" ? (
                   <Link
                     href="/student"
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-6 py-3 text-xs font-black text-white shadow-md transition hover:bg-brandHover"

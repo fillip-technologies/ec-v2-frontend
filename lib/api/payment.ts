@@ -340,3 +340,21 @@ export async function updateGatewayConfig(id: number, data: any): Promise<any> {
   }
   return resData;
 }
+
+/**
+ * Get all student orders (Admin / Super Admin)
+ */
+export async function getAdminOrders(): Promise<any[]> {
+  const res = await apiClient(`${BACKEND_URL}/orders`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...getAuthHeader(),
+    },
+  });
+
+  if (!res.ok) {
+    return [];
+  }
+  return await res.json();
+}
+
