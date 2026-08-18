@@ -8,6 +8,8 @@ import { CatalogFilterSidebar } from "./CatalogFilterSidebar";
 import { ProgramCard } from "./ProgramCard";
 import { SearchX, RotateCcw } from "lucide-react";
 import { detectUserCurrency } from "@/lib/utils/currency";
+import { useAuth } from "@/context/AuthContext";
+import { getStudentPrograms } from "@/lib/api/student";
 
 interface CatalogClientProps {
   initialPrograms: Program[];
@@ -24,6 +26,7 @@ function CatalogClientContent({
   initialTechnologies,
   initialCountries,
 }: CatalogClientProps) {
+  const { user, roleName } = useAuth();
   const searchParams = useSearchParams();
   const [selectedCountryCode, setSelectedCountryCode] = useState<string>("IN");
   const [searchQuery, setSearchQuery] = useState("");
@@ -31,7 +34,20 @@ function CatalogClientContent({
   const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null);
   const [selectedTechId, setSelectedTechId] = useState<number | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
-  // const [selectedStatus, setSelectedStatus] = useState("all");
+  const [enrolledProgramIds, setEnrolledProgramIds] = useState<number[]>([]);
+
+  useEffect(() => {
+    if (user && roleName?.toLowerCase() === "student") {
+      getStudentPrograms().then((progs) => {
+        if (Array.isArray(progs)) {
+          const ids = progs
+            .map((p: any) => p.program?.id || p.programId || p.id)
+            .filter(Boolean);
+          setEnrolledProgramIds(ids);
+        }
+      });
+    }
+  }, [user, roleName]);
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -243,6 +259,7 @@ function CatalogClientContent({
                       program={program}
                       countryId={activeCountry?.id}
                       currencyCode={activeCurrencyCode}
+                      isEnrolled={enrolledProgramIds.includes(program.id)}
                     />
                   ))}
                 </div>

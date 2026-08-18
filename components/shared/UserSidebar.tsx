@@ -12,6 +12,8 @@ import {
   ClipboardList,
   Award,
   CreditCard,
+  Ticket,
+  BarChart3,
   Users,
   User,
   LogOut,
@@ -55,8 +57,13 @@ export const UserSidebar: React.FC<UserSidebarProps> = ({
         return <ClipboardList className="h-4 w-4" />;
       case 'certificate':
         return <Award className="h-4 w-4" />;
+      case 'orders':
       case 'payments':
         return <CreditCard className="h-4 w-4" />;
+      case 'coupons':
+        return <Ticket className="h-4 w-4" />;
+      case 'reports':
+        return <BarChart3 className="h-4 w-4" />;
       case 'students':
       case 'users':
       case 'colleges':

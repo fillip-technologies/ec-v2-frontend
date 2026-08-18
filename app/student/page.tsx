@@ -8,6 +8,7 @@ import { StudentOverview } from '@/components/student/StudentOverview';
 import { StudentProgramView } from '@/components/student/StudentProgramView';
 import { StudentSubmissionsView } from '@/components/student/StudentSubmissionsView';
 import { StudentRubricsView } from '@/components/student/StudentRubricsView';
+import { StudentOrdersView } from '@/components/student/StudentOrdersView';
 import { TaskSubmissionModal } from '@/components/student/TaskSubmissionModal';
 import { AdminOverview } from '@/components/admin/AdminOverview';
 import { AdminCollegesView } from '@/components/admin/AdminCollegesView';
@@ -85,11 +86,36 @@ function DashboardContent() {
   const isAdmin = activeRole === 'super_admin' || activeRole === 'admin';
   const isCollege = activeRole === 'college';
 
-  // Sync active tab when URL param changes
+  const handleNavigateSlug = (slug: string) => {
+    setActiveSlug(slug);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', slug);
+      window.history.pushState({}, '', url.pathname + '?' + url.searchParams.toString());
+    }
+  };
+
+  // Sync active tab when URL param changes or on browser back/forward
   useEffect(() => {
     if (tabParam) {
       setActiveSlug(tabParam);
+    } else if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (!url.searchParams.has('tab')) {
+        url.searchParams.set('tab', 'overview');
+        window.history.replaceState({}, '', url.pathname + '?' + url.searchParams.toString());
+      }
     }
+
+    const onPopState = () => {
+      if (typeof window !== 'undefined') {
+        const currentParams = new URLSearchParams(window.location.search);
+        const currentTab = currentParams.get('tab') || currentParams.get('slug') || 'overview';
+        setActiveSlug(currentTab);
+      }
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
   }, [tabParam]);
 
   const handleOpenSubmissionModal = (
@@ -211,8 +237,8 @@ function DashboardContent() {
       {/* Pinned Left Sidebar */}
       <UserSidebar
         activeSlug={activeSlug}
-        onSelectSlug={setActiveSlug}
-        onOpenProfile={() => setActiveSlug('profile')}
+        onSelectSlug={handleNavigateSlug}
+        onOpenProfile={() => handleNavigateSlug('profile')}
       />
 
       {/* Main Content Area */}
@@ -226,7 +252,7 @@ function DashboardContent() {
                   overviewData={adminOverviewData}
                   onApproveCollege={handleApproveCollege}
                   onRejectCollege={handleRejectCollege}
-                  onNavigateSlug={setActiveSlug}
+                  onNavigateSlug={handleNavigateSlug}
                 />
               )}
 
@@ -261,7 +287,7 @@ function DashboardContent() {
               {activeSlug === 'overview' && (
                 <CollegeOverview
                   overviewData={collegeOverviewData}
-                  onNavigateSlug={setActiveSlug}
+                  onNavigateSlug={handleNavigateSlug}
                 />
               )}
 
@@ -297,8 +323,8 @@ function DashboardContent() {
                   projects={projects}
                   overviewData={overviewData}
                   programsData={programsData}
-                  onSelectSlug={setActiveSlug}
-                  onNavigateSlug={setActiveSlug}
+                  onSelectSlug={handleNavigateSlug}
+                  onNavigateSlug={handleNavigateSlug}
                 />
               )}
 
@@ -321,7 +347,7 @@ function DashboardContent() {
               {activeSlug === 'submissions' && (
                 <StudentSubmissionsView
                   submissions={submissionsList}
-                  onNavigateProgram={() => setActiveSlug('program')}
+                  onNavigateProgram={() => handleNavigateSlug('program')}
                 />
               )}
 
@@ -341,6 +367,10 @@ function DashboardContent() {
               )}
 
               {activeSlug === 'rubrics' && <StudentRubricsView rubrics={rubricsList} />}
+
+              {(activeSlug === 'orders' || activeSlug === 'payments') && (
+                <StudentOrdersView onNavigateProgram={() => handleNavigateSlug('program')} />
+              )}
             </>
           )}
 

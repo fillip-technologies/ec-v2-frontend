@@ -44,7 +44,10 @@ export const CollegeOverview: React.FC<CollegeOverviewProps> = ({
 
       {/* Scoped Telemetry Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="rounded-[20px] bg-white p-5 border border-borderLight shadow-xs">
+        <div
+          onClick={() => onNavigateSlug?.('students')}
+          className="rounded-[20px] bg-white p-5 border border-borderLight shadow-xs hover:border-brand/40 transition-all cursor-pointer"
+        >
           <div className="flex items-center justify-between text-textMuted mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider">Cohort Students</span>
             <Users className="h-4 w-4 text-warning" />
@@ -53,7 +56,10 @@ export const CollegeOverview: React.FC<CollegeOverviewProps> = ({
           <div className="text-[10px] font-semibold text-textMuted mt-1">Institutional Enrolments</div>
         </div>
 
-        <div className="rounded-[20px] bg-white p-5 border border-borderLight shadow-xs">
+        <div
+          onClick={() => onNavigateSlug?.('students')}
+          className="rounded-[20px] bg-white p-5 border border-borderLight shadow-xs hover:border-brand/40 transition-all cursor-pointer"
+        >
           <div className="flex items-center justify-between text-textMuted mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider">Active Workspaces</span>
             <Award className="h-4 w-4 text-info" />
@@ -62,7 +68,10 @@ export const CollegeOverview: React.FC<CollegeOverviewProps> = ({
           <div className="text-[10px] font-semibold text-infoDark mt-1">In-Progress Internships</div>
         </div>
 
-        <div className="rounded-[20px] bg-white p-5 border border-borderLight shadow-xs">
+        <div
+          onClick={() => onNavigateSlug?.('reports')}
+          className="rounded-[20px] bg-white p-5 border border-borderLight shadow-xs hover:border-brand/40 transition-all cursor-pointer"
+        >
           <div className="flex items-center justify-between text-textMuted mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider">Completed</span>
             <CheckCircle2 className="h-4 w-4 text-success" />
@@ -71,7 +80,10 @@ export const CollegeOverview: React.FC<CollegeOverviewProps> = ({
           <div className="text-[10px] font-semibold text-successDark mt-1">Certificates Earned</div>
         </div>
 
-        <div className="rounded-[20px] bg-white p-5 border border-borderLight shadow-xs">
+        <div
+          onClick={() => onNavigateSlug?.('coupons')}
+          className="rounded-[20px] bg-white p-5 border border-borderLight shadow-xs hover:border-brand/40 transition-all cursor-pointer"
+        >
           <div className="flex items-center justify-between text-textMuted mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider">Allocated Seats</span>
             <Ticket className="h-4 w-4 text-brand" />

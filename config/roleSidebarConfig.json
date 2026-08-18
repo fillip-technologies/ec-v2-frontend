@@ -16,7 +16,7 @@
         "label": "OUTCOMES",
         "items": [
           { "id": "certificate", "label": "Certificate", "slug": "certificate", "enabled": true },
-          { "id": "payments", "label": "Payments", "slug": "payments", "enabled": true }
+          { "id": "orders", "label": "Orders", "slug": "orders", "enabled": true }
         ]
       }
     ],

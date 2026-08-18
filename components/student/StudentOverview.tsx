@@ -163,7 +163,8 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
                 return (
                   <div
                     key={project.id || idx}
-                    className="flex items-center justify-between rounded-[16px] border border-borderLight/80 bg-bgSoft/60 p-3.5 text-xs"
+                    onClick={() => navigateFn('program')}
+                    className="flex items-center justify-between rounded-[16px] border border-borderLight/80 bg-bgSoft/60 p-3.5 text-xs hover:border-brand/40 hover:bg-white transition-all cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
                       <span

@@ -46,13 +46,50 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
   onSubmitTaskWork,
   onRepoUpdated,
 }) => {
-  const [expandedFeedbackTaskIds, setExpandedFeedbackTaskIds] = useState<Record<number, boolean>>({});
+  const [expandedFeedbackTaskIds, setExpandedFeedbackTaskIds] = useState<Record<string | number, boolean>>({});
+  const [collapsedProjects, setCollapsedProjects] = useState<Record<string | number, boolean>>({});
 
   // Repo Setup Modal State
   const [repoModalProject, setRepoModalProject] = useState<Project | null>(null);
   const [repoInput, setRepoInput] = useState<string>('');
   const [savingRepo, setSavingRepo] = useState<boolean>(false);
   const [repoError, setRepoError] = useState<string>('');
+
+  const isCollapsed = (project: Project, idx: number): boolean => {
+    const key = project.id !== undefined && project.id !== null ? project.id : idx;
+    if (collapsedProjects[key] !== undefined) {
+      return collapsedProjects[key];
+    }
+    // By default: 1st project (idx === 0) is expanded (false), all other projects are collapsed (true)
+    return idx > 0;
+  };
+
+  const toggleProjectCollapse = (project: Project, idx: number) => {
+    const key = project.id !== undefined && project.id !== null ? project.id : idx;
+    const currentlyCollapsed = isCollapsed(project, idx);
+    setCollapsedProjects((prev) => ({
+      ...prev,
+      [key]: !currentlyCollapsed,
+    }));
+  };
+
+  const expandAll = () => {
+    const map: Record<string | number, boolean> = {};
+    projects.forEach((p, idx) => {
+      const key = p.id !== undefined && p.id !== null ? p.id : idx;
+      map[key] = false;
+    });
+    setCollapsedProjects(map);
+  };
+
+  const collapseAll = () => {
+    const map: Record<string | number, boolean> = {};
+    projects.forEach((p, idx) => {
+      const key = p.id !== undefined && p.id !== null ? p.id : idx;
+      map[key] = true;
+    });
+    setCollapsedProjects(map);
+  };
 
   const toggleFeedback = (taskId: number) => {
     setExpandedFeedbackTaskIds((prev) => ({
@@ -108,112 +145,191 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      {/* Expand / Collapse All Toolbar */}
+      <div className="flex items-center justify-between pb-1 px-1">
+        <div className="text-xs font-bold text-textMuted">
+          Click any capstone project card to expand or collapse details
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={expandAll}
+            className="px-3.5 py-1.5 rounded-xl border border-borderLight bg-white hover:bg-bgSoft text-xs font-extrabold text-brand transition shadow-2xs cursor-pointer"
+          >
+            Expand All
+          </button>
+          <button
+            type="button"
+            onClick={collapseAll}
+            className="px-3.5 py-1.5 rounded-xl border border-borderLight bg-white hover:bg-bgSoft text-xs font-extrabold text-textMuted hover:text-textPrimary transition shadow-2xs cursor-pointer"
+          >
+            Collapse All
+          </button>
+        </div>
+      </div>
+
       {projects.map((project, pIdx) => {
         const isProjectActive = project.status === 'Active' || project.status === 'ACTIVE';
         const isProjectDone = project.status === 'Done' || project.status === 'DONE';
         const isProjectLocked = project.status === 'Locked' || project.status === 'LOCKED';
+        const collapsed = isCollapsed(project, pIdx);
 
         // Extract tasks from workspaceTemplate or directly
         const tasks = project.workspaceTemplate?.tasks || [];
         const projectRepoUrl = project.repoUrl || project.workspaceTemplate?.repoUrl;
+        const passedTasksCount = tasks.filter(
+          (t: any) => t.status === 'PASSED' || t.status === 'COMPLETED' || t.status === 'completed',
+        ).length;
+        const taskProgressPct = tasks.length > 0 ? Math.round((passedTasksCount / tasks.length) * 100) : 0;
 
         return (
           <div
-            key={project.id}
-            className={`rounded-[28px] border bg-white p-6 transition-all sm:p-8 ${
+            key={project.id || pIdx}
+            className={`rounded-[28px] border bg-white transition-all overflow-hidden ${
               isProjectActive
                 ? 'border-brand/40 shadow-md ring-1 ring-brand/20'
                 : isProjectDone
-                ? 'border-statusPassedBorder shadow-xs'
-                : 'border-borderLight opacity-70'
+                ? 'border-emerald-200 shadow-xs'
+                : 'border-borderLight opacity-90'
             }`}
           >
-            {/* Project Header */}
-            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-borderLight pb-5">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
+            {/* Project Header (Clickable Accordion Trigger) */}
+            <div
+              onClick={() => toggleProjectCollapse(project, pIdx)}
+              className="flex flex-wrap items-center justify-between gap-4 p-5 sm:p-6 bg-white hover:bg-bgSoft/60 transition-colors cursor-pointer select-none border-b border-transparent"
+            >
+              <div className="space-y-1.5 flex-1 min-w-[240px]">
+                <div className="flex flex-wrap items-center gap-2">
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider ${
                       isProjectDone
                         ? 'bg-statusPassedBg text-statusPassedText'
                         : isProjectActive
                         ? 'bg-brand text-white'
-                        : 'bg-gray-100 text-gray-500'
+                        : 'bg-gray-100 text-gray-600'
                     }`}
                   >
-                    Capstone {pIdx + 1} • {project.status}
+                    Capstone {pIdx + 1} • {project.status || 'Active'}
                   </span>
                   {project.hours && (
                     <span className="text-xs font-semibold text-textMuted">
                       {project.hours} Hours
                     </span>
                   )}
+                  {tasks.length > 0 && (
+                    <span className="text-xs font-bold text-textMuted">
+                      • {passedTasksCount} of {tasks.length} Tasks Passed ({taskProgressPct}%)
+                    </span>
+                  )}
                 </div>
 
-                <h3 className="text-lg font-black text-textPrimary">{project.title}</h3>
-                <p className="mt-1 text-xs text-textMuted max-w-2xl">{project.description}</p>
+                <h3 className="text-lg font-black text-textPrimary flex items-center gap-2">
+                  <span>{project.title}</span>
+                </h3>
               </div>
 
-              {/* Action Buttons: Edit Project button protected by <Can do="project:edit"> */}
-              <div className="flex items-center gap-2">
+              {/* Right Side Header Controls */}
+              <div className="flex items-center gap-2.5">
                 <Can do="project:edit">
                   <button
-                    onClick={() => onEditProject?.(project)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditProject?.(project);
+                    }}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-brand/30 bg-brand/5 px-3 py-1.5 text-xs font-bold text-brand hover:bg-brand/10 transition-all cursor-pointer"
                   >
                     <Edit3 className="h-3.5 w-3.5" />
-                    <span>Edit Project</span>
+                    <span>Edit</span>
                   </button>
                 </Can>
+
+                <div
+                  className={`inline-flex items-center gap-1.5 text-xs font-extrabold px-3 py-1.5 rounded-xl transition-all ${
+                    collapsed
+                      ? 'bg-bgSoft text-textPrimary border-borderLight/80'
+                      : 'bg-brand text-white border-brand shadow-xs'
+                  }`}
+                >
+                  {collapsed ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <ChevronUp className="h-4 w-4" />
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* GitHub Repository Bar for this Project */}
-            <div className="mt-4 rounded-2xl bg-bgSoft/80 p-3.5 border border-borderLight flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              {projectRepoUrl ? (
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-textPrimary text-white">
-                    <Code2 className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-[10px] font-extrabold uppercase tracking-wider text-textMuted">
-                      Project GitHub Repository
+            {/* Collapsed Mini Summary Bar */}
+            {collapsed && (
+              <div
+                onClick={() => toggleProjectCollapse(project, pIdx)}
+                className="px-6 py-3 bg-bgBody/40 border-t border-borderLight/60 flex items-center justify-between text-xs text-textMuted cursor-pointer hover:bg-bgBody/70 transition"
+              >
+                <span className="font-semibold truncate max-w-xl">
+                  {project.description || 'Click to expand tasks and evaluation criteria.'}
+                </span>
+                <span className="text-brand font-black shrink-0 flex items-center gap-1">
+                  View Tasks & Repo ↗
+                </span>
+              </div>
+            )}
+
+            {/* Collapsible Project Body */}
+            {!collapsed && (
+              <div className="px-6 pb-6 sm:px-8 sm:pb-8 pt-0 space-y-6 border-t border-borderLight/60 animate-in fade-in duration-200">
+                {/* Description */}
+                {project.description && (
+                  <p className="mt-4 text-xs text-textMuted leading-relaxed max-w-3xl">
+                    {project.description}
+                  </p>
+                )}
+
+                {/* GitHub Repository Bar for this Project */}
+                <div className="rounded-2xl bg-bgSoft/80 p-3.5 border border-borderLight flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  {projectRepoUrl ? (
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-textPrimary text-white">
+                        <Code2 className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[10px] font-extrabold uppercase tracking-wider text-textMuted">
+                          Project GitHub Repository
+                        </div>
+                        <a
+                          href={projectRepoUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs font-mono font-bold text-brand hover:underline truncate block"
+                        >
+                          {projectRepoUrl.replace(/^https?:\/\//, '')} ↗
+                        </a>
+                      </div>
                     </div>
-                    <a
-                      href={projectRepoUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs font-mono font-bold text-brand hover:underline truncate block"
+                  ) : (
+                    <div className="flex items-center gap-2 text-xs font-bold text-textMuted">
+                      <GitBranch className="h-4 w-4 text-brand shrink-0" />
+                      <span>⚡ Link your GitHub repository for this project to start submitting task commit hashes.</span>
+                    </div>
+                  )}
+
+                  {project.workspaceId && (
+                    <button
+                      type="button"
+                      onClick={() => handleOpenRepoModal(project)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer ${
+                        projectRepoUrl
+                          ? 'border border-borderLight bg-white text-textPrimary hover:bg-bgSoft'
+                          : 'bg-brand text-white hover:bg-brandDark shadow-xs'
+                      }`}
                     >
-                      {projectRepoUrl.replace(/^https?:\/\//, '')} ↗
-                    </a>
-                  </div>
+                      {projectRepoUrl ? 'Change Repo' : 'Connect GitHub Repo'}
+                    </button>
+                  )}
                 </div>
-              ) : (
-                <div className="flex items-center gap-2 text-xs font-bold text-textMuted">
-                  <GitBranch className="h-4 w-4 text-brand shrink-0" />
-                  <span>⚡ Link your GitHub repository for this project to start submitting task commit hashes.</span>
-                </div>
-              )}
 
-              {project.workspaceId && (
-                <button
-                  type="button"
-                  onClick={() => handleOpenRepoModal(project)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all shrink-0 cursor-pointer ${
-                    projectRepoUrl
-                      ? 'border border-borderLight bg-white text-textPrimary hover:bg-bgSoft'
-                      : 'bg-brand text-white hover:bg-brandDark shadow-xs'
-                  }`}
-                >
-                  {projectRepoUrl ? 'Change Repo' : 'Connect GitHub Repo'}
-                </button>
-              )}
-            </div>
-
-            {/* Template Tasks List */}
-            <div className="mt-5 space-y-4">
+                {/* Template Tasks List */}
+                <div className="mt-5 space-y-4">
               <div className="text-xs font-bold uppercase tracking-wider text-textMuted">
                 Blueprint Tasks & Deliverables ({tasks.length} Tasks)
               </div>
@@ -562,6 +678,8 @@ export const SharedProjectsView: React.FC<SharedProjectsViewProps> = ({
                 })}
               </div>
             </div>
+            </div>
+            )}
           </div>
         );
       })}

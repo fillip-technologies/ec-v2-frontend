@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Project } from '@/types/catalog';
 import { SharedProjectsView } from '@/components/shared/SharedProjectsView';
-import { BookOpen, Clock, Award, CheckCircle2, ChevronRight, Layers, Sparkles, FolderKanban } from 'lucide-react';
+import { BookOpen, Clock, Award, CheckCircle2, ChevronRight, Layers, Sparkles, FolderKanban, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ProgramDetail {
   id: number;
@@ -115,6 +115,8 @@ export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
     projects: [],
   };
 
+  const [showProgramDetails, setShowProgramDetails] = useState<boolean>(true);
+
   return (
     <div className="space-y-6">
       {/* 1. Multi-Program Selector Bar (If student has multiple programs) */}
@@ -151,9 +153,9 @@ export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
         </div>
       </div>
 
-      {/* 2. Program Details Header Card */}
-      <div className="rounded-[28px] border border-borderLight bg-white p-6 sm:p-8 shadow-xs space-y-6">
-        <div className="flex flex-wrap items-start justify-between gap-4 border-b border-borderLight pb-6">
+      {/* 2. Program Details Header Card (Collapsible) */}
+      <div className="rounded-[28px] border border-borderLight bg-white p-6 sm:p-7 shadow-xs space-y-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-2 max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-bold text-brand">
@@ -168,49 +170,66 @@ export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
             </div>
 
             <h2 className="text-2xl font-black text-textPrimary">{selectedProgram.title}</h2>
-            <p className="text-xs text-textMuted leading-relaxed">{selectedProgram.description}</p>
           </div>
 
-          {/* Program Progress Counter Badge */}
-          <div className="rounded-2xl border border-borderLight bg-bgSoft p-4 text-center min-w-[160px] space-y-1">
-            <div className="text-[10px] font-extrabold uppercase tracking-widest text-textMuted">
-              PROGRAMME PROGRESS
+          <div className="flex items-center gap-3">
+            {/* Program Progress Counter Badge */}
+            <div className="rounded-2xl border border-borderLight bg-bgSoft px-4 py-2.5 text-center min-w-[150px]">
+              <div className="text-[10px] font-extrabold uppercase tracking-widest text-textMuted">
+                COMPLETION
+              </div>
+              <div className="text-lg font-black text-brand">
+                {selectedProgram.completionPercentage}%
+              </div>
             </div>
-            <div className="text-xl font-black text-brand">
-              {selectedProgram.completionPercentage}%
-            </div>
-            <div className="text-[11px] font-bold text-textPrimary">
-              {selectedProgram.hoursLogged} / {selectedProgram.durationHours} Hours
-            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowProgramDetails((prev) => !prev)}
+              className="px-3.5 py-2.5 rounded-2xl  hover:bg-white text-xs font-extrabold text-textPrimary transition cursor-pointer"
+            >
+              {showProgramDetails ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <ChevronUp className="h-4 w-4" />
+                  )}
+            </button>
           </div>
         </div>
 
-        {/* Program Learning Outcomes */}
-        {selectedProgram.outcomes && (
-          <div className="rounded-2xl border border-brand/20 bg-brand/5 p-4 flex items-start gap-3 text-xs text-textPrimary">
-            <Sparkles className="h-5 w-5 text-brand shrink-0 mt-0.5" />
-            <div>
-              <span className="font-extrabold text-brand uppercase tracking-wider block mb-0.5">
-                Core Internship Outcomes:
-              </span>
-              <span>{selectedProgram.outcomes}</span>
+        {/* Collapsible Overview Details */}
+        {showProgramDetails && (
+          <div className="space-y-5 pt-4 border-t border-borderLight/60 animate-in fade-in duration-200">
+            <p className="text-xs text-textMuted leading-relaxed">{selectedProgram.description}</p>
+
+            {/* Program Learning Outcomes */}
+            {selectedProgram.outcomes && (
+              <div className="rounded-2xl border border-brand/20 bg-brand/5 p-4 flex items-start gap-3 text-xs text-textPrimary">
+                <Sparkles className="h-5 w-5 text-brand shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-extrabold text-brand uppercase tracking-wider block mb-0.5">
+                    Core Internship Outcomes:
+                  </span>
+                  <span>{selectedProgram.outcomes}</span>
+                </div>
+              </div>
+            )}
+
+            {/* Progress Bar */}
+            <div className="space-y-1.5">
+              <div className="flex justify-between text-xs font-bold text-textMuted">
+                <span>Overall Programme Completion</span>
+                <span>{selectedProgram.projectsDone} of {selectedProgram.totalProjects} Projects Completed</span>
+              </div>
+              <div className="h-2.5 w-full rounded-full bg-bgSoft overflow-hidden border border-borderLight/60">
+                <div
+                  className="h-full bg-brand rounded-full transition-all duration-500"
+                  style={{ width: `${selectedProgram.completionPercentage}%` }}
+                />
+              </div>
             </div>
           </div>
         )}
-
-        {/* Progress Bar */}
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-xs font-bold text-textMuted">
-            <span>Overall Programme Completion</span>
-            <span>{selectedProgram.projectsDone} of {selectedProgram.totalProjects} Projects Completed</span>
-          </div>
-          <div className="h-2.5 w-full rounded-full bg-bgSoft overflow-hidden border border-borderLight/60">
-            <div
-              className="h-full bg-brand rounded-full transition-all duration-500"
-              style={{ width: `${selectedProgram.completionPercentage}%` }}
-            />
-          </div>
-        </div>
       </div>
 
       {/* 3. Nested Projects Inside Program Section */}
