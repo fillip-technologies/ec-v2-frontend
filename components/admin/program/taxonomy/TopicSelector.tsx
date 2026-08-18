@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { Plus, X, Search } from 'lucide-react';
 import { Cluster, Topic } from '@/types/catalog';
 import { createTopic } from '@/lib/api/catalog';
+import { CustomDropdown } from '@/components/shared/CustomDropdown';
 
 interface TopicSelectorProps {
   topics: Topic[];
@@ -167,17 +168,14 @@ export const TopicSelector: React.FC<TopicSelectorProps> = ({
                   + New Cluster
                 </button>
               </div>
-              <select
+              <CustomDropdown
                 value={newTopicClusterId}
-                onChange={(e) => setNewTopicClusterId(Number(e.target.value))}
-                className="w-full rounded-xl bg-white px-3 py-2 text-xs font-bold text-textPrimary border border-borderLight cursor-pointer"
-              >
-                {clusters.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => setNewTopicClusterId(Number(val))}
+                options={clusters.map((c) => ({
+                  value: c.id,
+                  label: c.name,
+                }))}
+              />
             </div>
           </div>
 

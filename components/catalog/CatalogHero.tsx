@@ -4,6 +4,7 @@ import React from "react";
 import { Globe, Sparkles, BookOpen, Layers, Award } from "lucide-react";
 import { Country } from "@/types/catalog";
 import { getCurrencySymbol, getFlagEmoji } from "@/lib/utils/currency";
+import { CustomDropdown } from "@/components/shared/CustomDropdown";
 
 interface CatalogHeroProps {
   programCount: number;
@@ -67,21 +68,19 @@ export const CatalogHero: React.FC<CatalogHeroProps> = ({
             </div>
 
             <div className="mt-3">
-              <select
+              <CustomDropdown
                 value={selectedCountryCode}
-                onChange={(e) => onCountryChange(e.target.value)}
-                className="w-full rounded-xl border border-borderLight bg-bgBody px-3.5 py-2.5 text-sm font-extrabold uppercase tracking-wide text-textPrimary shadow-xs transition-all focus:border-brand focus:outline-hidden focus:ring-2 focus:ring-brand/20 cursor-pointer"
-              >
-                {countries.map((c) => {
+                onChange={(val) => onCountryChange(val)}
+                options={countries.map((c) => {
                   const flag = getFlagEmoji(c.isoCode);
                   const symbol = getCurrencySymbol(c.currencyCode);
-                  return (
-                    <option key={c.id || c.isoCode} value={c.isoCode}>
-                      {flag} {c.name.toUpperCase()} ({c.currencyCode} {symbol})
-                    </option>
-                  );
+                  return {
+                    value: c.isoCode,
+                    label: `${flag} ${c.name.toUpperCase()}`,
+                    badge: `${c.currencyCode} ${symbol}`,
+                  };
                 })}
-              </select>
+              />
             </div>
 
             <p className="mt-3 text-xs font-semibold text-textMuted">

@@ -21,6 +21,10 @@ interface SearchableSelectProps {
   required?: boolean;
   emptyMessage?: string;
   className?: string;
+  allowCustomAction?: {
+    label: string;
+    action: (query: string) => void;
+  };
 }
 
 export const SearchableSelect: React.FC<SearchableSelectProps> = ({
@@ -33,6 +37,7 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
   required = false,
   emptyMessage = 'No matching options found.',
   className = '',
+  allowCustomAction,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -147,8 +152,20 @@ export const SearchableSelect: React.FC<SearchableSelectProps> = ({
           {/* Options List */}
           <div className="max-h-56 overflow-y-auto space-y-1 pr-1">
             {filteredOptions.length === 0 ? (
-              <div className="p-3 text-center text-xs font-semibold text-textMuted">
-                {emptyMessage}
+              <div className="p-4 text-center text-xs space-y-2">
+                <div className="font-bold text-textMuted">{emptyMessage}</div>
+                {allowCustomAction && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      allowCustomAction.action(searchQuery);
+                      setIsOpen(false);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand/10 text-brand text-xs font-black hover:bg-brand/20 transition cursor-pointer"
+                  >
+                    <span>{allowCustomAction.label}</span>
+                  </button>
+                )}
               </div>
             ) : (
               filteredOptions.map((opt) => {

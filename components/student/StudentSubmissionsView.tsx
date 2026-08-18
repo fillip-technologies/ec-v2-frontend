@@ -18,6 +18,7 @@ import {
   ArrowUpDown,
   FileCheck2,
 } from 'lucide-react';
+import { CustomDropdown } from '@/components/shared/CustomDropdown';
 
 interface StudentSubmissionsViewProps {
   submissions: any[];
@@ -242,18 +243,15 @@ export const StudentSubmissionsView: React.FC<StudentSubmissionsViewProps> = ({
             </div>
 
             {/* Page Size Selector */}
-            <div className="flex items-center gap-1.5 text-xs text-textMuted font-bold">
+            <div className="flex items-center gap-2 text-xs text-textMuted font-bold">
               <span>Show:</span>
-              <select
-                value={pageSize}
-                onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-                className="rounded-xl border border-borderLight bg-white py-1 px-2 text-xs font-bold text-textPrimary focus:border-brand focus:outline-none cursor-pointer"
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-              </select>
+              <div className="w-20">
+                <CustomDropdown
+                  options={[5, 10, 20, 50]}
+                  value={pageSize}
+                  onChange={(val) => handlePageSizeChange(Number(val))}
+                />
+              </div>
             </div>
           </div>
         </div>

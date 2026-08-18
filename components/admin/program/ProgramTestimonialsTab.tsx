@@ -3,6 +3,7 @@
 import React from 'react';
 import { MessageSquareQuote, Plus, Trash2 } from 'lucide-react';
 import { ProgramTestimonialForm } from '@/types/catalog';
+import { CustomDropdown } from '@/components/shared/CustomDropdown';
 
 interface ProgramTestimonialsTabProps {
   testimonials: ProgramTestimonialForm[];
@@ -102,16 +103,18 @@ export const ProgramTestimonialsTab: React.FC<ProgramTestimonialsTabProps> = ({
               </div>
 
               <div>
-                <label className="text-xs font-extrabold text-textPrimary">Star Rating (1 - 5)</label>
-                <select
+                <CustomDropdown
+                  label="Star Rating (1 - 5)"
                   value={t.rating}
-                  onChange={(e) => handleTestimonialChange(idx, 'rating', e.target.value)}
-                  className="mt-1.5 w-full rounded-xl bg-bgSoft px-3.5 py-2 text-xs font-bold text-textPrimary border border-borderLight cursor-pointer"
-                >
-                  <option value={5}>⭐⭐⭐⭐⭐ (5 Stars)</option>
-                  <option value={4}>⭐⭐⭐⭐ (4 Stars)</option>
-                  <option value={3}>⭐⭐⭐ (3 Stars)</option>
-                </select>
+                  onChange={(val) => handleTestimonialChange(idx, 'rating', Number(val))}
+                  options={[
+                    { value: 5, label: "⭐⭐⭐⭐⭐ (5 Stars)" },
+                    { value: 4, label: "⭐⭐⭐⭐ (4 Stars)" },
+                    { value: 3, label: "⭐⭐⭐ (3 Stars)" },
+                    { value: 2, label: "⭐⭐ (2 Stars)" },
+                    { value: 1, label: "⭐ (1 Star)" },
+                  ]}
+                />
               </div>
             </div>
 

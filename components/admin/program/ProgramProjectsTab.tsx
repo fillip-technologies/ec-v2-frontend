@@ -9,6 +9,7 @@ import {
   Plus,
   Trash2,
 } from 'lucide-react';
+import { CustomDropdown } from '@/components/shared/CustomDropdown';
 
 export interface ProjectTaskRubricCriteria {
   criterion: string;
@@ -388,16 +389,18 @@ export const ProgramProjectsTab: React.FC<ProgramProjectsTabProps> = ({
 
             {proj.resources.map((res, rIdx) => (
               <div key={rIdx} className="flex flex-wrap items-center gap-3 bg-white p-3 rounded-xl border border-borderLight">
-                <select
-                  value={res.type}
-                  onChange={(e) => handleProjectResourceChange(pIdx, rIdx, 'type', e.target.value)}
-                  className="rounded-lg bg-bgSoft px-2.5 py-1.5 text-xs font-bold text-textPrimary border border-borderLight cursor-pointer"
-                >
-                  <option value="DOCUMENTATION">DOCUMENTATION</option>
-                  <option value="STARTER_REPO">STARTER_REPO</option>
-                  <option value="API_SPEC">API_SPEC</option>
-                  <option value="ASSETS">ASSETS</option>
-                </select>
+                <div className="w-44">
+                  <CustomDropdown
+                    value={res.type}
+                    onChange={(val) => handleProjectResourceChange(pIdx, rIdx, 'type', val)}
+                    options={[
+                      { value: "DOCUMENTATION", label: "DOCUMENTATION" },
+                      { value: "STARTER_REPO", label: "STARTER_REPO" },
+                      { value: "API_SPEC", label: "API_SPEC" },
+                      { value: "ASSETS", label: "ASSETS" },
+                    ]}
+                  />
+                </div>
 
                 <input
                   type="text"

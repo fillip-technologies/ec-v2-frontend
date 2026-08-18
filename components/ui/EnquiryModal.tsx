@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { X, CheckCircle2, Sparkles, Send } from "lucide-react";
 import { Button } from "./Button";
+import { CustomDropdown } from "@/components/shared/CustomDropdown";
 
 interface EnquiryModalProps {
   isOpen: boolean;
@@ -149,18 +150,16 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-textPrimary">
-                    Target Level
-                  </label>
-                  <select
+                  <CustomDropdown
+                    label="Target Level"
+                    options={[
+                      "Beginner (45 Days)",
+                      "Intermediate (75 Days)",
+                      "Advanced (90 Days)",
+                    ]}
                     value={formData.level}
-                    onChange={(e) => setFormData({ ...formData, level: e.target.value })}
-                    className="mt-1.5 w-full rounded-2xl border border-borderSoft bg-bgBody px-4 py-3 text-sm font-medium text-textPrimary outline-none transition focus:border-brand focus:bg-white focus:ring-2 focus:ring-brand/20"
-                  >
-                    <option value="Beginner (45 Days)">Beginner (45 Days)</option>
-                    <option value="Intermediate (75 Days)">Intermediate (75 Days)</option>
-                    <option value="Advanced (90 Days)">Advanced (90 Days)</option>
-                  </select>
+                    onChange={(val) => setFormData({ ...formData, level: val })}
+                  />
                 </div>
               </div>
 

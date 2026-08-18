@@ -11,6 +11,7 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from 'lucide-react';
+import { CustomDropdown } from '@/components/shared/CustomDropdown';
 
 interface AdminUsersViewProps {
   users: any[];
@@ -138,18 +139,16 @@ export const AdminUsersView: React.FC<AdminUsersViewProps> = ({
 
           <div className="flex items-center gap-2 text-xs font-bold text-textMuted border-l border-borderLight pl-3">
             <span>Rows:</span>
-            <select
-              value={pageSize}
-              onChange={(e) => {
-                setPageSize(Number(e.target.value));
-                setCurrentPage(1);
-              }}
-              className="rounded-lg bg-bgSoft px-2 py-1 text-xs font-black text-textPrimary border border-borderLight outline-none cursor-pointer"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-            </select>
+            <div className="w-20">
+              <CustomDropdown
+                options={[10, 25, 50]}
+                value={pageSize}
+                onChange={(val) => {
+                  setPageSize(Number(val));
+                  setCurrentPage(1);
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>

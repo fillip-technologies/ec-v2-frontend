@@ -7,10 +7,25 @@ export interface LoginPayload {
 }
 
 export interface StudentRegisterPayload {
-  name: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
   email: string;
   password: string;
-  college_name: string;
+  phoneNo?: string;
+  countryId?: number;
+  collegeId?: number | null;
+  customCollegeName?: string;
+  college_name?: string;
+  usn?: string;
+  branch?: string;
+  graduationYear?: number;
+}
+
+export interface PublicCollegeItem {
+  id: number;
+  name: string;
+  address?: string;
 }
 
 export interface CollegeRegisterPayload {
@@ -96,6 +111,21 @@ export async function registerCollege(payload: CollegeRegisterPayload): Promise<
   }
 
   return data;
+}
+
+/**
+ * GET /auth/colleges
+ * Public list of approved colleges for registration dropdown
+ */
+export async function getPublicColleges(): Promise<PublicCollegeItem[]> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/auth/colleges`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  } catch (err) {
+    return [];
+  }
 }
 
 /**

@@ -22,6 +22,7 @@ import {
 import { Country, Program } from '@/types/catalog';
 import { formatPrice, getCurrencySymbol, getFlagEmoji } from '@/lib/utils/currency';
 import { useAuth } from '@/context/AuthContext';
+import { CustomDropdown } from '@/components/shared/CustomDropdown';
 import { showToast } from '@/lib/toast';
 import { getStudentPrograms } from '@/lib/api/student';
 import {
@@ -284,25 +285,17 @@ export const ProgramDetailSidebar: React.FC<ProgramDetailSidebarProps> = ({
         <div className="space-y-6 animate-in fade-in duration-200">
           {/* Location / Country Selector */}
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-textMuted">
-              <Globe className="h-4 w-4 text-brand" />
-              <span>Select Location & Currency</span>
-            </div>
-
-            <div className="mt-2.5">
-              <select
-                value={selectedCountryCode}
-                onChange={(e) => onCountryChange(e.target.value)}
-                className="w-full rounded-xl border border-borderLight bg-bgBody px-3.5 py-2.5 text-xs font-extrabold uppercase tracking-wide text-textPrimary shadow-xs transition-all focus:border-brand focus:outline-hidden focus:ring-2 focus:ring-brand/20 cursor-pointer"
-              >
-                {countries.map((c) => (
-                  <option key={c.id || c.isoCode} value={c.isoCode}>
-                    {getFlagEmoji(c.isoCode)} {c.name.toUpperCase()} ({c.currencyCode}{' '}
-                    {getCurrencySymbol(c.currencyCode)})
-                  </option>
-                ))}
-              </select>
-            </div>
+            <CustomDropdown
+              label="Select Location & Currency"
+              icon={<Globe className="h-4 w-4 text-brand" />}
+              value={selectedCountryCode}
+              onChange={(val) => onCountryChange(val)}
+              options={countries.map((c) => ({
+                value: c.isoCode,
+                label: `${getFlagEmoji(c.isoCode)} ${c.name.toUpperCase()}`,
+                badge: `${c.currencyCode} ${getCurrencySymbol(c.currencyCode)}`,
+              }))}
+            />
           </div>
 
           {/* Pricing Header Card / Enrolled Status Card */}

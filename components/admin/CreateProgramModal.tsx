@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { X, BookOpen, Globe, Cpu, Layers, DollarSign, Plus, Trash2, CheckCircle2 } from 'lucide-react';
 import { Country, Technology, Topic } from '@/types/catalog';
 import { getCountries, getTopics, getTechnologies, createProgram } from '@/lib/api/catalog';
+import { CustomDropdown } from '@/components/shared/CustomDropdown';
 
 interface CreateProgramModalProps {
   isOpen: boolean;
@@ -209,18 +210,15 @@ export const CreateProgramModal: React.FC<CreateProgramModalProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
-                <label className="text-xs font-extrabold text-textPrimary">Target Country</label>
-                <select
+                <CustomDropdown
+                  label="Target Country"
+                  options={countries.map((c) => ({
+                    value: c.id,
+                    label: `${c.name} (${c.isoCode})`,
+                  }))}
                   value={countryId}
-                  onChange={(e) => setCountryId(Number(e.target.value))}
-                  className="mt-1.5 w-full rounded-2xl border border-borderLight/80 bg-bgSoft px-4 py-3 text-xs font-bold text-textPrimary outline-none focus:border-brand cursor-pointer"
-                >
-                  {countries.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name} ({c.isoCode})
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val) => setCountryId(Number(val))}
+                />
               </div>
 
               <div>
@@ -236,16 +234,16 @@ export const CreateProgramModal: React.FC<CreateProgramModalProps> = ({
               </div>
 
               <div>
-                <label className="text-xs font-extrabold text-textPrimary">Status</label>
-                <select
+                <CustomDropdown
+                  label="Status"
+                  options={[
+                    { value: "published", label: "Published" },
+                    { value: "draft", label: "Draft" },
+                    { value: "archived", label: "Archived" },
+                  ]}
                   value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                  className="mt-1.5 w-full rounded-2xl border border-borderLight/80 bg-bgSoft px-4 py-3 text-xs font-bold text-textPrimary outline-none focus:border-brand cursor-pointer"
-                >
-                  <option value="published">Published</option>
-                  <option value="draft">Draft</option>
-                  <option value="archived">Archived</option>
-                </select>
+                  onChange={(val) => setStatus(val)}
+                />
               </div>
             </div>
 
@@ -346,18 +344,15 @@ export const CreateProgramModal: React.FC<CreateProgramModalProps> = ({
                   key={pIdx}
                   className="flex flex-wrap items-center gap-3 p-3.5 rounded-2xl bg-bgSoft border border-borderLight/60"
                 >
-                  <div className="flex-1 min-w-[140px]">
-                    <select
+                  <div className="flex-1 min-w-[160px]">
+                    <CustomDropdown
                       value={p.countryId}
-                      onChange={(e) => handlePricingChange(pIdx, 'countryId', Number(e.target.value))}
-                      className="w-full rounded-xl bg-white px-3 py-2 text-xs font-bold text-textPrimary border border-borderLight cursor-pointer"
-                    >
-                      {countries.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name} ({c.currencyCode})
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(val) => handlePricingChange(pIdx, 'countryId', Number(val))}
+                      options={countries.map((c) => ({
+                        value: c.id,
+                        label: `${c.name} (${c.currencyCode})`,
+                      }))}
+                    />
                   </div>
 
                   <div className="w-24">

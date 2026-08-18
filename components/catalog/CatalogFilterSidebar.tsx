@@ -3,6 +3,7 @@
 import React from "react";
 import { Search, Filter, RotateCcw, Layers, Code, Clock, ShieldCheck } from "lucide-react";
 import { Cluster, Technology, Topic } from "@/types/catalog";
+import { CustomDropdown } from "@/components/shared/CustomDropdown";
 
 interface CatalogFilterSidebarProps {
   searchQuery: string;
@@ -110,21 +111,16 @@ export const CatalogFilterSidebar: React.FC<CatalogFilterSidebarProps> = ({
 
         {/* Topic Dropdown Filter */}
         <div>
-          <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-textMuted">
-            Topic Focus
-          </label>
-          <select
+          <CustomDropdown
+            label="Topic Focus"
+            placeholder="All Topics"
+            options={[
+              { value: "", label: "All Topics" },
+              ...topics.map((t) => ({ value: t.id, label: t.name })),
+            ]}
             value={selectedTopicId || ""}
-            onChange={(e) => onTopicSelect(e.target.value ? Number(e.target.value) : null)}
-            className="w-full rounded-xl border border-borderLight bg-bgBody px-3 py-2 text-xs font-semibold text-textPrimary shadow-xs transition-all focus:border-brand focus:outline-hidden focus:ring-2 focus:ring-brand/20 cursor-pointer"
-          >
-            <option value="">All Topics</option>
-            {topics.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.name}
-              </option>
-            ))}
-          </select>
+            onChange={(val) => onTopicSelect(val ? Number(val) : null)}
+          />
         </div>
 
         {/* Technology Filter Chips */}
