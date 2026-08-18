@@ -1,9 +1,11 @@
 "use client";
 
 import React from "react";
-import { Globe, CheckCircle2, ShieldCheck, ArrowRight, Zap } from "lucide-react";
+import { Globe, CheckCircle2, ShieldCheck, ArrowRight, Zap, AlertCircle } from "lucide-react";
 import { Country, Program } from "@/types/catalog";
 import { formatPrice, getCurrencySymbol, getFlagEmoji } from "@/lib/utils/currency";
+import { useAuth } from "@/context/AuthContext";
+import { showToast } from "@/lib/toast";
 
 interface ProgramDetailSidebarProps {
   program: Program;
@@ -18,6 +20,9 @@ export const ProgramDetailSidebar: React.FC<ProgramDetailSidebarProps> = ({
   selectedCountryCode,
   onCountryChange,
 }) => {
+  const { user, roleName } = useAuth();
+  const canEnroll = !user || roleName === "student" || roleName === "guest";
+
   const activeCountry =
     countries.find((c) => c.isoCode.toUpperCase() === selectedCountryCode.toUpperCase()) ||
     countries[0];
@@ -34,6 +39,24 @@ export const ProgramDetailSidebar: React.FC<ProgramDetailSidebarProps> = ({
 
   const activeCurrency = pricing?.currency || activeCurrencyCode;
   const activeAmount = pricing?.amount;
+
+  const handleEnrollClick = () => {
+    if (!canEnroll) {
+      const displayRole = roleName ? roleName.replace(/_/g, " ") : "this";
+      showToast.warning(
+        `Enrollment is restricted to student accounts. You are currently signed in as ${displayRole}.`,
+        "Student Account Required"
+      );
+      return;
+    }
+
+    if (!user || roleName === "guest") {
+      window.location.href = `/signup?role=student&redirect=/catalog/${program.slug || program.id}`;
+      return;
+    }
+
+    alert(`Enrolling in ${program.title}`);
+  };
 
   return (
     <aside className="sticky top-24 rounded-3xl border border-glassBorder bg-white p-6 shadow-xl backdrop-blur-xl space-y-6">
@@ -74,12 +97,24 @@ export const ProgramDetailSidebar: React.FC<ProgramDetailSidebarProps> = ({
       <div>
         <button
           type="button"
-          onClick={() => alert(`Enrolling in ${program.title}`)}
-          className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand py-3.5 text-sm font-extrabold text-white shadow-md hover:bg-brandHover transition-all cursor-pointer"
+          onClick={handleEnrollClick}
+          title={!canEnroll ? "Enrollment is restricted to student accounts." : undefined}
+          className={`w-full inline-flex items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-extrabold transition-all bg-brand text-white shadow-md  ${
+            canEnroll
+              ?  "hover:bg-brandHover cursor-pointer"
+              : " cursor-not-allowed"
+          }`}
         >
           <span>Enroll in Program</span>
           <ArrowRight className="h-4 w-4" />
         </button>
+
+        {!canEnroll && (
+          <p className="mt-2 text-center text-[11px] font-semibold text-textMuted flex items-center justify-center gap-1.5">
+            <AlertCircle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+            <span>Enrollment disabled for {roleName.replace(/_/g, " ")} accounts</span>
+          </p>
+        )}
       </div>
 
       {/* What's Included Checklist */}
