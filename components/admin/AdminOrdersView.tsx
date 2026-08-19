@@ -20,7 +20,6 @@ import {
   Ticket,
   User,
   Building,
-  DollarSign,
   TrendingUp,
   X,
   ShieldCheck,
@@ -29,6 +28,7 @@ import {
   Copy,
   Check,
   ExternalLink,
+  IndianRupee,
 } from 'lucide-react';
 import { getAdminOrders } from '@/lib/api/admin';
 import { formatPrice } from '@/lib/utils/currency';
@@ -456,7 +456,7 @@ export const AdminOrdersView: React.FC = () => {
               Total Revenue
             </span>
             <span className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
-              <DollarSign className="h-4 w-4" />
+              <IndianRupee className="h-4 w-4" />
             </span>
           </div>
           <div className="mt-3">

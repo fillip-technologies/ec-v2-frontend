@@ -25,19 +25,33 @@ export const ProgramDetailClient: React.FC<ProgramDetailClientProps> = ({
     "overview"
   );
 
-  // Auto-detect visitor location on page load via Geolocation IP API
+  // Auto-detect visitor location on page load via Geolocation IP API (filtered to priced countries)
   useEffect(() => {
+    const pricedCountries = countries.filter((country) =>
+      program.pricings?.some(
+        (p) =>
+          p.countryId === country.id ||
+          p.currency?.toUpperCase() === country.currencyCode?.toUpperCase(),
+      ),
+    );
+
     detectUserCurrency().then((info) => {
       if (info.countryCode) {
-        const matched = countries.find(
-          (c) => c.isoCode.toUpperCase() === info.countryCode.toUpperCase()
+        const matched = pricedCountries.find(
+          (c) => c.isoCode.toUpperCase() === info.countryCode.toUpperCase(),
         );
         if (matched) {
           setSelectedCountryCode(matched.isoCode);
+          return;
         }
       }
+
+      // Default to first priced country (e.g. IN or first configured pricing)
+      if (pricedCountries.length > 0 && !pricedCountries.some((c) => c.isoCode.toUpperCase() === 'IN')) {
+        setSelectedCountryCode(pricedCountries[0].isoCode);
+      }
     });
-  }, [countries]);
+  }, [countries, program.pricings]);
 
   return (
     <main className="min-h-screen bg-bgBody text-textPrimary">

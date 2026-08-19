@@ -94,21 +94,52 @@ export const ProgramDetailSidebar: React.FC<ProgramDetailSidebarProps> = ({
   const isAlreadyEnrolled = enrolledProgramIds.includes(program.id);
   const canEnroll = (!user || roleName === 'student' || roleName === 'guest') && !isAlreadyEnrolled;
 
+  // Filter country list to ONLY countries whose pricing is set in this program
+  const pricedCountries = React.useMemo(() => {
+    if (!program.pricings || program.pricings.length === 0) {
+      return countries.length > 0 ? [countries[0]] : [];
+    }
+
+    const available = countries.filter((country) =>
+      program.pricings?.some(
+        (p) =>
+          p.countryId === country.id ||
+          p.currency?.toUpperCase() === country.currencyCode?.toUpperCase(),
+      ),
+    );
+
+    return available.length > 0 ? available : countries.slice(0, 1);
+  }, [countries, program.pricings]);
+
+  // Ensure selected country is valid in pricedCountries list
+  useEffect(() => {
+    if (pricedCountries.length > 0) {
+      const isCurrentValid = pricedCountries.some(
+        (c) => c.isoCode.toUpperCase() === selectedCountryCode.toUpperCase(),
+      );
+      if (!isCurrentValid && pricedCountries[0]) {
+        onCountryChange(pricedCountries[0].isoCode);
+      }
+    }
+  }, [pricedCountries, selectedCountryCode, onCountryChange]);
+
   const activeCountry =
-    countries.find(
+    pricedCountries.find(
       (c) => c.isoCode.toUpperCase() === selectedCountryCode.toUpperCase(),
-    ) || countries[0];
+    ) || pricedCountries[0];
 
   const activeCurrencyCode = activeCountry?.currencyCode || 'INR';
 
-  // Find pricing by matching countryId OR currencyCode
+  // Find pricing by matching countryId OR currencyCode from program.pricings
   const pricing =
     program.pricings?.find(
       (p) =>
         (activeCountry ? p.countryId === activeCountry.id : false) ||
-        p.currency === activeCurrencyCode,
+        p.currency?.toUpperCase() === activeCurrencyCode.toUpperCase(),
     ) ||
-    program.pricings?.find((p) => p.currency === activeCurrencyCode) ||
+    program.pricings?.find(
+      (p) => p.currency?.toUpperCase() === activeCurrencyCode.toUpperCase(),
+    ) ||
     program.pricings?.[0];
 
   const basePrice = pricing ? Number(pricing.amount) : 4999;
@@ -283,18 +314,29 @@ export const ProgramDetailSidebar: React.FC<ProgramDetailSidebarProps> = ({
            VIEW MODE 1: PROGRAM OVERVIEW & ENROLL TRIGGER
            ========================================================================= */
         <div className="space-y-6 animate-in fade-in duration-200">
-          {/* Location / Country Selector */}
+          {/* Location / Country Selector (Filtered to Available Priced Countries) */}
           <div>
             <CustomDropdown
-              label="Select Location & Currency"
+              label="Select Location & Pricing"
               icon={<Globe className="h-4 w-4 text-brand" />}
               value={selectedCountryCode}
               onChange={(val) => onCountryChange(val)}
-              options={countries.map((c) => ({
-                value: c.isoCode,
-                label: `${getFlagEmoji(c.isoCode)} ${c.name.toUpperCase()}`,
-                badge: `${c.currencyCode} ${getCurrencySymbol(c.currencyCode)}`,
-              }))}
+              options={pricedCountries.map((c) => {
+                const matchingPricing = program.pricings?.find(
+                  (p) =>
+                    p.countryId === c.id ||
+                    p.currency?.toUpperCase() === c.currencyCode?.toUpperCase(),
+                );
+                const priceBadge = matchingPricing
+                  ? formatPrice(Number(matchingPricing.amount), matchingPricing.currency)
+                  : `${c.currencyCode} ${getCurrencySymbol(c.currencyCode)}`;
+
+                return {
+                  value: c.isoCode,
+                  label: `${getFlagEmoji(c.isoCode)} ${c.name.toUpperCase()}`,
+                  badge: priceBadge,
+                };
+              })}
             />
           </div>
 

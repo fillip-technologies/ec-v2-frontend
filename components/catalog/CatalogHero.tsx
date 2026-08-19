@@ -24,11 +24,13 @@ export const CatalogHero: React.FC<CatalogHeroProps> = ({
   onCountryChange,
 }) => {
   return (
-    <section className="relative overflow-hidden border-b border-borderLight/60 bg-gradient-to-b from-bgMain via-surface to-bgBody py-12 md:py-16">
-      {/* Background Decorative Glow */}
-      <div className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-96 w-96 -translate-x-1/2 rounded-full bg-brand/10 blur-3xl" />
+    <section className="relative z-20 overflow-visible border-b border-borderLight/60 bg-gradient-to-b from-bgMain via-surface to-bgBody py-12 md:py-16">
+      {/* Background Decorative Glow (Contained in isolated overflow-hidden wrapper) */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden -z-10">
+        <div className="absolute -top-24 left-1/2 h-96 w-96 -translate-x-1/2 rounded-full bg-brand/10 blur-3xl" />
+      </div>
 
-      <div className="container-main">
+      <div className="container-main relative z-20">
         <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
           {/* Main Title & Value Prop */}
           <div className="max-w-3xl space-y-4">
@@ -61,7 +63,7 @@ export const CatalogHero: React.FC<CatalogHeroProps> = ({
           </div>
 
           {/* Dynamic Browsing Location Selector */}
-          <div className="w-full rounded-2xl border border-glassBorder bg-white/90 p-5 shadow-lg backdrop-blur-xl sm:w-auto sm:min-w-[280px]">
+          <div className="relative z-30 w-full rounded-2xl border border-glassBorder bg-white/95 p-5 shadow-lg backdrop-blur-xl sm:w-auto sm:min-w-[280px]">
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-textMuted">
               <Globe className="h-4 w-4 text-brand" />
               <span>Browsing Location</span>

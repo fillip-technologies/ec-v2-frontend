@@ -66,10 +66,17 @@ function CatalogClientContent({
     if (dur) setSelectedDuration(Number(dur));
   }, [searchParams]);
 
-  // Reset page when filters change
+  // Reset page when filters or browsing location change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, selectedClusterId, selectedTopicId, selectedTechId, selectedDuration]);
+  }, [
+    searchQuery,
+    selectedClusterId,
+    selectedTopicId,
+    selectedTechId,
+    selectedDuration,
+    selectedCountryCode,
+  ]);
 
   // Auto-detect visitor location on page load via Geolocation IP API (if no URL param override)
   useEffect(() => {
@@ -125,10 +132,20 @@ function CatalogClientContent({
     // setSelectedStatus("all");
   };
 
-  // Filter programs dynamically based on criteria
+  // Filter programs dynamically based on criteria and browsing location
   const filteredPrograms = useMemo(() => {
     return initialPrograms.filter((program) => {
-      // 1. Search Query Filter
+      // 1. Browsing Location / Country Pricing Filter
+      if (activeCountry && program.pricings && program.pricings.length > 0) {
+        const hasPricingForLocation = program.pricings.some(
+          (p) =>
+            p.countryId === activeCountry.id ||
+            p.currency?.toUpperCase() === activeCurrencyCode.toUpperCase()
+        );
+        if (!hasPricingForLocation) return false;
+      }
+
+      // 2. Search Query Filter
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
         const matchesTitle = program.title.toLowerCase().includes(query);
@@ -139,7 +156,7 @@ function CatalogClientContent({
         if (!matchesTitle && !matchesDesc && !matchesTopic) return false;
       }
 
-      // 2. Cluster Filter
+      // 3. Cluster Filter
       if (selectedClusterId !== null) {
         const matchesCluster = program.topics?.some(
           (t) => t.topic.clusterId === selectedClusterId
@@ -147,7 +164,7 @@ function CatalogClientContent({
         if (!matchesCluster) return false;
       }
 
-      // 3. Topic Filter
+      // 4. Topic Filter
       if (selectedTopicId !== null) {
         const matchesTopic = program.topics?.some(
           (t) => t.topic.id === selectedTopicId
@@ -155,7 +172,7 @@ function CatalogClientContent({
         if (!matchesTopic) return false;
       }
 
-      // 4. Technology Filter
+      // 5. Technology Filter
       if (selectedTechId !== null) {
         const matchesTech = program.technologies?.some(
           (t) => t.technology.id === selectedTechId
@@ -163,26 +180,22 @@ function CatalogClientContent({
         if (!matchesTech) return false;
       }
 
-      // 5. Duration Filter (e.g. 60+, 120+, 180+)
+      // 6. Duration Filter (e.g. 60+, 120+, 180+)
       if (selectedDuration !== null) {
         if (program.durationHours < selectedDuration) return false;
       }
-
-        // // 6. Status Filter
-        // if (selectedStatus !== "all") {
-        //   if (program.status !== selectedStatus) return false;
-        // }
 
       return true;
     });
   }, [
     initialPrograms,
+    activeCountry,
+    activeCurrencyCode,
     searchQuery,
     selectedClusterId,
     selectedTopicId,
     selectedTechId,
     selectedDuration,
-    // selectedStatus,
   ]);
 
   // Paginated Programs List
@@ -197,7 +210,7 @@ function CatalogClientContent({
     <main className="min-h-screen bg-bgBody text-textPrimary">
       {/* Hero Banner Header */}
       <CatalogHero
-        programCount={initialPrograms.length}
+        programCount={filteredPrograms.length}
         clusterCount={initialClusters.length}
         topicCount={initialTopics.length}
         countries={initialCountries}
@@ -237,6 +250,11 @@ function CatalogClientContent({
                 <span className="text-sm font-extrabold text-textPrimary">
                   Showing {filteredPrograms.length} of {initialPrograms.length} Programs
                 </span>
+                {activeCountry && (
+                  <span className="text-xs font-bold text-textMuted hidden sm:inline">
+                    • In {activeCountry.name} ({activeCurrencyCode})
+                  </span>
+                )}
               </div>
 
               {hasActiveFilters && (

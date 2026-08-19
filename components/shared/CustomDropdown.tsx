@@ -68,7 +68,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
   }, [normalizedOptions, value]);
 
   return (
-    <div className={`relative ${className}`} ref={containerRef}>
+    <div className={`relative ${isOpen ? 'z-[60]' : ''} ${className}`} ref={containerRef}>
       {label && (
         <label className="block text-xs font-bold text-textPrimary mb-1.5">
           {label} {required && <span className="text-rose-500">*</span>}
@@ -117,7 +117,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
       {/* Dropdown Popover */}
       {isOpen && (
-        <div className="absolute left-0 right-0 top-full mt-1.5 z-50 rounded-2xl border border-borderLight bg-white p-1.5 shadow-xl animate-in fade-in zoom-in-95 duration-150 max-h-60 overflow-y-auto space-y-1">
+        <div className="absolute left-0 right-0 top-full mt-1.5 z-[100] rounded-2xl border border-borderLight bg-white p-1.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-60 overflow-y-auto space-y-1">
           {normalizedOptions.length === 0 ? (
             <div className="p-3 text-center text-xs font-bold text-textMuted">
               No options available

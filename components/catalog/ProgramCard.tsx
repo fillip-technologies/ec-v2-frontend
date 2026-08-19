@@ -27,9 +27,11 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
     program.pricings?.find(
       (p) =>
         (countryId ? p.countryId === countryId : false) ||
-        p.currency === currencyCode,
+        p.currency?.toUpperCase() === currencyCode.toUpperCase(),
     ) ||
-    program.pricings?.find((p) => p.currency === currencyCode) ||
+    program.pricings?.find(
+      (p) => p.currency?.toUpperCase() === currencyCode.toUpperCase(),
+    ) ||
     program.pricings?.[0];
 
   const activeCurrency = pricing?.currency || currencyCode;
