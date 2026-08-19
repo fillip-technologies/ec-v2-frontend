@@ -295,10 +295,17 @@ export const UserSidebar: React.FC<UserSidebarProps> = ({
               <div className="w-full flex justify-center pt-1">
                 <Link
                   href="/"
-                  className="h-10 w-10 rounded-2xl bg-brand/10 text-brand font-black text-sm flex items-center justify-center hover:bg-brand hover:text-white transition shadow-2xs"
+                  className="h-10 w-10 rounded-2xl flex items-center justify-center transition"
                   title="Engineers Clinic Home"
                 >
-                  EC
+                  <Image
+                    src="/images/Engineers-clinic-short.png"
+                    alt="EC"
+                    width={56}
+                    height={56}
+                    priority
+                    className="h-11 w-auto max-w-full object-contain"
+                  />
                 </Link>
               </div>
             )}

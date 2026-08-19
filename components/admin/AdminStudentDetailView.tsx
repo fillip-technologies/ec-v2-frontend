@@ -128,15 +128,6 @@ export const AdminStudentDetailView: React.FC<AdminStudentDetailViewProps> = ({
       {/* 1. Top Breadcrumb Navigation & Controls */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          {onBack && (
-            <button
-              onClick={onBack}
-              className="inline-flex items-center justify-center h-10 w-10 rounded-2xl bg-white border border-borderLight text-textPrimary hover:bg-bgSoft hover:text-brand transition cursor-pointer shadow-2xs"
-              title="Return"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </button>
-          )}
           <div>
             <div className="flex items-center gap-2 text-[11px] font-bold text-textMuted">
               <span>Admin Console</span>
