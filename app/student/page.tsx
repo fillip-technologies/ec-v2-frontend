@@ -94,7 +94,7 @@ function DashboardContent() {
   } | null>(null);
 
   const activeRole = roleName || (user as any)?.role?.name || (typeof user?.role === 'string' ? user.role : 'student');
-  const isAdmin = activeRole === 'super_admin' || activeRole === 'admin';
+  const isAdmin = activeRole === 'super_admin' || activeRole === 'admin' || activeRole === 'support';
   const isCollege = activeRole === 'college';
 
   const handleNavigateSlug = (slug: string, itemId?: number | null) => {

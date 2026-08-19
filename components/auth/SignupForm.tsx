@@ -491,14 +491,12 @@ export const SignupForm: React.FC<SignupFormProps> = ({ initialRole = "student" 
                       <CustomDropdown
                         label="Expected Graduation Year"
                         placeholder="Select Year..."
-                        searchPlaceholder="Type year (e.g. 2026)..."
                         options={GRADUATION_YEARS}
                         value={studentGraduationYear}
                         onChange={(val) =>
                           setStudentGraduationYear(val ? Number(val) : "")
                         }
                         icon={<Calendar className="h-3.5 w-3.5" />}
-                        emptyMessage="No matching year found."
                       />
                     </div>
                   </div>

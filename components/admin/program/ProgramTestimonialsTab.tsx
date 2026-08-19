@@ -105,7 +105,7 @@ export const ProgramTestimonialsTab: React.FC<ProgramTestimonialsTabProps> = ({
               <div>
                 <CustomDropdown
                   label="Star Rating (1 - 5)"
-                  value={t.rating}
+                  value={t.rating ?? 5}
                   onChange={(val) => handleTestimonialChange(idx, 'rating', Number(val))}
                   options={[
                     { value: 5, label: "⭐⭐⭐⭐⭐ (5 Stars)" },

@@ -7,30 +7,11 @@ import { login } from "@/lib/api/auth";
 import { showToast } from "@/lib/toast";
 
 export const LoginForm: React.FC = () => {
-  const [activeRole, setActiveRole] = useState<"student" | "college" | "admin">("student");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
-  const roles = {
-    student: {
-      label: "Student",
-      signupLabel: "Sign up as Student",
-      signupUrl: "/signup?role=student",
-    },
-    college: {
-      label: "College",
-      signupLabel: "Sign up as College",
-      signupUrl: "/signup?role=college",
-    },
-    admin: {
-      label: "Admin",
-      signupLabel: null,
-      signupUrl: null,
-    },
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,10 +19,10 @@ export const LoginForm: React.FC = () => {
     setLoading(true);
 
     try {
+      // Authenticate with Email & Password (backend automatically determines user role)
       const data = await login({
         email,
         password,
-        role: activeRole,
       });
 
       // Store JWT Tokens in localStorage
@@ -64,7 +45,7 @@ export const LoginForm: React.FC = () => {
         'Authenticated'
       );
 
-      if (userRole === "super_admin" || userRole === "admin") {
+      if (userRole === "super_admin" || userRole === "admin" || userRole === "support") {
         window.location.href = "/admin";
       } else if (userRole === "college") {
         window.location.href = "/college";
@@ -73,7 +54,7 @@ export const LoginForm: React.FC = () => {
       }
     } catch (err: any) {
       setLoading(false);
-      const msg = err.message || "Something went wrong during login";
+      const msg = err.message || "Invalid email or password";
       setErrorMessage(msg);
       showToast.error(msg, "Login Failed");
     }
@@ -89,10 +70,10 @@ export const LoginForm: React.FC = () => {
               Secure Portal
             </p>
             <h2 className="mt-3 text-3xl font-extrabold tracking-tight text-textPrimary">
-              Login
+              Login to Account
             </h2>
-            <p className="mt-2 text-sm leading-6 text-textGray">
-              Access your Engineers Clinic portal
+            <p className="mt-2 text-sm leading-6 text-textMuted">
+              Enter your registered email and password to access your dashboard
             </p>
           </div>
 
@@ -114,7 +95,7 @@ export const LoginForm: React.FC = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email address"
+                  placeholder="name@institution.edu or personal email"
                   className="w-full rounded-2xl border border-borderLight bg-surface pl-11 pr-4 py-3.5 text-sm text-textPrimary outline-none transition placeholder:text-textMuted focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                 />
               </div>
@@ -122,7 +103,9 @@ export const LoginForm: React.FC = () => {
 
             {/* Password Field */}
             <div>
-              <label className="text-sm font-bold text-textPrimary">Password</label>
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-bold text-textPrimary">Password</label>
+              </div>
               <div className="relative mt-2">
                 <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-textMuted" />
                 <input
@@ -130,7 +113,7 @@ export const LoginForm: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder="Enter your account password"
                   className="w-full rounded-2xl border border-borderLight bg-surface pl-11 pr-11 py-3.5 text-sm text-textPrimary outline-none transition placeholder:text-textMuted focus:border-brand focus:bg-white focus:ring-4 focus:ring-brand/15"
                 />
                 <button
@@ -150,48 +133,35 @@ export const LoginForm: React.FC = () => {
               disabled={loading}
               className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-brand to-brandLight px-5 py-4 text-sm font-extrabold text-white shadow-lg shadow-brand/25 transition hover:scale-[1.01] cursor-pointer disabled:opacity-70"
             >
-              <span>{loading ? "Signing in..." : `Login as ${roles[activeRole].label}`}</span>
+              <span>{loading ? "Signing in..." : "Sign In"}</span>
               <ArrowRight className="h-4 w-4" />
             </button>
 
-            {/* Role Switcher */}
-            <div className="mt-6 text-center">
-              <p className="text-sm font-bold text-textGray">Login as:</p>
-              <div className="mt-3 flex flex-wrap justify-center gap-3">
-                {(["student", "college", "admin"] as const).map((roleKey) => (
-                  <button
-                    key={roleKey}
-                    type="button"
-                    onClick={() => setActiveRole(roleKey)}
-                    className={`inline-flex items-center justify-center rounded-full border px-4 py-2 text-xs font-black transition cursor-pointer ${
-                      activeRole === roleKey
-                        ? "border-transparent bg-gradient-to-r from-brand to-brandLight text-white shadow-lg shadow-brand/20"
-                        : "border-borderLight bg-white text-textGray hover:border-brand/40 hover:bg-brand/5 hover:text-textPrimary"
-                    }`}
-                  >
-                    {roles[roleKey].label}
-                  </button>
-                ))}
+            {/* Registration Options */}
+            <div className="mt-8 pt-6 border-t border-borderLight/60 text-center space-y-2">
+              <p className="text-xs text-textMuted font-medium">
+                New to Engineers Clinic?
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3 text-xs font-extrabold">
+                <Link
+                  href="/signup?role=student"
+                  className="text-brand hover:underline"
+                >
+                  Sign up as Student
+                </Link>
+                <span className="text-borderLight">•</span>
+                <Link
+                  href="/signup?role=college"
+                  className="text-brand hover:underline"
+                >
+                  Register College Institution
+                </Link>
               </div>
             </div>
-
-            {/* Dynamic Signup Link */}
-            {roles[activeRole].signupUrl && (
-              <div className="mt-4 text-center">
-                <p className="text-sm text-textGray">
-                  New here?{" "}
-                  <Link
-                    href={roles[activeRole].signupUrl!}
-                    className="font-extrabold text-brand transition hover:text-textPrimary"
-                  >
-                    {roles[activeRole].signupLabel}
-                  </Link>
-                </p>
-              </div>
-            )}
           </form>
         </div>
       </div>
     </div>
   );
 };
+

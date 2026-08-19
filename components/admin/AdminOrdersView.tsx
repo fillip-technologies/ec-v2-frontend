@@ -28,6 +28,7 @@ import {
   BookOpen,
   Copy,
   Check,
+  ExternalLink,
 } from 'lucide-react';
 import { getAdminOrders } from '@/lib/api/admin';
 import { formatPrice } from '@/lib/utils/currency';

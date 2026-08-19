@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { AdminCollegeDetailView } from '@/components/admin/AdminCollegeDetailView';
@@ -11,13 +11,18 @@ function CollegeDetailPageQueryContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user, roleName } = useAuth();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const idParam = searchParams.get('id');
   const collegeId = Number(idParam);
   const activeRole = roleName || (user as any)?.role?.name || (typeof user?.role === 'string' ? user.role : '');
   const isAdmin = activeRole === 'super_admin' || activeRole === 'admin';
 
-  if (!user) {
+  if (!mounted || !user) {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-bgSoft">
         <Loader2 className="h-8 w-8 animate-spin text-brand" />
