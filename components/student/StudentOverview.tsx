@@ -9,19 +9,28 @@ import { Clock, FolderKanban, Award, Send, ArrowRight, ShieldCheck } from 'lucid
 interface StudentOverviewProps {
   projects?: Project[];
   programTitle?: string;
+  overview?: any;
   overviewData?: any;
+  profile?: any;
+  programs?: any[];
   programsData?: any[];
   onSelectSlug?: (slug: string) => void;
   onNavigateSlug?: (slug: string) => void;
+  onOpenSubmitModal?: (taskId: number, taskTitle: string, repoUrl?: string, workspaceId?: number) => void;
 }
 
 export const StudentOverview: React.FC<StudentOverviewProps> = ({
   projects = [],
   programTitle = 'Full Stack Web Engineering (MERN & Next.js)',
-  overviewData,
+  overview,
+  overviewData: overviewDataProp,
+  programs,
+  programsData,
   onSelectSlug,
   onNavigateSlug,
+  onOpenSubmitModal,
 }) => {
+  const effectiveOverview = overview || overviewDataProp;
   const { user } = useAuth();
   const [mounted, setMounted] = useState(false);
 
@@ -30,13 +39,13 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
   }, []);
 
   const navigateFn = onSelectSlug || onNavigateSlug || (() => {});
-  const metrics = overviewData?.metrics || studentData.metrics;
-  const recentAiReview = overviewData?.recentAiReview || studentData.recentAiReview;
-  const title = overviewData?.programTitle || programTitle;
+  const metrics = effectiveOverview?.metrics || studentData.metrics;
+  const recentAiReview = effectiveOverview?.recentAiReview || studentData.recentAiReview;
+  const title = effectiveOverview?.programTitle || programTitle;
 
   const rawProjects =
-    overviewData?.projects && Array.isArray(overviewData.projects) && overviewData.projects.length > 0
-      ? overviewData.projects
+    effectiveOverview?.projects && Array.isArray(effectiveOverview.projects) && effectiveOverview.projects.length > 0
+      ? effectiveOverview.projects
       : Array.isArray(projects) && projects.length > 0
       ? projects
       : (studentData as any)?.defaultProgramProjects || [];
@@ -44,7 +53,7 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
   const projectTracks: any[] = Array.isArray(rawProjects) ? rawProjects : [];
 
   const firstName = mounted
-    ? overviewData?.firstName ||
+    ? effectiveOverview?.firstName ||
       (user as any)?.student?.firstName ||
       user?.firstName ||
       (user as any)?.displayName ||

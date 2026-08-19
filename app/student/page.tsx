@@ -65,6 +65,10 @@ const StudentOrdersView = dynamic(
   () => import('@/components/student/StudentOrdersView').then((m) => m.StudentOrdersView),
   { loading: ViewLoadingFallback }
 );
+const StudentCertificateView = dynamic(
+  () => import('@/components/student/StudentCertificateView').then((m) => m.StudentCertificateView),
+  { loading: ViewLoadingFallback }
+);
 
 // Admin Views (Code-Split for Students)
 const AdminOverview = dynamic(
@@ -303,20 +307,25 @@ function DashboardContent() {
       if (activeSlug === 'overview' && !overviewData) {
         getStudentOverview().then((data) => { if (data) setOverviewData(data); });
         getStudentPrograms().then((progs) => { if (Array.isArray(progs) && progs.length > 0) setProgramsData(progs); });
-      } else if (activeSlug === 'program' && projects.length === 0) {
-        getStudentWorkspace()
-          .then((wsProjects) => {
-            if (Array.isArray(wsProjects) && wsProjects.length > 0) {
-              setProjects(wsProjects);
-            } else {
+      } else if (activeSlug === 'program') {
+        if (programsData.length === 0) {
+          getStudentPrograms().then((progs) => { if (Array.isArray(progs) && progs.length > 0) setProgramsData(progs); });
+        }
+        if (projects.length === 0) {
+          getStudentWorkspace()
+            .then((wsProjects) => {
+              if (Array.isArray(wsProjects) && wsProjects.length > 0) {
+                setProjects(wsProjects);
+              } else {
+                getProgramByIdOrSlug(studentData.defaultProgramSlug)
+                  .then((data) => { if (data?.projects) setProjects(data.projects); });
+              }
+            })
+            .catch(() => {
               getProgramByIdOrSlug(studentData.defaultProgramSlug)
                 .then((data) => { if (data?.projects) setProjects(data.projects); });
-            }
-          })
-          .catch(() => {
-            getProgramByIdOrSlug(studentData.defaultProgramSlug)
-              .then((data) => { if (data?.projects) setProjects(data.projects); });
-          });
+            });
+        }
       } else if (activeSlug === 'submissions' && submissionsList.length === 0) {
         getStudentSubmissions().then((data) => { if (Array.isArray(data)) setSubmissionsList(data); });
       } else if (activeSlug === 'rubrics' && rubricsList.length === 0) {
@@ -495,6 +504,7 @@ function DashboardContent() {
 
               {activeSlug === 'program' && (
                 <StudentProgramView
+                  programsData={programsData}
                   programs={programsData}
                   projects={projects}
                   onOpenSubmitModal={handleOpenSubmissionModal}
@@ -517,6 +527,12 @@ function DashboardContent() {
 
               {activeSlug === 'orders' && (
                 <StudentOrdersView />
+              )}
+
+              {(activeSlug === 'certificate' || activeSlug === 'certificates') && (
+                <StudentCertificateView
+                  onNavigateToProgram={() => handleNavigateSlug('program')}
+                />
               )}
             </Suspense>
           )}

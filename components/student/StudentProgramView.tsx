@@ -1,11 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Project } from '@/types/catalog';
 import { SharedProjectsView } from '@/components/shared/SharedProjectsView';
-import { BookOpen, Clock, Award, CheckCircle2, ChevronRight, Layers, Sparkles, FolderKanban, ChevronDown, ChevronUp } from 'lucide-react';
+import {
+  BookOpen,
+  Sparkles,
+  FolderKanban,
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  RefreshCw,
+  AlertCircle,
+} from 'lucide-react';
+import { getStudentPrograms } from '@/lib/api/student';
+import { showToast } from '@/lib/toast';
 
-interface ProgramDetail {
+export interface ProgramDetail {
   id: number;
   title: string;
   slug: string;
@@ -23,6 +34,7 @@ interface ProgramDetail {
 
 interface StudentProgramViewProps {
   programsData?: ProgramDetail[];
+  programs?: ProgramDetail[];
   fallbackProjects?: Project[];
   projects?: Project[];
   submissions?: any[];
@@ -35,8 +47,9 @@ interface StudentProgramViewProps {
 
 export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
   programsData,
+  programs: programsProp,
   fallbackProjects = [],
-  projects = [],
+  projects: projectsProp = [],
   submissions,
   onSelectProject,
   onEditProject,
@@ -44,193 +57,240 @@ export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
   onOpenSubmitModal,
   onRepoUpdated,
 }) => {
-  const effectiveProjects = Array.isArray(fallbackProjects) && fallbackProjects.length > 0
-    ? fallbackProjects
-    : Array.isArray(projects)
-    ? projects
-    : [];
+  const initialList =
+    Array.isArray(programsData) && programsData.length > 0
+      ? programsData
+      : Array.isArray(programsProp) && programsProp.length > 0
+      ? programsProp
+      : [];
+
+  const [programsList, setProgramsList] = useState<ProgramDetail[]>(initialList);
+  const [loading, setLoading] = useState<boolean>(initialList.length === 0);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [activeProgramId, setActiveProgramId] = useState<number>(initialList[0]?.id || 0);
+  const [showProgramDetails, setShowProgramDetails] = useState<boolean>(true);
+
+  const fetchEnrolledPrograms = async (isManual = false) => {
+    if (isManual) setRefreshing(true);
+    else setLoading(true);
+
+    try {
+      const data = await getStudentPrograms();
+      if (Array.isArray(data) && data.length > 0) {
+        setProgramsList(data);
+        if (!activeProgramId || !data.some((p) => p.id === activeProgramId)) {
+          setActiveProgramId(data[0].id);
+        }
+        if (isManual) {
+          showToast.success('Enrolled internship programs refreshed', 'Synced');
+        }
+      } else {
+        setProgramsList([]);
+      }
+    } catch (err: any) {
+      console.error('Failed to fetch student programs:', err);
+      if (isManual) {
+        showToast.error('Could not refresh internship programs', 'Sync Failed');
+      }
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    if (initialList.length > 0) {
+      setProgramsList(initialList);
+      if (!activeProgramId) {
+        setActiveProgramId(initialList[0].id);
+      }
+    } else {
+      fetchEnrolledPrograms();
+    }
+  }, [programsData, programsProp]);
 
   const handleSubmitTask = onSubmitTaskWork || onOpenSubmitModal;
 
-  // Default mock programs list if no multi-program data passed
-  const programs: ProgramDetail[] = Array.isArray(programsData) && programsData.length > 0
-    ? programsData
-    : [
-        {
-          id: 1,
-          title: 'Full Stack Web Engineering (MERN & Next.js)',
-          slug: 'fullstack-web-engineering-mern-nextjs',
-          clusterName: 'Software Engineering',
-          durationHours: 120,
-          description:
-            'Master enterprise full-stack web application development using React, Next.js, Node.js, and MariaDB with AI evaluation rubric gating.',
-          outcomes:
-            'Design microservice architectures, build secure REST APIs with NestJS, and deploy responsive Next.js web applications.',
-          status: 'ACTIVE',
-          hoursLogged: 40,
-          completionPercentage: 33,
-          projectsDone: 1,
-          totalProjects: 3,
-          projects: effectiveProjects,
-        },
-        {
-          id: 2,
-          title: 'Cybersecurity Incident Response & Digital Forensics',
-          slug: 'cybersecurity-incident-response-digital-forensics',
-          clusterName: 'Cybersecurity & Infrastructure',
-          durationHours: 120,
-          description:
-            'Hands-on network packet analysis, vulnerability threat hunting, and automated incident response scripts.',
-          outcomes:
-            'Conduct digital forensic analysis, audit OWASP top 10 web vulnerabilities, and automate SIEM log detection.',
-          status: 'ACTIVE',
-          hoursLogged: 0,
-          completionPercentage: 0,
-          projectsDone: 0,
-          totalProjects: 3,
-          projects: effectiveProjects.map((p, idx) => ({
-            ...p,
-            id: p.id + 100,
-            title: idx === 0
-              ? 'Network Packet Sniffer & Security Auditor'
-              : idx === 1
-              ? 'Automated Web Vulnerability Exploitation Suite'
-              : 'SIEM Incident Detection & Log Analyzer',
-          })),
-        },
-      ];
+  const selectedProgram =
+    programsList.find((p) => p.id === activeProgramId) ||
+    programsList[0] ||
+    null;
 
-  const [activeProgramId, setActiveProgramId] = useState<number>(programs[0]?.id || 1);
-  const selectedProgram = programs.find((p) => p.id === activeProgramId) || programs[0] || {
-    id: 1,
-    title: 'Internship Program',
-    slug: 'internship-program',
-    durationHours: 120,
-    description: '',
-    status: 'ACTIVE',
-    hoursLogged: 0,
-    completionPercentage: 0,
-    projectsDone: 0,
-    totalProjects: 0,
-    projects: [],
-  };
+  const effectiveProjects: Project[] =
+    selectedProgram?.projects && selectedProgram.projects.length > 0
+      ? selectedProgram.projects
+      : Array.isArray(fallbackProjects) && fallbackProjects.length > 0
+      ? fallbackProjects
+      : Array.isArray(projectsProp) && projectsProp.length > 0
+      ? projectsProp
+      : [];
 
-  const [showProgramDetails, setShowProgramDetails] = useState<boolean>(true);
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-20 rounded-[28px] border border-borderLight bg-white shadow-xs">
+        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+        <span className="text-xs font-bold text-textMuted uppercase tracking-wider mt-3">
+          Loading Your Enrolled Internship Programmes...
+        </span>
+      </div>
+    );
+  }
+
+  if (!selectedProgram && programsList.length === 0) {
+    return (
+      <div className="rounded-[28px] border border-dashed border-borderLight bg-white p-12 text-center shadow-xs">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand/10 text-brand">
+          <BookOpen className="h-7 w-7" />
+        </div>
+        <h3 className="mt-4 text-lg font-black text-textPrimary">No Enrolled Programmes Found</h3>
+        <p className="mt-1 text-xs text-textMuted max-w-md mx-auto">
+          You are not currently enrolled in any active internship tracks. Browse the catalogue to enroll in industry capstone programs.
+        </p>
+        <div className="mt-5 flex items-center justify-center gap-3">
+          <button
+            onClick={() => fetchEnrolledPrograms(true)}
+            className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-xs font-bold text-white hover:bg-brandHover transition cursor-pointer"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+            Check Enrolments
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* 1. Multi-Program Selector Bar (If student has multiple programs) */}
-      <div className="rounded-[24px] border border-borderLight bg-white p-4 shadow-xs">
-        <div className="text-[10px] font-extrabold uppercase tracking-widest text-textMuted mb-2 px-1">
-          YOUR ENROLLED INTERNSHIP PROGRAMMES ({programs.length})
-        </div>
+      {/* 1. Multi-Program Selector Bar */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-[24px] border border-borderLight bg-white p-4 shadow-xs">
+        <div>
+          <div className="text-[10px] font-extrabold uppercase tracking-widest text-textMuted mb-2 px-1">
+            YOUR ENROLLED INTERNSHIP PROGRAMMES ({programsList.length})
+          </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          {programs.map((prog) => {
-            const isActive = prog.id === activeProgramId;
-            return (
-              <button
-                key={prog.id}
-                onClick={() => setActiveProgramId(prog.id)}
-                className={`flex items-center gap-2.5 rounded-2xl px-4 py-2.5 text-xs font-bold transition-all text-left cursor-pointer ${
-                  isActive
-                    ? 'bg-brand text-white shadow-xs ring-2 ring-brand/20'
-                    : 'bg-bgSoft text-textPrimary hover:bg-white hover:border-borderLight border border-borderLight/60'
-                }`}
-              >
-                <BookOpen className="h-4 w-4 shrink-0" />
-                <span className="truncate max-w-[240px]">{prog.title}</span>
-                <span
-                  className={`rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-brand/10 text-brand'
+          <div className="flex flex-wrap items-center gap-2">
+            {programsList.map((prog) => {
+              const isActive = prog.id === activeProgramId;
+              return (
+                <button
+                  key={prog.id}
+                  onClick={() => setActiveProgramId(prog.id)}
+                  className={`flex items-center gap-2.5 rounded-2xl px-4 py-2.5 text-xs font-bold transition-all text-left cursor-pointer ${
+                    isActive
+                      ? 'bg-brand text-white shadow-xs ring-2 ring-brand/20'
+                      : 'bg-bgSoft text-textPrimary hover:bg-white hover:border-borderLight border border-borderLight/60'
                   }`}
                 >
-                  {prog.status}
-                </span>
-              </button>
-            );
-          })}
+                  <BookOpen className="h-4 w-4 shrink-0" />
+                  <span className="truncate max-w-[240px]">{prog.title}</span>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase ${
+                      isActive ? 'bg-white/20 text-white' : 'bg-brand/10 text-brand'
+                    }`}
+                  >
+                    {prog.status}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
+
+        <button
+          onClick={() => fetchEnrolledPrograms(true)}
+          disabled={refreshing}
+          className="inline-flex items-center gap-2 rounded-xl border border-borderLight bg-bgSoft px-3.5 py-2 text-xs font-bold text-textPrimary hover:bg-borderLight hover:text-brand transition cursor-pointer disabled:opacity-50 self-end sm:self-auto shrink-0"
+        >
+          <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin text-brand' : ''}`} />
+          <span>{refreshing ? 'Refreshing...' : 'Refresh'}</span>
+        </button>
       </div>
 
       {/* 2. Program Details Header Card (Collapsible) */}
-      <div className="rounded-[28px] border border-borderLight bg-white p-6 sm:p-7 shadow-xs space-y-5">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="space-y-2 max-w-3xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-bold text-brand">
-                {selectedProgram.clusterName || 'Engineering Stream'}
-              </span>
-              <span className="rounded-full bg-bgSoft px-3 py-1 text-xs font-bold text-textMuted border border-borderLight/60">
-                {selectedProgram.durationHours} Hours Internship
-              </span>
-              <span className="rounded-full bg-statusPassedBg px-3 py-1 text-xs font-bold text-statusPassedText uppercase">
-                {selectedProgram.status}
-              </span>
+      {selectedProgram && (
+        <div className="rounded-[28px] border border-borderLight bg-white p-6 sm:p-7 shadow-xs space-y-5">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="space-y-2 max-w-3xl">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-bold text-brand">
+                  {selectedProgram.clusterName || 'Software Engineering'}
+                </span>
+                <span className="rounded-full bg-bgSoft px-3 py-1 text-xs font-bold text-textMuted border border-borderLight/60">
+                  {selectedProgram.durationHours || 120} Hours Internship
+                </span>
+                <span className="rounded-full bg-statusPassedBg px-3 py-1 text-xs font-bold text-statusPassedText uppercase">
+                  {selectedProgram.status}
+                </span>
+              </div>
+
+              <h2 className="text-2xl font-black text-textPrimary">{selectedProgram.title}</h2>
             </div>
 
-            <h2 className="text-2xl font-black text-textPrimary">{selectedProgram.title}</h2>
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Program Progress Counter Badge */}
-            <div className="rounded-2xl border border-borderLight bg-bgSoft px-4 py-2.5 text-center min-w-[150px]">
-              <div className="text-[10px] font-extrabold uppercase tracking-widest text-textMuted">
-                COMPLETION
-              </div>
-              <div className="text-lg font-black text-brand">
-                {selectedProgram.completionPercentage}%
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setShowProgramDetails((prev) => !prev)}
-              className="px-3.5 py-2.5 rounded-2xl  hover:bg-white text-xs font-extrabold text-textPrimary transition cursor-pointer"
-            >
-              {showProgramDetails ? (
-                    <ChevronDown className="h-4 w-4" />
-                  ) : (
-                    <ChevronUp className="h-4 w-4" />
-                  )}
-            </button>
-          </div>
-        </div>
-
-        {/* Collapsible Overview Details */}
-        {showProgramDetails && (
-          <div className="space-y-5 pt-4 border-t border-borderLight/60 animate-in fade-in duration-200">
-            <p className="text-xs text-textMuted leading-relaxed">{selectedProgram.description}</p>
-
-            {/* Program Learning Outcomes */}
-            {selectedProgram.outcomes && (
-              <div className="rounded-2xl border border-brand/20 bg-brand/5 p-4 flex items-start gap-3 text-xs text-textPrimary">
-                <Sparkles className="h-5 w-5 text-brand shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-extrabold text-brand uppercase tracking-wider block mb-0.5">
-                    Core Internship Outcomes:
-                  </span>
-                  <span>{selectedProgram.outcomes}</span>
+            <div className="flex items-center gap-3">
+              {/* Program Progress Counter Badge */}
+              <div className="rounded-2xl border border-borderLight bg-bgSoft px-4 py-2.5 text-center min-w-[140px]">
+                <div className="text-[10px] font-extrabold uppercase tracking-widest text-textMuted">
+                  COMPLETION
+                </div>
+                <div className="text-lg font-black text-brand">
+                  {selectedProgram.completionPercentage || 0}%
                 </div>
               </div>
-            )}
 
-            {/* Progress Bar */}
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-xs font-bold text-textMuted">
-                <span>Overall Programme Completion</span>
-                <span>{selectedProgram.projectsDone} of {selectedProgram.totalProjects} Projects Completed</span>
-              </div>
-              <div className="h-2.5 w-full rounded-full bg-bgSoft overflow-hidden border border-borderLight/60">
-                <div
-                  className="h-full bg-brand rounded-full transition-all duration-500"
-                  style={{ width: `${selectedProgram.completionPercentage}%` }}
-                />
-              </div>
+              <button
+                type="button"
+                onClick={() => setShowProgramDetails((prev) => !prev)}
+                className="p-2.5 rounded-2xl border border-borderLight hover:bg-bgSoft text-xs font-extrabold text-textPrimary transition cursor-pointer"
+                title={showProgramDetails ? 'Collapse details' : 'Expand details'}
+              >
+                {showProgramDetails ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
+              </button>
             </div>
           </div>
-        )}
-      </div>
+
+          {/* Collapsible Overview Details */}
+          {showProgramDetails && (
+            <div className="space-y-5 pt-4 border-t border-borderLight/60 animate-in fade-in duration-200">
+              {selectedProgram.description && (
+                <p className="text-xs text-textMuted leading-relaxed">{selectedProgram.description}</p>
+              )}
+
+              {/* Program Learning Outcomes */}
+              {selectedProgram.outcomes && (
+                <div className="rounded-2xl border border-brand/20 bg-brand/5 p-4 flex items-start gap-3 text-xs text-textPrimary">
+                  <Sparkles className="h-5 w-5 text-brand shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-extrabold text-brand uppercase tracking-wider block mb-0.5">
+                      Core Internship Outcomes:
+                    </span>
+                    <span>{selectedProgram.outcomes}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Progress Bar */}
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs font-bold text-textMuted">
+                  <span>Overall Programme Completion</span>
+                  <span>
+                    {selectedProgram.projectsDone || 0} of {selectedProgram.totalProjects || effectiveProjects.length || 3} Projects Completed
+                  </span>
+                </div>
+                <div className="h-2.5 w-full rounded-full bg-bgSoft overflow-hidden border border-borderLight/60">
+                  <div
+                    className="h-full bg-brand rounded-full transition-all duration-500"
+                    style={{ width: `${selectedProgram.completionPercentage || 0}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* 3. Nested Projects Inside Program Section */}
       <div className="space-y-4">
@@ -238,22 +298,32 @@ export const StudentProgramView: React.FC<StudentProgramViewProps> = ({
           <div className="flex items-center gap-2">
             <FolderKanban className="h-5 w-5 text-brand" />
             <h3 className="text-lg font-black text-textPrimary">
-              Capstone Projects ({selectedProgram.projects?.length || 0})
+              Capstone Projects ({effectiveProjects.length})
             </h3>
           </div>
           <span className="text-xs font-medium text-textMuted">
-            All capstone projects live inside this programme
+            Deliverables and evaluation rubrics for this programme
           </span>
         </div>
 
         {/* Render nested capstone projects */}
-        <SharedProjectsView
-          projects={selectedProgram.projects || []}
-          onSelectProject={onSelectProject}
-          onEditProject={onEditProject}
-          onSubmitTaskWork={handleSubmitTask}
-          onRepoUpdated={onRepoUpdated}
-        />
+        {effectiveProjects.length > 0 ? (
+          <SharedProjectsView
+            projects={effectiveProjects}
+            onSelectProject={onSelectProject}
+            onEditProject={onEditProject}
+            onSubmitTaskWork={handleSubmitTask}
+            onRepoUpdated={onRepoUpdated}
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center p-12 rounded-[24px] border border-dashed border-borderLight bg-white text-center">
+            <AlertCircle className="h-8 w-8 text-textMuted/50 mb-2" />
+            <h4 className="text-sm font-black text-textPrimary">No Capstone Projects Configured</h4>
+            <p className="text-xs text-textMuted mt-1 max-w-sm">
+              Capstone projects for this track are being synchronized by the curriculum coordinator.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
