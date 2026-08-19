@@ -1,29 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useRef } from 'react';
+import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import { UserSidebar } from '@/components/shared/UserSidebar';
-import { StudentOverview } from '@/components/student/StudentOverview';
-import { StudentProgramView } from '@/components/student/StudentProgramView';
-import { StudentSubmissionsView } from '@/components/student/StudentSubmissionsView';
-import { StudentRubricsView } from '@/components/student/StudentRubricsView';
-import { StudentOrdersView } from '@/components/student/StudentOrdersView';
 import { TaskSubmissionModal } from '@/components/student/TaskSubmissionModal';
-import { AdminOverview } from '@/components/admin/AdminOverview';
-import { AdminCollegesView } from '@/components/admin/AdminCollegesView';
-import { AdminUsersView } from '@/components/admin/AdminUsersView';
-import { AdminProgramsView } from '@/components/admin/AdminProgramsView';
-import { AdminCouponsView } from '@/components/admin/AdminCouponsView';
-import { AdminSubmissionsView } from '@/components/admin/AdminSubmissionsView';
-import { AdminOrdersView } from '@/components/admin/AdminOrdersView';
-import { AdminStudentDetailView } from '@/components/admin/AdminStudentDetailView';
-import { AdminStudentsListView } from '@/components/admin/AdminStudentsListView';
-import { AdminCollegeDetailView } from '@/components/admin/AdminCollegeDetailView';
-import { CollegeOverview } from '@/components/college/CollegeOverview';
-import { CollegeStudentsView } from '@/components/college/CollegeStudentsView';
-import { CollegeCouponsView } from '@/components/college/CollegeCouponsView';
-import { CollegeReportsView } from '@/components/college/CollegeReportsView';
 import { Project } from '@/types/catalog';
 import { getProgramByIdOrSlug, getPrograms } from '@/lib/api/catalog';
 import {
@@ -52,6 +34,98 @@ import studentData from '@/config/studentData.json';
 import { showToast } from '@/lib/toast';
 import { School, Shield, Loader2, Award, CreditCard } from 'lucide-react';
 
+// Lightweight fallback loader for lazy dynamic chunks
+const ViewLoadingFallback = () => (
+  <div className="flex h-64 items-center justify-center rounded-2xl bg-white/60 p-8">
+    <div className="flex flex-col items-center gap-2">
+      <Loader2 className="h-6 w-6 animate-spin text-brand" />
+      <span className="text-xs font-bold text-textMuted">Loading view...</span>
+    </div>
+  </div>
+);
+
+// Student Views (Core)
+const StudentOverview = dynamic(
+  () => import('@/components/student/StudentOverview').then((m) => m.StudentOverview),
+  { loading: ViewLoadingFallback }
+);
+const StudentProgramView = dynamic(
+  () => import('@/components/student/StudentProgramView').then((m) => m.StudentProgramView),
+  { loading: ViewLoadingFallback }
+);
+const StudentSubmissionsView = dynamic(
+  () => import('@/components/student/StudentSubmissionsView').then((m) => m.StudentSubmissionsView),
+  { loading: ViewLoadingFallback }
+);
+const StudentRubricsView = dynamic(
+  () => import('@/components/student/StudentRubricsView').then((m) => m.StudentRubricsView),
+  { loading: ViewLoadingFallback }
+);
+const StudentOrdersView = dynamic(
+  () => import('@/components/student/StudentOrdersView').then((m) => m.StudentOrdersView),
+  { loading: ViewLoadingFallback }
+);
+
+// Admin Views (Code-Split for Students)
+const AdminOverview = dynamic(
+  () => import('@/components/admin/AdminOverview').then((m) => m.AdminOverview),
+  { loading: ViewLoadingFallback }
+);
+const AdminCollegesView = dynamic(
+  () => import('@/components/admin/AdminCollegesView').then((m) => m.AdminCollegesView),
+  { loading: ViewLoadingFallback }
+);
+const AdminUsersView = dynamic(
+  () => import('@/components/admin/AdminUsersView').then((m) => m.AdminUsersView),
+  { loading: ViewLoadingFallback }
+);
+const AdminProgramsView = dynamic(
+  () => import('@/components/admin/AdminProgramsView').then((m) => m.AdminProgramsView),
+  { loading: ViewLoadingFallback }
+);
+const AdminCouponsView = dynamic(
+  () => import('@/components/admin/AdminCouponsView').then((m) => m.AdminCouponsView),
+  { loading: ViewLoadingFallback }
+);
+const AdminSubmissionsView = dynamic(
+  () => import('@/components/admin/AdminSubmissionsView').then((m) => m.AdminSubmissionsView),
+  { loading: ViewLoadingFallback }
+);
+const AdminOrdersView = dynamic(
+  () => import('@/components/admin/AdminOrdersView').then((m) => m.AdminOrdersView),
+  { loading: ViewLoadingFallback }
+);
+const AdminStudentDetailView = dynamic(
+  () => import('@/components/admin/AdminStudentDetailView').then((m) => m.AdminStudentDetailView),
+  { loading: ViewLoadingFallback }
+);
+const AdminStudentsListView = dynamic(
+  () => import('@/components/admin/AdminStudentsListView').then((m) => m.AdminStudentsListView),
+  { loading: ViewLoadingFallback }
+);
+const AdminCollegeDetailView = dynamic(
+  () => import('@/components/admin/AdminCollegeDetailView').then((m) => m.AdminCollegeDetailView),
+  { loading: ViewLoadingFallback }
+);
+
+// College Views (Code-Split)
+const CollegeOverview = dynamic(
+  () => import('@/components/college/CollegeOverview').then((m) => m.CollegeOverview),
+  { loading: ViewLoadingFallback }
+);
+const CollegeStudentsView = dynamic(
+  () => import('@/components/college/CollegeStudentsView').then((m) => m.CollegeStudentsView),
+  { loading: ViewLoadingFallback }
+);
+const CollegeCouponsView = dynamic(
+  () => import('@/components/college/CollegeCouponsView').then((m) => m.CollegeCouponsView),
+  { loading: ViewLoadingFallback }
+);
+const CollegeReportsView = dynamic(
+  () => import('@/components/college/CollegeReportsView').then((m) => m.CollegeReportsView),
+  { loading: ViewLoadingFallback }
+);
+
 function DashboardContent() {
   const { user, roleName } = useAuth();
   const searchParams = useSearchParams();
@@ -70,22 +144,22 @@ function DashboardContent() {
   const [catalogPrograms, setCatalogPrograms] = useState<any[]>([]);
   const [overviewData, setOverviewData] = useState<any>(null);
   const [profileData, setProfileData] = useState<any>(null);
-  const [submissionsList, setSubmissionsList] = useState<any[]>(studentData.submissions);
-  const [rubricsList, setRubricsList] = useState<any[]>(studentData.rubrics);
+  const [submissionsList, setSubmissionsList] = useState<any[]>([]);
+  const [rubricsList, setRubricsList] = useState<any[]>([]);
 
-  // Admin Data State
+  // Super Admin Data State
   const [adminOverviewData, setAdminOverviewData] = useState<any>(null);
   const [adminColleges, setAdminColleges] = useState<any[]>([]);
   const [adminUsers, setAdminUsers] = useState<any[]>([]);
 
-  // College Data State
+  // B2B College Data State
   const [collegeOverviewData, setCollegeOverviewData] = useState<any>(null);
   const [collegeStudents, setCollegeStudents] = useState<any[]>([]);
   const [collegeCoupons, setCollegeCoupons] = useState<any[]>([]);
   const [collegeReports, setCollegeReports] = useState<any>(null);
 
   // Modal State
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState<{
     id: number;
     title: string;
@@ -93,90 +167,50 @@ function DashboardContent() {
     workspaceId?: number;
   } | null>(null);
 
-  const activeRole = roleName || (user as any)?.role?.name || (typeof user?.role === 'string' ? user.role : 'student');
-  const isAdmin = activeRole === 'super_admin' || activeRole === 'admin' || activeRole === 'support';
-  const isCollege = activeRole === 'college';
+  // Track fetched tabs to avoid redundant re-fetching
+  const fetchedTabsRef = useRef<Set<string>>(new Set());
 
-  const handleNavigateSlug = (slug: string, itemId?: number | null) => {
-    setActiveSlug(slug);
-    if (slug === 'students' || slug === 'studentdetail') {
-      setSelectedStudentId(itemId !== undefined ? itemId : null);
-      setSelectedCollegeId(null);
-    } else if (slug === 'colleges' || slug === 'collegedetail') {
-      setSelectedCollegeId(itemId !== undefined ? itemId : null);
-      setSelectedStudentId(null);
-    } else {
-      setSelectedStudentId(null);
-      setSelectedCollegeId(null);
-    }
+  const currentRole = roleName?.toLowerCase() || 'student';
+  const isAdmin = currentRole === 'super_admin' || currentRole === 'admin' || currentRole === 'support';
+  const isCollege = currentRole === 'college';
 
-    if (typeof window !== 'undefined') {
-      const url = new URL(window.location.href);
-      url.searchParams.set('tab', slug);
-      if (itemId) {
-        url.searchParams.set('id', String(itemId));
-      } else {
-        url.searchParams.delete('id');
-      }
-      window.history.pushState({}, '', url.pathname + '?' + url.searchParams.toString());
-    }
-  };
-
-  const handleViewStudentDetail = (id: number) => {
-    setSelectedStudentId(id);
-    handleNavigateSlug('students', id);
-  };
-
-  const handleViewCollegeDetail = (id: number) => {
-    setSelectedCollegeId(id);
-    handleNavigateSlug('colleges', id);
-  };
-
-  // Sync active tab when URL param changes or on browser back/forward
+  // Synchronize state with URL parameters
   useEffect(() => {
-    if (tabParam) {
+    if (tabParam && tabParam !== activeSlug) {
       setActiveSlug(tabParam);
-    } else if (typeof window !== 'undefined') {
-      const url = new URL(window.location.href);
-      if (!url.searchParams.has('tab')) {
-        url.searchParams.set('tab', 'overview');
-        window.history.replaceState({}, '', url.pathname + '?' + url.searchParams.toString());
-      }
     }
     if (idParam) {
-      if (tabParam === 'colleges' || tabParam === 'collegedetail') {
-        setSelectedCollegeId(Number(idParam));
-        setSelectedStudentId(null);
-      } else if (tabParam === 'students' || tabParam === 'studentdetail') {
+      if (tabParam === 'students' || tabParam === 'studentdetail') {
         setSelectedStudentId(Number(idParam));
-        setSelectedCollegeId(null);
+      } else if (tabParam === 'colleges' || tabParam === 'collegedetail') {
+        setSelectedCollegeId(Number(idParam));
       }
     } else {
       setSelectedStudentId(null);
       setSelectedCollegeId(null);
     }
+  }, [tabParam, idParam]);
 
+  // Handle browser back/forward navigation
+  useEffect(() => {
     const onPopState = () => {
-      if (typeof window !== 'undefined') {
-        const currentParams = new URLSearchParams(window.location.search);
-        const currentTab = currentParams.get('tab') || currentParams.get('slug') || 'overview';
-        const currentId = currentParams.get('id');
-        setActiveSlug(currentTab);
-        if (currentTab === 'colleges' || currentTab === 'collegedetail') {
-          setSelectedCollegeId(currentId ? Number(currentId) : null);
-          setSelectedStudentId(null);
-        } else if (currentTab === 'students' || currentTab === 'studentdetail') {
-          setSelectedStudentId(currentId ? Number(currentId) : null);
-          setSelectedCollegeId(null);
-        } else {
-          setSelectedStudentId(null);
-          setSelectedCollegeId(null);
+      const currentTab = new URLSearchParams(window.location.search).get('tab') || 'overview';
+      const currentId = new URLSearchParams(window.location.search).get('id');
+      setActiveSlug(currentTab);
+      if (currentId) {
+        if (currentTab === 'students' || currentTab === 'studentdetail') {
+          setSelectedStudentId(Number(currentId));
+        } else if (currentTab === 'colleges' || currentTab === 'collegedetail') {
+          setSelectedCollegeId(Number(currentId));
         }
+      } else {
+        setSelectedStudentId(null);
+        setSelectedCollegeId(null);
       }
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
-  }, [tabParam, idParam]);
+  }, []);
 
   const handleOpenSubmissionModal = (
     taskId: number,
@@ -198,10 +232,12 @@ function DashboardContent() {
   const handleApproveCollege = async (id: number) => {
     try {
       await updateCollegeStatus(id, 'approved');
-      const updatedColleges = await getAdminColleges();
-      setAdminColleges(updatedColleges);
-      const updatedOverview = await getAdminOverview();
-      if (updatedOverview) setAdminOverviewData(updatedOverview);
+      setAdminColleges((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, status: 'approved' } : c))
+      );
+      getAdminOverview().then((updated) => {
+        if (updated) setAdminOverviewData(updated);
+      });
       showToast.success('College account approved successfully.', 'College Approved');
     } catch (err: any) {
       showToast.error(err.message || 'Failed to approve college', 'Action Failed');
@@ -211,102 +247,142 @@ function DashboardContent() {
   const handleRejectCollege = async (id: number) => {
     try {
       await updateCollegeStatus(id, 'rejected');
-      const updatedColleges = await getAdminColleges();
-      setAdminColleges(updatedColleges);
-      const updatedOverview = await getAdminOverview();
-      if (updatedOverview) setAdminOverviewData(updatedOverview);
+      setAdminColleges((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, status: 'rejected' } : c))
+      );
+      getAdminOverview().then((updated) => {
+        if (updated) setAdminOverviewData(updated);
+      });
       showToast.info('College account has been marked as rejected.', 'College Rejected');
     } catch (err: any) {
       showToast.error(err.message || 'Failed to reject college', 'Action Failed');
     }
   };
 
-  // Admin User Handlers
+  // Admin User Status Handler
   const handleUpdateUserStatus = async (id: number, status: string) => {
     try {
       await updateUserStatus(id, status);
-      const updatedUsers = await getAdminUsers();
-      setAdminUsers(updatedUsers);
+      setAdminUsers((prev) =>
+        prev.map((u) => (u.id === id ? { ...u, status } : u))
+      );
       showToast.success(`User status updated to "${status}".`, 'Status Updated');
     } catch (err: any) {
       showToast.error(err.message || 'Failed to update user status', 'Action Failed');
     }
   };
 
+  // =========================================================================
+  // ON-DEMAND (LAZY) TAB DATA FETCHING
+  // =========================================================================
   useEffect(() => {
+    const tabKey = `${currentRole}:${activeSlug}`;
+
     if (isAdmin) {
-      // Fetch Super Admin Console Telemetry Data
-      getAdminOverview().then((data) => { if (data) setAdminOverviewData(data); });
-      getAdminColleges().then((colleges) => setAdminColleges(colleges));
-      getAdminUsers().then((users) => setAdminUsers(users));
-      getPrograms().then((progs) => setCatalogPrograms(progs));
+      if (activeSlug === 'overview' && !adminOverviewData) {
+        getAdminOverview().then((data) => { if (data) setAdminOverviewData(data); });
+      } else if (activeSlug === 'colleges' && adminColleges.length === 0) {
+        getAdminColleges().then((colleges) => setAdminColleges(colleges));
+      } else if (activeSlug === 'users' && adminUsers.length === 0) {
+        getAdminUsers().then((users) => setAdminUsers(users));
+      } else if (activeSlug === 'programs' && catalogPrograms.length === 0) {
+        getPrograms().then((progs) => setCatalogPrograms(progs));
+      }
     } else if (isCollege) {
-      // Fetch B2B College Portal Data
-      getCollegeOverview().then((data) => { if (data) setCollegeOverviewData(data); });
-      getCollegeStudents().then((students) => setCollegeStudents(students));
-      getCollegeCoupons().then((coupons) => setCollegeCoupons(coupons));
-      getCollegeReports().then((reports) => setCollegeReports(reports));
-      getPrograms().then((progs) => setCatalogPrograms(progs));
+      if (activeSlug === 'overview' && !collegeOverviewData) {
+        getCollegeOverview().then((data) => { if (data) setCollegeOverviewData(data); });
+      } else if (activeSlug === 'students' && collegeStudents.length === 0) {
+        getCollegeStudents().then((students) => setCollegeStudents(students));
+      } else if (activeSlug === 'coupons' && collegeCoupons.length === 0) {
+        getCollegeCoupons().then((coupons) => setCollegeCoupons(coupons));
+      } else if (activeSlug === 'reports' && !collegeReports) {
+        getCollegeReports().then((reports) => setCollegeReports(reports));
+      }
     } else {
-      // Fetch Student Data
-      getStudentPrograms()
-        .then((progs) => { if (Array.isArray(progs) && progs.length > 0) setProgramsData(progs); })
-        .catch((err) => console.error('Failed to load student programs:', err));
-
-      getStudentWorkspace()
-        .then((wsProjects) => {
-          if (Array.isArray(wsProjects) && wsProjects.length > 0) {
-            setProjects(wsProjects);
-          } else {
+      // Student on-demand loading
+      if (activeSlug === 'overview' && !overviewData) {
+        getStudentOverview().then((data) => { if (data) setOverviewData(data); });
+        getStudentPrograms().then((progs) => { if (Array.isArray(progs) && progs.length > 0) setProgramsData(progs); });
+      } else if (activeSlug === 'program' && projects.length === 0) {
+        getStudentWorkspace()
+          .then((wsProjects) => {
+            if (Array.isArray(wsProjects) && wsProjects.length > 0) {
+              setProjects(wsProjects);
+            } else {
+              getProgramByIdOrSlug(studentData.defaultProgramSlug)
+                .then((data) => { if (data?.projects) setProjects(data.projects); });
+            }
+          })
+          .catch(() => {
             getProgramByIdOrSlug(studentData.defaultProgramSlug)
-              .then((data) => { if (data?.projects) setProjects(data.projects); })
-              .catch((err) => console.error('Failed to load program projects:', err));
-          }
-        })
-        .catch(() => {
-          getProgramByIdOrSlug(studentData.defaultProgramSlug)
-            .then((data) => { if (data?.projects) setProjects(data.projects); })
-            .catch((err) => console.error('Failed to load program projects:', err));
-        });
-
-      getStudentOverview().then((data) => { if (data) setOverviewData(data); });
-      getStudentProfile().then((data) => { if (data) setProfileData(data); });
-      getStudentSubmissions().then((data) => { if (Array.isArray(data)) setSubmissionsList(data); });
-      getStudentRubrics().then((data) => { if (Array.isArray(data)) setRubricsList(data); });
+              .then((data) => { if (data?.projects) setProjects(data.projects); });
+          });
+      } else if (activeSlug === 'submissions' && submissionsList.length === 0) {
+        getStudentSubmissions().then((data) => { if (Array.isArray(data)) setSubmissionsList(data); });
+      } else if (activeSlug === 'rubrics' && rubricsList.length === 0) {
+        getStudentRubrics().then((data) => { if (Array.isArray(data)) setRubricsList(data); });
+      }
     }
-  }, [isAdmin, isCollege]);
+
+    fetchedTabsRef.current.add(tabKey);
+  }, [
+    activeSlug,
+    isAdmin,
+    isCollege,
+    currentRole,
+    adminOverviewData,
+    adminColleges.length,
+    adminUsers.length,
+    catalogPrograms.length,
+    collegeOverviewData,
+    collegeStudents.length,
+    collegeCoupons.length,
+    collegeReports,
+    overviewData,
+    projects.length,
+    submissionsList.length,
+    rubricsList.length,
+  ]);
 
   const studentObj = (user as any)?.student;
   const firstName = studentObj?.firstName || user?.firstName || '';
-  const lastName = studentObj?.lastName || user?.lastName || '';
-  
-  const displayName = profileData?.displayName || (
-    (firstName || lastName)
-      ? `${firstName} ${lastName}`.trim()
-      : user?.email
-      ? user.email.split('@')[0]
-      : 'User Account'
-  );
 
-  const userEmail = profileData?.email || user?.email || 'user@engineersclinic.com';
-  const institutionName = profileData?.institutionName || studentData.profile.institutionName;
-  const verificationStatus = profileData?.verificationStatus || studentData.profile.verificationStatus;
+  const handleNavigateSlug = (slug: string, id?: number | null) => {
+    setActiveSlug(slug);
+    if (slug === 'students' || slug === 'studentdetail') {
+      setSelectedStudentId(id !== undefined ? id : null);
+      setSelectedCollegeId(null);
+    } else if (slug === 'colleges' || slug === 'collegedetail') {
+      setSelectedCollegeId(id !== undefined ? id : null);
+      setSelectedStudentId(null);
+    } else {
+      setSelectedStudentId(null);
+      setSelectedCollegeId(null);
+    }
+
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', slug);
+    if (id) {
+      url.searchParams.set('id', String(id));
+    } else {
+      url.searchParams.delete('id');
+    }
+    window.history.pushState({}, '', url.toString());
+  };
 
   return (
-    <div className="h-screen w-screen overflow-hidden flex bg-bgSoft">
-      {/* Pinned Left Sidebar */}
+    <div className="flex h-screen overflow-hidden bg-bgBody">
       <UserSidebar
         activeSlug={activeSlug}
         onSelectSlug={handleNavigateSlug}
-        onOpenProfile={() => handleNavigateSlug('profile')}
+        onNavigate={handleNavigateSlug}
       />
 
-      {/* Main Content Area */}
       <main className="flex-1 h-full overflow-y-auto p-4 pt-16 sm:p-6 md:p-8">
         <div className="mx-auto max-w-6xl space-y-6">
           {/* Super Admin Console Views */}
           {isAdmin ? (
-            <>
+            <Suspense fallback={<ViewLoadingFallback />}>
               {activeSlug === 'overview' && (
                 <AdminOverview
                   overviewData={adminOverviewData}
@@ -329,61 +405,51 @@ function DashboardContent() {
                 )
               )}
 
-              {activeSlug === 'studentdetail' && selectedStudentId && (
-                <AdminStudentDetailView
-                  studentId={selectedStudentId}
-                  onBack={() => handleNavigateSlug('students')}
-                />
-              )}
-
               {activeSlug === 'colleges' && (
                 selectedCollegeId ? (
                   <AdminCollegeDetailView
                     collegeId={selectedCollegeId}
                     onBack={() => handleNavigateSlug('colleges')}
-                    onSelectStudent={(sId) => handleNavigateSlug('students', sId)}
                   />
                 ) : (
                   <AdminCollegesView
                     colleges={adminColleges}
                     onApproveCollege={handleApproveCollege}
                     onRejectCollege={handleRejectCollege}
-                    onSelectCollege={(cId) => handleNavigateSlug('colleges', cId)}
+                    onSelectCollege={(id) => handleNavigateSlug('colleges', id)}
                   />
                 )
-              )}
-
-              {activeSlug === 'collegedetail' && selectedCollegeId && (
-                <AdminCollegeDetailView
-                  collegeId={selectedCollegeId}
-                  onBack={() => handleNavigateSlug('colleges')}
-                  onSelectStudent={(sId) => handleNavigateSlug('students', sId)}
-                />
               )}
 
               {activeSlug === 'users' && (
                 <AdminUsersView
                   users={adminUsers}
                   onUpdateUserStatus={handleUpdateUserStatus}
-                  onViewStudentDetail={handleViewStudentDetail}
-                  onViewCollegeDetail={handleViewCollegeDetail}
                 />
               )}
 
               {activeSlug === 'programs' && (
                 <AdminProgramsView
                   programs={catalogPrograms}
-                  onProgramUpdated={() => getPrograms().then((p) => setCatalogPrograms(p))}
+                  onProgramUpdated={() => getPrograms().then((progs) => setCatalogPrograms(progs))}
                 />
               )}
 
-              {activeSlug === 'submissions' && <AdminSubmissionsView />}
-              {activeSlug === 'coupons' && <AdminCouponsView />}
-              {activeSlug === 'orders' && <AdminOrdersView />}
-            </>
+              {activeSlug === 'coupons' && (
+                <AdminCouponsView />
+              )}
+
+              {activeSlug === 'submissions' && (
+                <AdminSubmissionsView />
+              )}
+
+              {activeSlug === 'orders' && (
+                <AdminOrdersView />
+              )}
+            </Suspense>
           ) : isCollege ? (
             /* B2B College Portal Views */
-            <>
+            <Suspense fallback={<ViewLoadingFallback />}>
               {activeSlug === 'overview' && (
                 <CollegeOverview
                   overviewData={collegeOverviewData}
@@ -391,137 +457,102 @@ function DashboardContent() {
                 />
               )}
 
-              {activeSlug === 'program' && (
-                <AdminProgramsView
-                  programs={catalogPrograms}
-                />
-              )}
-
               {activeSlug === 'students' && (
                 <CollegeStudentsView
                   students={collegeStudents}
+                  programs={catalogPrograms}
+                  onRefresh={() => getCollegeStudents().then((s) => setCollegeStudents(s))}
                 />
               )}
 
               {activeSlug === 'coupons' && (
                 <CollegeCouponsView
                   coupons={collegeCoupons}
+                  programs={catalogPrograms}
+                  onRefresh={() => getCollegeCoupons().then((c) => setCollegeCoupons(c))}
                 />
               )}
 
               {activeSlug === 'reports' && (
                 <CollegeReportsView
-                  reportsData={collegeReports}
+                  reports={collegeReports}
+                  programs={catalogPrograms}
                 />
               )}
-            </>
+            </Suspense>
           ) : (
-            /* B2C Student Dashboard Views */
-            <>
+            /* Student Dashboard Views */
+            <Suspense fallback={<ViewLoadingFallback />}>
               {activeSlug === 'overview' && (
                 <StudentOverview
+                  overview={overviewData}
+                  profile={profileData}
+                  programs={programsData}
                   projects={projects}
-                  overviewData={overviewData}
-                  programsData={programsData}
-                  onSelectSlug={handleNavigateSlug}
-                  onNavigateSlug={handleNavigateSlug}
+                  onOpenSubmitModal={handleOpenSubmissionModal}
                 />
               )}
 
               {activeSlug === 'program' && (
                 <StudentProgramView
-                  programsData={programsData}
-                  fallbackProjects={projects}
+                  programs={programsData}
                   projects={projects}
-                  submissions={submissionsList}
                   onOpenSubmitModal={handleOpenSubmissionModal}
-                  onSubmitTaskWork={handleOpenSubmissionModal}
-                  onRepoUpdated={() => {
-                    getStudentPrograms().then((progs) => {
-                      if (Array.isArray(progs) && progs.length > 0) setProgramsData(progs);
-                    });
-                  }}
                 />
               )}
 
               {activeSlug === 'submissions' && (
                 <StudentSubmissionsView
                   submissions={submissionsList}
-                  onNavigateProgram={() => handleNavigateSlug('program')}
+                  onOpenSubmitModal={handleOpenSubmissionModal}
                 />
               )}
 
-              {activeSlug === 'certificate' && (
-                <div className="rounded-[24px] border border-borderLight bg-white p-8 text-center space-y-4 shadow-xs">
-                  <div className="h-14 w-14 rounded-full bg-brand/10 text-brand flex items-center justify-center mx-auto">
-                    <Award className="h-7 w-7" />
-                  </div>
-                  <h2 className="text-xl font-black text-textPrimary">Verified Internship Certificate</h2>
-                  <p className="text-xs text-textMuted max-w-md mx-auto">
-                    Complete all 3 capstone projects and pass AI evaluation rubrics to unlock your verifiable certificate and transcript badge.
-                  </p>
-                  <div className="inline-block rounded-full bg-brand/10 px-4 py-1.5 text-xs font-bold text-brand">
-                    {overviewData?.metrics?.completionPercentage || studentData.metrics.completionPercentage}% Complete
-                  </div>
-                </div>
+              {activeSlug === 'rubrics' && (
+                <StudentRubricsView
+                  rubrics={rubricsList}
+                  onOpenSubmitModal={handleOpenSubmissionModal}
+                />
               )}
 
-              {activeSlug === 'rubrics' && <StudentRubricsView rubrics={rubricsList} />}
-
-              {(activeSlug === 'orders' || activeSlug === 'payments') && (
-                <StudentOrdersView onNavigateProgram={() => handleNavigateSlug('program')} />
+              {activeSlug === 'orders' && (
+                <StudentOrdersView />
               )}
-            </>
-          )}
-
-          {/* Profile & Institution Details Tab */}
-          {activeSlug === 'profile' && (
-            <div className="rounded-[28px] border border-borderLight bg-white p-6 sm:p-8 shadow-xs space-y-6">
-              <div className="flex items-center justify-between border-b border-borderLight pb-4">
-                <div>
-                  <h2 className="text-xl font-black text-textPrimary">User & Institution Profile</h2>
-                  <p className="text-xs text-textMuted">Account credentials and verification status</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-brand/10 px-3 py-1 text-xs font-bold text-brand uppercase tracking-wider">
-                    {activeRole}
-                  </span>
-                </div>
-              </div>
-            </div>
+            </Suspense>
           )}
         </div>
       </main>
 
       {/* Task Submission Modal */}
-      {!isAdmin && !isCollege && selectedTask && (
+      {selectedTask && (
         <TaskSubmissionModal
           isOpen={isModalOpen}
-          taskId={selectedTask.id}
-          taskTitle={selectedTask.title}
-          repoUrl={selectedTask.repoUrl}
-          workspaceId={selectedTask.workspaceId}
           onClose={() => setIsModalOpen(false)}
-          onSubmitSuccess={handleSubmissionSuccess}
-          submitFn={submitStudentTask}
+          task={selectedTask}
+          onSuccess={handleSubmissionSuccess}
         />
       )}
     </div>
   );
 }
 
-export default function DashboardPage() {
+export default function StudentPage() {
   return (
-    <AuthProvider>
-      <Suspense
-        fallback={
-          <div className="flex h-screen w-screen items-center justify-center bg-bgSoft">
+    <Suspense
+      fallback={
+        <div className="flex h-screen items-center justify-center bg-bgBody">
+          <div className="flex flex-col items-center gap-3">
             <Loader2 className="h-8 w-8 animate-spin text-brand" />
+            <p className="text-xs font-bold text-textMuted uppercase tracking-wider">
+              Loading Dashboard...
+            </p>
           </div>
-        }
-      >
+        </div>
+      }
+    >
+      <AuthProvider>
         <DashboardContent />
-      </Suspense>
-    </AuthProvider>
+      </AuthProvider>
+    </Suspense>
   );
 }

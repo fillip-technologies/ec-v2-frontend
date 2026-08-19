@@ -667,20 +667,59 @@ export const AdminCouponsView: React.FC = () => {
                   <ChevronLeft className="h-3.5 w-3.5" />
                 </button>
 
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pg) => (
-                  <button
-                    key={pg}
-                    type="button"
-                    onClick={() => setCurrentPage(pg)}
-                    className={`h-8 w-8 rounded-lg text-xs font-black transition cursor-pointer ${
-                      currentPage === pg
-                        ? 'bg-brand text-white'
-                        : 'border border-borderLight bg-white text-textPrimary hover:bg-bgSoft'
-                    }`}
-                  >
-                    {pg}
-                  </button>
-                ))}
+                {(() => {
+                  const maxButtons = 5;
+                  let start = Math.max(1, currentPage - 2);
+                  let end = Math.min(totalPages, start + maxButtons - 1);
+                  if (end - start + 1 < maxButtons) {
+                    start = Math.max(1, end - maxButtons + 1);
+                  }
+                  const pages = [];
+                  for (let i = start; i <= end; i++) pages.push(i);
+
+                  return (
+                    <>
+                      {start > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setCurrentPage(1)}
+                            className="h-8 w-8 rounded-lg text-xs font-black border border-borderLight bg-white text-textPrimary hover:bg-bgSoft transition cursor-pointer"
+                          >
+                            1
+                          </button>
+                          {start > 2 && <span className="px-1 text-xs text-textMuted font-black">...</span>}
+                        </>
+                      )}
+                      {pages.map((pg) => (
+                        <button
+                          key={pg}
+                          type="button"
+                          onClick={() => setCurrentPage(pg)}
+                          className={`h-8 w-8 rounded-lg text-xs font-black transition cursor-pointer ${
+                            currentPage === pg
+                              ? 'bg-brand text-white'
+                              : 'border border-borderLight bg-white text-textPrimary hover:bg-bgSoft'
+                          }`}
+                        >
+                          {pg}
+                        </button>
+                      ))}
+                      {end < totalPages && (
+                        <>
+                          {end < totalPages - 1 && <span className="px-1 text-xs text-textMuted font-black">...</span>}
+                          <button
+                            type="button"
+                            onClick={() => setCurrentPage(totalPages)}
+                            className="h-8 w-8 rounded-lg text-xs font-black border border-borderLight bg-white text-textPrimary hover:bg-bgSoft transition cursor-pointer"
+                          >
+                            {totalPages}
+                          </button>
+                        </>
+                      )}
+                    </>
+                  );
+                })()}
 
                 <button
                   type="button"

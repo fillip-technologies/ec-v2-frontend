@@ -7,6 +7,16 @@ function getAuthHeader(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  role?: string;
+  collegeId?: number;
+  gateway?: string;
+}
+
 /**
  * GET /admin/overview
  * Fetch high-level platform telemetry metrics
@@ -34,14 +44,24 @@ export async function getAdminOverview() {
 
 /**
  * GET /admin/colleges
- * Fetch list of registered B2B college institutions
+ * Fetch list of registered B2B college institutions with optional pagination
  */
-export async function getAdminColleges(status?: string) {
+export async function getAdminColleges(params?: PaginationParams | string) {
   try {
     const searchParams = new URLSearchParams();
-    if (status) searchParams.append("status", status);
+    if (typeof params === "string") {
+      if (params) searchParams.append("status", params);
+    } else if (params) {
+      if (params.status) searchParams.append("status", params.status);
+      if (params.search) searchParams.append("search", params.search);
+      if (params.page !== undefined) searchParams.append("page", String(params.page));
+      if (params.limit !== undefined) searchParams.append("limit", String(params.limit));
+    }
 
-    const res = await fetch(`${BACKEND_URL}/admin/colleges?${searchParams.toString()}`, {
+    const qs = searchParams.toString();
+    const url = qs ? `${BACKEND_URL}/admin/colleges?${qs}` : `${BACKEND_URL}/admin/colleges`;
+
+    const res = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
         ...getAuthHeader(),
@@ -50,13 +70,14 @@ export async function getAdminColleges(status?: string) {
     });
 
     if (!res.ok) {
-      return [];
+      return typeof params === "object" && params?.page !== undefined ? { data: [], meta: null } : [];
     }
 
-    return await res.json();
+    const json = await res.json();
+    return json;
   } catch (error) {
     console.error("API getAdminColleges error:", error);
-    return [];
+    return typeof params === "object" && params?.page !== undefined ? { data: [], meta: null } : [];
   }
 }
 
@@ -110,15 +131,26 @@ export async function getAdminCollegeDetail(id: number) {
 
 /**
  * GET /admin/users
- * Fetch list of platform users
+ * Fetch list of platform users with optional pagination
  */
-export async function getAdminUsers(role?: string, status?: string) {
+export async function getAdminUsers(params?: PaginationParams | string, status?: string) {
   try {
     const searchParams = new URLSearchParams();
-    if (role) searchParams.append("role", role);
-    if (status) searchParams.append("status", status);
+    if (typeof params === "string") {
+      if (params) searchParams.append("role", params);
+      if (status) searchParams.append("status", status);
+    } else if (params) {
+      if (params.role) searchParams.append("role", params.role);
+      if (params.status) searchParams.append("status", params.status);
+      if (params.search) searchParams.append("search", params.search);
+      if (params.page !== undefined) searchParams.append("page", String(params.page));
+      if (params.limit !== undefined) searchParams.append("limit", String(params.limit));
+    }
 
-    const res = await fetch(`${BACKEND_URL}/admin/users?${searchParams.toString()}`, {
+    const qs = searchParams.toString();
+    const url = qs ? `${BACKEND_URL}/admin/users?${qs}` : `${BACKEND_URL}/admin/users`;
+
+    const res = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
         ...getAuthHeader(),
@@ -127,13 +159,13 @@ export async function getAdminUsers(role?: string, status?: string) {
     });
 
     if (!res.ok) {
-      return [];
+      return typeof params === "object" && params?.page !== undefined ? { data: [], meta: null } : [];
     }
 
     return await res.json();
   } catch (error) {
     console.error("API getAdminUsers error:", error);
-    return [];
+    return typeof params === "object" && params?.page !== undefined ? { data: [], meta: null } : [];
   }
 }
 
@@ -161,11 +193,22 @@ export async function updateUserStatus(id: number, status: string) {
 
 /**
  * GET /admin/submissions
- * Fetch list of student task submissions
+ * Fetch list of student task submissions with optional pagination
  */
-export async function getAdminSubmissions() {
+export async function getAdminSubmissions(params?: PaginationParams) {
   try {
-    const res = await fetch(`${BACKEND_URL}/admin/submissions`, {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      if (params.status) searchParams.append("status", params.status);
+      if (params.search) searchParams.append("search", params.search);
+      if (params.page !== undefined) searchParams.append("page", String(params.page));
+      if (params.limit !== undefined) searchParams.append("limit", String(params.limit));
+    }
+
+    const qs = searchParams.toString();
+    const url = qs ? `${BACKEND_URL}/admin/submissions?${qs}` : `${BACKEND_URL}/admin/submissions`;
+
+    const res = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
         ...getAuthHeader(),
@@ -174,13 +217,13 @@ export async function getAdminSubmissions() {
     });
 
     if (!res.ok) {
-      return [];
+      return params?.page !== undefined ? { data: [], meta: null } : [];
     }
 
     return await res.json();
   } catch (error) {
     console.error("API getAdminSubmissions error:", error);
-    return [];
+    return params?.page !== undefined ? { data: [], meta: null } : [];
   }
 }
 
@@ -208,11 +251,23 @@ export async function reviewSubmission(id: number, status: "PASSED" | "NEEDS_WOR
 
 /**
  * GET /orders
- * Fetch all student orders and payment attempts (Admin / Super Admin)
+ * Fetch all student orders and payment attempts with optional pagination (Admin / Super Admin)
  */
-export async function getAdminOrders() {
+export async function getAdminOrders(params?: PaginationParams) {
   try {
-    const res = await fetch(`${BACKEND_URL}/orders`, {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      if (params.status) searchParams.append("status", params.status);
+      if (params.gateway) searchParams.append("gateway", params.gateway);
+      if (params.search) searchParams.append("search", params.search);
+      if (params.page !== undefined) searchParams.append("page", String(params.page));
+      if (params.limit !== undefined) searchParams.append("limit", String(params.limit));
+    }
+
+    const qs = searchParams.toString();
+    const url = qs ? `${BACKEND_URL}/orders?${qs}` : `${BACKEND_URL}/orders`;
+
+    const res = await fetch(url, {
       headers: {
         "Content-Type": "application/json",
         ...getAuthHeader(),
@@ -221,20 +276,55 @@ export async function getAdminOrders() {
     });
 
     if (!res.ok) {
-      return [];
+      return params?.page !== undefined ? { data: [], meta: null } : [];
     }
 
     return await res.json();
   } catch (error) {
     console.error("API getAdminOrders error:", error);
-    return [];
+    return params?.page !== undefined ? { data: [], meta: null } : [];
+  }
+}
+
+/**
+ * GET /admin/students
+ * Fetch registered student list with optional pagination
+ */
+export async function getAdminStudents(params?: PaginationParams) {
+  try {
+    const searchParams = new URLSearchParams();
+    if (params) {
+      if (params.collegeId !== undefined) searchParams.append("collegeId", String(params.collegeId));
+      if (params.search) searchParams.append("search", params.search);
+      if (params.page !== undefined) searchParams.append("page", String(params.page));
+      if (params.limit !== undefined) searchParams.append("limit", String(params.limit));
+    }
+
+    const qs = searchParams.toString();
+    const url = qs ? `${BACKEND_URL}/admin/students?${qs}` : `${BACKEND_URL}/admin/students`;
+
+    const res = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return params?.page !== undefined ? { data: [], meta: null } : [];
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("API getAdminStudents error:", error);
+    return params?.page !== undefined ? { data: [], meta: null } : [];
   }
 }
 
 /**
  * GET /admin/students/:id
- * Fetch 360-degree student portfolio, academic profile, enrollment tracks,
- * workspace progression, orders & billing audit, and certificates (Admin / Super Admin)
+ * Fetch 360-degree student portfolio dossier
  */
 export async function getAdminStudentDetail(id: number) {
   try {
@@ -255,30 +345,5 @@ export async function getAdminStudentDetail(id: number) {
   } catch (error: any) {
     console.error("API getAdminStudentDetail error:", error);
     throw error;
-  }
-}
-
-/**
- * GET /admin/students
- * Fetch all registered student accounts with academic & enrollment stats
- */
-export async function getAdminStudents() {
-  try {
-    const res = await fetch(`${BACKEND_URL}/admin/students`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...getAuthHeader(),
-      },
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      return [];
-    }
-
-    return await res.json();
-  } catch (error) {
-    console.error("API getAdminStudents error:", error);
-    return [];
   }
 }

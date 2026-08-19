@@ -27,19 +27,29 @@ import {
 
 export interface UserSidebarProps {
   activeSlug: string;
-  onSelectSlug: (slug: string) => void;
+  onSelectSlug?: (slug: string) => void;
+  onNavigate?: (slug: string) => void;
   onOpenProfile?: () => void;
 }
 
 export const UserSidebar: React.FC<UserSidebarProps> = ({
   activeSlug,
   onSelectSlug,
+  onNavigate,
   onOpenProfile,
 }) => {
   const { user, roleName, logout } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+
+  const handleSelectSlug = (slug: string) => {
+    if (typeof onSelectSlug === 'function') {
+      onSelectSlug(slug);
+    } else if (typeof onNavigate === 'function') {
+      onNavigate(slug);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -121,7 +131,7 @@ export const UserSidebar: React.FC<UserSidebarProps> = ({
   const userEmailDisplay = mounted ? user?.email || 'Logged in user' : 'Logged in user';
 
   const handleItemClick = (slug: string) => {
-    onSelectSlug(slug);
+    handleSelectSlug(slug);
     setMobileDrawerOpen(false);
   };
 
@@ -219,7 +229,7 @@ export const UserSidebar: React.FC<UserSidebarProps> = ({
                 <button
                   onClick={() => {
                     if (onOpenProfile) onOpenProfile();
-                    else onSelectSlug('profile');
+                    else handleSelectSlug('profile');
                     setMobileDrawerOpen(false);
                   }}
                   className="flex items-center gap-2.5 flex-1 min-w-0 text-left group cursor-pointer"
@@ -332,7 +342,7 @@ export const UserSidebar: React.FC<UserSidebarProps> = ({
                       return (
                         <button
                           key={item.id}
-                          onClick={() => onSelectSlug(item.slug)}
+                          onClick={() => handleSelectSlug(item.slug)}
                           className={`h-11 w-11 flex items-center justify-center rounded-2xl transition-all cursor-pointer group relative ${
                             isActive
                               ? 'bg-brand text-white shadow-xs scale-105'
@@ -348,7 +358,7 @@ export const UserSidebar: React.FC<UserSidebarProps> = ({
                     return (
                       <button
                         key={item.id}
-                        onClick={() => onSelectSlug(item.slug)}
+                        onClick={() => handleSelectSlug(item.slug)}
                         className={`w-full flex items-center gap-3 rounded-[14px] px-3 py-2.5 text-xs font-bold transition-all text-left cursor-pointer ${
                           isActive
                             ? 'bg-brand text-white shadow-xs'
@@ -398,7 +408,7 @@ export const UserSidebar: React.FC<UserSidebarProps> = ({
               <button
                 onClick={() => {
                   if (onOpenProfile) onOpenProfile();
-                  else onSelectSlug('profile');
+                  else handleSelectSlug('profile');
                 }}
                 className="flex items-center gap-2.5 flex-1 min-w-0 text-left group cursor-pointer"
                 title="Open Profile"
@@ -439,7 +449,7 @@ export const UserSidebar: React.FC<UserSidebarProps> = ({
               <button
                 onClick={() => {
                   if (onOpenProfile) onOpenProfile();
-                  else onSelectSlug('profile');
+                  else handleSelectSlug('profile');
                 }}
                 className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand/10 text-brand font-black text-xs hover:bg-brand hover:text-white transition-all cursor-pointer shadow-2xs"
                 title={`${displayName} (Profile)`}

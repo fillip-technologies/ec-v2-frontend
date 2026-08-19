@@ -92,6 +92,8 @@ type SortOrder = 'asc' | 'desc';
 
 export const AdminOrdersView: React.FC = () => {
   const [orders, setOrders] = useState<AdminOrderItem[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -134,8 +136,22 @@ export const AdminOrdersView: React.FC = () => {
     else setLoading(true);
 
     try {
-      const data = await getAdminOrders();
-      setOrders(Array.isArray(data) ? data : []);
+      const res = await getAdminOrders({
+        page: currentPage,
+        limit: pageSize,
+        search: searchTerm.trim() || undefined,
+        status: statusFilter !== 'ALL' ? statusFilter : undefined,
+      });
+
+      if (res && res.data && res.meta) {
+        setOrders(res.data);
+        setTotalCount(res.meta.total);
+        setTotalPages(res.meta.totalPages);
+      } else if (Array.isArray(res)) {
+        setOrders(res);
+        setTotalCount(res.length);
+        setTotalPages(Math.ceil(res.length / pageSize) || 1);
+      }
       if (isManualRefresh) {
         showToast.success('Order records refreshed successfully', 'Synced');
       }
@@ -150,7 +166,7 @@ export const AdminOrdersView: React.FC = () => {
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [currentPage, pageSize, searchTerm, statusFilter]);
 
   // Sort Field Click Handler
   const handleSort = (field: SortField) => {
@@ -298,10 +314,9 @@ export const AdminOrdersView: React.FC = () => {
   }, [orders, searchTerm, statusFilter, paymentTypeFilter, sortField, sortOrder]);
 
   // Pagination Calculations
-  const totalEntries = filteredAndSortedOrders.length;
-  const totalPages = Math.ceil(totalEntries / pageSize) || 1;
+  const totalEntries = totalCount || filteredAndSortedOrders.length;
   const startIndex = (currentPage - 1) * pageSize;
-  const paginatedOrders = filteredAndSortedOrders.slice(startIndex, startIndex + pageSize);
+  const paginatedOrders = filteredAndSortedOrders;
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {

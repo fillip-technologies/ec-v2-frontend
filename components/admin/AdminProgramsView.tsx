@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import {
   BookOpen,
@@ -15,17 +15,18 @@ import {
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
+  Loader2,
+  RefreshCw,
 } from 'lucide-react';
 import { Program } from '@/types/catalog';
-import { deleteProgram } from '@/lib/api/catalog';
+import { deleteProgram, getPrograms } from '@/lib/api/catalog';
 import { AdminCreateProgramView } from './AdminCreateProgramView';
 import { useAuth } from '@/context/AuthContext';
 import { CustomDropdown } from '@/components/shared/CustomDropdown';
+import { showToast } from '@/lib/toast';
 
 interface AdminProgramsViewProps {
-  programs: Program[];
+  programs?: Program[];
   onProgramUpdated?: () => void;
 }
 
@@ -33,13 +34,18 @@ type ProgramSortField = 'title' | 'durationHours' | 'status' | 'createdAt';
 type SortOrder = 'asc' | 'desc';
 
 export const AdminProgramsView: React.FC<AdminProgramsViewProps> = ({
-  programs,
+  programs: initialPrograms,
   onProgramUpdated,
 }) => {
   const { user, roleName } = useAuth();
-  const activeRole = roleName || (user as any)?.role?.name || (typeof user?.role === 'string' ? user.role : 'student');
+  const activeRole =
+    roleName ||
+    (user as any)?.role?.name ||
+    (typeof user?.role === 'string' ? user.role : 'student');
   const canManageCatalogue = activeRole === 'super_admin' || activeRole === 'admin';
 
+  const [programsList, setProgramsList] = useState<Program[]>(initialPrograms || []);
+  const [loading, setLoading] = useState<boolean>(!initialPrograms || initialPrograms.length === 0);
   const [mode, setMode] = useState<'list' | 'create'>('list');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -49,6 +55,35 @@ export const AdminProgramsView: React.FC<AdminProgramsViewProps> = ({
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+
+  // Sync with prop updates
+  useEffect(() => {
+    if (initialPrograms && initialPrograms.length > 0) {
+      setProgramsList(initialPrograms);
+      setLoading(false);
+    }
+  }, [initialPrograms]);
+
+  // Fetch programs if not provided by parent
+  const fetchProgramsData = async () => {
+    setLoading(true);
+    try {
+      const data = await getPrograms();
+      if (Array.isArray(data)) {
+        setProgramsList(data);
+      }
+    } catch (err: any) {
+      showToast.error(err.message || 'Failed to load programs list', 'Data Error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!initialPrograms || initialPrograms.length === 0) {
+      fetchProgramsData();
+    }
+  }, []);
 
   const handleSort = (field: ProgramSortField) => {
     if (sortField === field) {
@@ -63,16 +98,18 @@ export const AdminProgramsView: React.FC<AdminProgramsViewProps> = ({
     if (confirm(`Are you sure you want to delete the program "${title}"?`)) {
       try {
         await deleteProgram(id);
+        setProgramsList((prev) => prev.filter((p) => p.id !== id));
         if (onProgramUpdated) onProgramUpdated();
+        showToast.success(`Program "${title}" deleted successfully.`, 'Program Deleted');
       } catch (err: any) {
-        alert(err.message || 'Failed to delete program');
+        showToast.error(err.message || 'Failed to delete program', 'Action Failed');
       }
     }
   };
 
   // 1. Filtered & Sorted Programs
   const filteredAndSortedPrograms = useMemo(() => {
-    let result = (programs || []).filter((p) => {
+    let result = (programsList || []).filter((p) => {
       const matchesSearch =
         p.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         p.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -96,7 +133,7 @@ export const AdminProgramsView: React.FC<AdminProgramsViewProps> = ({
     });
 
     return result;
-  }, [programs, searchTerm, statusFilter, sortField, sortOrder]);
+  }, [programsList, searchTerm, statusFilter, sortField, sortOrder]);
 
   // 2. Pagination Calculations
   const totalEntries = filteredAndSortedPrograms.length;
@@ -116,6 +153,7 @@ export const AdminProgramsView: React.FC<AdminProgramsViewProps> = ({
       <AdminCreateProgramView
         onBack={() => setMode('list')}
         onSuccess={() => {
+          fetchProgramsData();
           if (onProgramUpdated) onProgramUpdated();
           setMode('list');
         }}
@@ -136,15 +174,25 @@ export const AdminProgramsView: React.FC<AdminProgramsViewProps> = ({
             Author and publish 120-hour internship programs, configure multi-country pricing, and structure capstone project pools.
           </p>
         </div>
-        {canManageCatalogue && (
-          <Link
-            href="/admin/program"
-            className="rounded-xl bg-gradient-to-r from-textPrimary via-gray-900 to-brand text-white px-4 py-2.5 text-xs font-black transition-all hover:scale-[1.01] cursor-pointer shadow-md flex items-center gap-2"
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={fetchProgramsData}
+            className="rounded-xl border border-borderLight bg-bgSoft p-2.5 text-textPrimary hover:bg-borderLight transition cursor-pointer"
+            title="Refresh Programs"
           >
-            <Plus className="h-4 w-4" />
-            <span>Create Program</span>
-          </Link>
-        )}
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-brand' : ''}`} />
+          </button>
+          {canManageCatalogue && (
+            <Link
+              href="/admin/program"
+              className="rounded-xl bg-gradient-to-r from-textPrimary via-gray-900 to-brand text-white px-4 py-2.5 text-xs font-black transition-all hover:scale-[1.01] cursor-pointer shadow-md flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Create Program</span>
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Datatable Controls Bar */}
@@ -202,163 +250,214 @@ export const AdminProgramsView: React.FC<AdminProgramsViewProps> = ({
         </div>
       </div>
 
-      {/* Datatable Wrapper */}
+      {/* Programs DataTable Container */}
       <div className="bg-white rounded-[24px] border border-borderLight shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-bgSoft/80 border-b border-borderLight text-[11px] font-extrabold uppercase tracking-wider text-textMuted select-none">
-                <th
-                  onClick={() => handleSort('title')}
-                  className="py-4 px-5 cursor-pointer hover:text-brand transition-all"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span>Program Title & Slug</span>
-                    <ArrowUpDown className="h-3 w-3 text-textMuted" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('durationHours')}
-                  className="py-4 px-4 text-center cursor-pointer hover:text-brand transition-all"
-                >
-                  <div className="flex items-center justify-center gap-1.5">
-                    <span>Duration</span>
-                    <ArrowUpDown className="h-3 w-3 text-textMuted" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('status')}
-                  className="py-4 px-4 cursor-pointer hover:text-brand transition-all"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span>Status</span>
-                    <ArrowUpDown className="h-3 w-3 text-textMuted" />
-                  </div>
-                </th>
-                <th className="py-4 px-4">Country Pricings</th>
-                {canManageCatalogue && <th className="py-4 px-5 text-right">Actions</th>}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-borderLight/60 text-xs">
-              {paginatedPrograms.length === 0 ? (
-                <tr>
-                  <td colSpan={canManageCatalogue ? 5 : 4} className="py-12 text-center text-textMuted font-bold">
-                    No catalog programs found matching criteria.
-                  </td>
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 gap-3">
+            <Loader2 className="h-8 w-8 animate-spin text-brand" />
+            <p className="text-xs font-bold text-textMuted uppercase tracking-wider">Loading Catalogue Programs...</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-borderLight bg-bgSoft/60 text-[11px] font-extrabold uppercase tracking-wider text-textMuted">
+                  <th
+                    className="py-4 px-6 cursor-pointer hover:text-brand transition"
+                    onClick={() => handleSort('title')}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>Program Curriculum</span>
+                      <ArrowUpDown className="h-3.5 w-3.5" />
+                    </div>
+                  </th>
+                  <th className="py-4 px-6">Domain / Topics</th>
+                  <th
+                    className="py-4 px-6 cursor-pointer hover:text-brand transition"
+                    onClick={() => handleSort('durationHours')}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>Duration</span>
+                      <ArrowUpDown className="h-3.5 w-3.5" />
+                    </div>
+                  </th>
+                  <th className="py-4 px-6">Multi-Country Pricing</th>
+                  <th
+                    className="py-4 px-6 cursor-pointer hover:text-brand transition"
+                    onClick={() => handleSort('status')}
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <span>Status</span>
+                      <ArrowUpDown className="h-3.5 w-3.5" />
+                    </div>
+                  </th>
+                  <th className="py-4 px-6 text-right">Actions</th>
                 </tr>
-              ) : (
-                paginatedPrograms.map((prog) => (
-                  <tr key={prog.id} className="hover:bg-bgSoft/40 transition-all">
-                    <td className="py-4 px-5">
-                      <div className="font-black text-textPrimary">{prog.title}</div>
-                      <div className="text-[10px] text-textMuted font-medium">{prog.slug}</div>
-                    </td>
-                    <td className="py-4 px-4 text-center">
-                      <span className="inline-block px-3 py-1 rounded-full bg-brand/10 text-brand font-extrabold text-[10px]">
-                        {prog.durationHours || 120} Hours
-                      </span>
-                    </td>
-                    <td className="py-4 px-4">
-                      <span
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                          prog.status === 'published'
-                            ? 'bg-statusPassedBg text-statusPassedText'
-                            : 'bg-statusEvaluatingBg text-statusEvaluatingText'
-                        }`}
-                      >
-                        {prog.status === 'published' ? (
-                          <CheckCircle2 className="h-3 w-3" />
-                        ) : (
-                          <Clock className="h-3 w-3" />
-                        )}
-                        {prog.status || 'published'}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center gap-1.5 font-bold text-textPrimary">
-                        <Globe className="h-3.5 w-3.5 text-brand" />
-                        <span>
-                          {prog.pricings?.[0]
-                            ? `${prog.pricings[0].currency} ${prog.pricings[0].amount}`
-                            : '₹4,999'}
-                        </span>
+              </thead>
+              <tbody className="divide-y divide-borderLight/60 text-xs">
+                {paginatedPrograms.length > 0 ? (
+                  paginatedPrograms.map((p) => {
+                    const topicList = p.topics?.map((t) => t.topic.name) || [];
+                    const pricingsCount = p.pricings?.length || 0;
+
+                    return (
+                      <tr key={p.id} className="hover:bg-bgSoft/40 transition">
+                        {/* Title & Slug */}
+                        <td className="py-4 px-6 max-w-xs">
+                          <div className="font-black text-textPrimary text-sm line-clamp-1">{p.title}</div>
+                          <div className="text-[11px] font-mono text-textMuted mt-0.5">{p.slug}</div>
+                        </td>
+
+                        {/* Domain / Topics */}
+                        <td className="py-4 px-6">
+                          <div className="flex flex-wrap gap-1 max-w-[200px]">
+                            {topicList.length > 0 ? (
+                              topicList.map((top, idx) => (
+                                <span
+                                  key={idx}
+                                  className="inline-block rounded-md bg-bgSoft px-2 py-0.5 text-[10px] font-bold text-textPrimary border border-borderLight"
+                                >
+                                  {top}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-textMuted text-[11px] italic">General Track</span>
+                            )}
+                          </div>
+                        </td>
+
+                        {/* Duration */}
+                        <td className="py-4 px-6 font-bold text-textPrimary whitespace-nowrap">
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="h-3.5 w-3.5 text-brand" />
+                            <span>{p.durationHours} Hours</span>
+                          </div>
+                        </td>
+
+                        {/* Multi-Country Pricing */}
+                        <td className="py-4 px-6 whitespace-nowrap">
+                          <div className="flex items-center gap-1.5">
+                            <Globe className="h-3.5 w-3.5 text-textMuted" />
+                            <span className="font-extrabold text-textPrimary">
+                              {pricingsCount} {pricingsCount === 1 ? 'Country' : 'Countries'}
+                            </span>
+                          </div>
+                        </td>
+
+                        {/* Status */}
+                        <td className="py-4 px-6 whitespace-nowrap">
+                          <span
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                              p.status === 'published'
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                : p.status === 'draft'
+                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                : 'bg-gray-100 text-gray-700 border border-gray-200'
+                            }`}
+                          >
+                            <CheckCircle2 className="h-3 w-3" />
+                            {p.status}
+                          </span>
+                        </td>
+
+                        {/* Actions */}
+                        <td className="py-4 px-6 text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-2">
+                            <Link
+                              href={`/admin/program?id=${p.id}`}
+                              className="p-2 rounded-xl bg-bgSoft text-textPrimary hover:bg-brand hover:text-white transition cursor-pointer"
+                              title="Edit Program"
+                            >
+                              <Pencil className="h-3.5 w-3.5" />
+                            </Link>
+                            {canManageCatalogue && (
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteProgram(p.id, p.title)}
+                                className="p-2 rounded-xl bg-dangerLight text-danger hover:bg-danger hover:text-white transition cursor-pointer"
+                                title="Delete Program"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="py-16 text-center text-textMuted">
+                      <div className="flex flex-col items-center justify-center gap-2">
+                        <BookOpen className="h-8 w-8 text-textMuted/40" />
+                        <span className="text-sm font-black text-textPrimary">No Programs Found</span>
+                        <p className="text-xs text-textMuted">
+                          {searchTerm || statusFilter !== 'all'
+                            ? 'No programs matched your current search or status filter.'
+                            : 'No internship programs have been created yet.'}
+                        </p>
                       </div>
                     </td>
-                    {canManageCatalogue && (
-                      <td className="py-4 px-5 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <Link
-                            href={`/admin/program?id=${prog.id}`}
-                            className="p-2 rounded-xl text-brand hover:bg-brand/10 transition-all cursor-pointer inline-flex items-center justify-center"
-                            title="Edit Program"
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Link>
-                          <button
-                            onClick={() => handleDeleteProgram(prog.id, prog.title)}
-                            className="p-2 rounded-xl text-danger hover:bg-dangerLight hover:text-dangerDark transition-all cursor-pointer inline-flex items-center justify-center"
-                            title="Delete Program"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    )}
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Datatable Footer / Pagination Controls */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 bg-bgSoft/40 border-t border-borderLight text-xs font-bold text-textMuted">
-          <div>
-            Showing <span className="text-textPrimary font-black">{totalEntries > 0 ? startIndex + 1 : 0}</span> to{' '}
-            <span className="text-textPrimary font-black">{Math.min(startIndex + pageSize, totalEntries)}</span> of{' '}
-            <span className="text-textPrimary font-black">{totalEntries}</span> entries
+                )}
+              </tbody>
+            </table>
           </div>
+        )}
 
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => handlePageChange(1)}
-              disabled={currentPage === 1}
-              className="p-1.5 rounded-lg border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              title="First Page"
-            >
-              <ChevronsLeft className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="p-1.5 rounded-lg border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              title="Previous Page"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
+        {/* Pagination Bar */}
+        {!loading && totalEntries > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 border-t border-borderLight bg-bgSoft/20">
+            <div className="text-xs font-bold text-textMuted">
+              Showing{' '}
+              <span className="font-extrabold text-textPrimary">
+                {startIndex + 1}
+              </span>{' '}
+              to{' '}
+              <span className="font-extrabold text-textPrimary">
+                {Math.min(startIndex + pageSize, totalEntries)}
+              </span>{' '}
+              of <span className="font-extrabold text-textPrimary">{totalEntries}</span> programs
+            </div>
 
-            <span className="px-3 text-xs font-black text-textPrimary">
-              Page {currentPage} of {totalPages}
-            </span>
+            {totalPages > 1 && (
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-lg border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                </button>
 
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="p-1.5 rounded-lg border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              title="Next Page"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => handlePageChange(totalPages)}
-              disabled={currentPage === totalPages}
-              className="p-1.5 rounded-lg border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              title="Last Page"
-            >
-              <ChevronsRight className="h-4 w-4" />
-            </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((pg) => (
+                  <button
+                    key={pg}
+                    type="button"
+                    onClick={() => handlePageChange(pg)}
+                    className={`h-8 w-8 rounded-lg text-xs font-black transition cursor-pointer ${
+                      currentPage === pg
+                        ? 'bg-brand text-white'
+                        : 'border border-borderLight bg-white text-textPrimary hover:bg-bgSoft'
+                    }`}
+                  >
+                    {pg}
+                  </button>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-lg border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
+                >
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

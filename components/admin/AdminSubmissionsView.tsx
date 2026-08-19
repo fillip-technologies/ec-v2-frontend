@@ -24,6 +24,8 @@ import { CustomDropdown } from '@/components/shared/CustomDropdown';
 
 export function AdminSubmissionsView() {
   const [submissions, setSubmissions] = useState<any[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -48,9 +50,21 @@ export function AdminSubmissionsView() {
   const fetchSubmissions = async () => {
     setLoading(true);
     try {
-      const data = await getAdminSubmissions();
-      if (Array.isArray(data)) {
-        setSubmissions(data);
+      const res = await getAdminSubmissions({
+        page: currentPage,
+        limit: pageSize,
+        search: searchTerm.trim() || undefined,
+        status: filterStatus !== 'ALL' ? filterStatus : undefined,
+      });
+
+      if (res && res.data && res.meta) {
+        setSubmissions(res.data);
+        setTotalCount(res.meta.total);
+        setTotalPages(res.meta.totalPages);
+      } else if (Array.isArray(res)) {
+        setSubmissions(res);
+        setTotalCount(res.length);
+        setTotalPages(Math.ceil(res.length / pageSize) || 1);
       }
     } catch (err: any) {
       setError(err.message || 'Failed to fetch submissions');
@@ -61,7 +75,7 @@ export function AdminSubmissionsView() {
 
   useEffect(() => {
     fetchSubmissions();
-  }, []);
+  }, [currentPage, pageSize, searchTerm, filterStatus]);
 
   const handleOpenReview = (sub: any) => {
     setReviewingSub(sub);
@@ -188,12 +202,8 @@ export function AdminSubmissionsView() {
   }, [submissions, searchTerm, filterStatus, sortField, sortAsc]);
 
   // Pagination Calculations
-  const totalRows = filteredAndSortedSubmissions.length;
-  const totalPages = Math.ceil(totalRows / pageSize) || 1;
-  const paginatedSubmissions = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return filteredAndSortedSubmissions.slice(start, start + pageSize);
-  }, [filteredAndSortedSubmissions, currentPage, pageSize]);
+  const totalRows = totalCount || filteredAndSortedSubmissions.length;
+  const paginatedSubmissions = filteredAndSortedSubmissions;
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {

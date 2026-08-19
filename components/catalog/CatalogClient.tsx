@@ -6,10 +6,18 @@ import { Cluster, Country, Program, Technology, Topic } from "@/types/catalog";
 import { CatalogHero } from "./CatalogHero";
 import { CatalogFilterSidebar } from "./CatalogFilterSidebar";
 import { ProgramCard } from "./ProgramCard";
-import { SearchX, RotateCcw } from "lucide-react";
+import {
+  SearchX,
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 import { detectUserCurrency } from "@/lib/utils/currency";
 import { useAuth } from "@/context/AuthContext";
 import { getStudentPrograms } from "@/lib/api/student";
+import { CustomDropdown } from "@/components/shared/CustomDropdown";
 
 interface CatalogClientProps {
   initialPrograms: Program[];
@@ -51,7 +59,7 @@ function CatalogClientContent({
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
-  const CARDS_PER_PAGE = 12;
+  const [pageSize, setPageSize] = useState(6);
 
   // Read URL query parameters on navigation from MegaMenu links
   useEffect(() => {
@@ -59,11 +67,13 @@ function CatalogClientContent({
     const tId = searchParams.get("topicId");
     const country = searchParams.get("countryCode");
     const dur = searchParams.get("durationHours");
+    const page = searchParams.get("page");
 
     if (cId) setSelectedClusterId(Number(cId));
     if (tId) setSelectedTopicId(Number(tId));
     if (country) setSelectedCountryCode(country.toUpperCase());
     if (dur) setSelectedDuration(Number(dur));
+    if (page) setCurrentPage(Number(page) || 1);
   }, [searchParams]);
 
   // Reset page when filters or browsing location change
@@ -111,8 +121,7 @@ function CatalogClientContent({
       selectedClusterId !== null ||
       selectedTopicId !== null ||
       selectedTechId !== null ||
-      selectedDuration !== null 
-      // selectedStatus !== "all"
+      selectedDuration !== null
     );
   }, [
     searchQuery,
@@ -120,7 +129,6 @@ function CatalogClientContent({
     selectedTopicId,
     selectedTechId,
     selectedDuration,
-    // selectedStatus,
   ]);
 
   const handleClearFilters = () => {
@@ -129,7 +137,6 @@ function CatalogClientContent({
     setSelectedTopicId(null);
     setSelectedTechId(null);
     setSelectedDuration(null);
-    // setSelectedStatus("all");
   };
 
   // Filter programs dynamically based on criteria and browsing location
@@ -199,12 +206,19 @@ function CatalogClientContent({
   ]);
 
   // Paginated Programs List
+  const totalEntries = filteredPrograms.length;
+  const totalPages = Math.ceil(totalEntries / pageSize) || 1;
+  const startIndex = (currentPage - 1) * pageSize;
   const paginatedPrograms = useMemo(() => {
-    const startIndex = (currentPage - 1) * CARDS_PER_PAGE;
-    return filteredPrograms.slice(startIndex, startIndex + CARDS_PER_PAGE);
-  }, [filteredPrograms, currentPage]);
+    return filteredPrograms.slice(startIndex, startIndex + pageSize);
+  }, [filteredPrograms, startIndex, pageSize]);
 
-  const totalPages = Math.ceil(filteredPrograms.length / CARDS_PER_PAGE);
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      window.scrollTo({ top: 400, behavior: "smooth" });
+    }
+  };
 
   return (
     <main className="min-h-screen bg-bgBody text-textPrimary">
@@ -236,19 +250,17 @@ function CatalogClientContent({
             onTechSelect={setSelectedTechId}
             selectedDuration={selectedDuration}
             onDurationSelect={setSelectedDuration}
-            // selectedStatus={selectedStatus}
-            // onStatusSelect={setSelectedStatus}
             onClearFilters={handleClearFilters}
             hasActiveFilters={hasActiveFilters}
           />
 
           {/* Right Programs Column */}
           <div>
-            {/* Header Result Counter & Active Filter Pills */}
+            {/* Header Result Counter, Active Filters & Page Size Selector */}
             <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-glassBorder bg-white/80 p-4 shadow-xs">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-extrabold text-textPrimary">
-                  Showing {filteredPrograms.length} of {initialPrograms.length} Programs
+                  Showing {totalEntries > 0 ? startIndex + 1 : 0}–{Math.min(startIndex + pageSize, totalEntries)} of {totalEntries} Programs
                 </span>
                 {activeCountry && (
                   <span className="text-xs font-bold text-textMuted hidden sm:inline">
@@ -257,14 +269,31 @@ function CatalogClientContent({
                 )}
               </div>
 
-              {hasActiveFilters && (
-                <button
-                  onClick={handleClearFilters}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:underline cursor-pointer"
-                >
-                  <RotateCcw className="h-3.5 w-3.5" /> Reset All Filters
-                </button>
-              )}
+              <div className="flex items-center gap-4">
+                {hasActiveFilters && (
+                  <button
+                    onClick={handleClearFilters}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:underline cursor-pointer"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" /> Reset All Filters
+                  </button>
+                )}
+
+                {/* Cards per page */}
+                <div className="flex items-center gap-2 text-xs font-bold text-textMuted border-l border-borderLight pl-3">
+                  <span>Per page:</span>
+                  <div className="w-18">
+                    <CustomDropdown
+                      options={[3, 6, 12, 24]}
+                      value={pageSize}
+                      onChange={(val) => {
+                        setPageSize(Number(val));
+                        setCurrentPage(1);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Programs Cards Grid */}
@@ -282,40 +311,73 @@ function CatalogClientContent({
                   ))}
                 </div>
 
-                {/* Pagination Controls */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-1.5 pt-4">
+                {/* Pagination Controls Bar */}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-glassBorder bg-white/90 p-4 shadow-xs">
+                  <div className="text-xs font-bold text-textMuted">
+                    Showing <span className="text-textPrimary font-black">{totalEntries > 0 ? startIndex + 1 : 0}</span> to{" "}
+                    <span className="text-textPrimary font-black">{Math.min(startIndex + pageSize, totalEntries)}</span> of{" "}
+                    <span className="text-textPrimary font-black">{totalEntries}</span> programs
+                  </div>
+
+                  <div className="flex items-center gap-1.5">
                     <button
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      onClick={() => handlePageChange(1)}
                       disabled={currentPage === 1}
-                      className="rounded-xl border border-borderLight bg-white px-3 py-2 text-xs font-bold text-textPrimary hover:bg-bgSoft disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+                      className="p-2 rounded-xl border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-2xs transition"
+                      title="First Page"
                     >
-                      Previous
+                      <ChevronsLeft className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className="p-2 rounded-xl border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-2xs transition"
+                      title="Previous Page"
+                    >
+                      <ChevronLeft className="h-3.5 w-3.5" />
                     </button>
 
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => setCurrentPage(page)}
-                        className={`h-9 w-9 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
-                          currentPage === page
-                            ? 'bg-brand text-white'
-                            : 'border border-borderLight bg-white text-textPrimary hover:bg-bgSoft'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
+                    {/* Page Numbers */}
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1)
+                        .filter((p) => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                        .map((page, idx, arr) => (
+                          <React.Fragment key={page}>
+                            {idx > 0 && arr[idx - 1] !== page - 1 && (
+                              <span className="px-1 text-xs text-textMuted font-bold">...</span>
+                            )}
+                            <button
+                              onClick={() => handlePageChange(page)}
+                              className={`h-8 w-8 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+                                currentPage === page
+                                  ? "bg-brand text-white shadow-xs"
+                                  : "border border-borderLight bg-white text-textPrimary hover:bg-bgSoft"
+                              }`}
+                            >
+                              {page}
+                            </button>
+                          </React.Fragment>
+                        ))}
+                    </div>
 
                     <button
-                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage === totalPages}
-                      className="rounded-xl border border-borderLight bg-white px-3 py-2 text-xs font-bold text-textPrimary hover:bg-bgSoft disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
+                      className="p-2 rounded-xl border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-2xs transition"
+                      title="Next Page"
                     >
-                      Next
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handlePageChange(totalPages)}
+                      disabled={currentPage === totalPages}
+                      className="p-2 rounded-xl border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-2xs transition"
+                      title="Last Page"
+                    >
+                      <ChevronsRight className="h-3.5 w-3.5" />
                     </button>
                   </div>
-                )}
+                </div>
               </div>
             ) : (
               /* Empty Results State */
@@ -342,10 +404,18 @@ function CatalogClientContent({
   );
 }
 
-export const CatalogClient: React.FC<CatalogClientProps> = (props) => {
+export function CatalogClient(props: CatalogClientProps) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-bgBody p-10 text-center font-bold">Loading Catalogue...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-bgBody">
+          <p className="text-xs font-bold text-textMuted uppercase tracking-wider">
+            Loading Catalog...
+          </p>
+        </div>
+      }
+    >
       <CatalogClientContent {...props} />
     </Suspense>
   );
-};
+}

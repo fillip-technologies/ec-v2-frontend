@@ -4,7 +4,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import {
   GraduationCap,
   Search,
-  Filter,
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
@@ -16,6 +15,7 @@ import {
   BookOpen,
   Award,
   RefreshCw,
+  Loader2,
 } from 'lucide-react';
 import { CustomDropdown } from '@/components/shared/CustomDropdown';
 import { getAdminStudents } from '@/lib/api/admin';
@@ -32,10 +32,11 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
   onSelectStudent,
 }) => {
   const [students, setStudents] = useState<any[]>([]);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
 
   // DataTable State
   const [sortField, setSortField] = useState<StudentSortField>('createdAt');
@@ -48,8 +49,21 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
     else setLoading(true);
 
     try {
-      const data = await getAdminStudents();
-      setStudents(Array.isArray(data) ? data : []);
+      const res = await getAdminStudents({
+        page: currentPage,
+        limit: pageSize,
+        search: searchTerm.trim() || undefined,
+      });
+
+      if (res && res.data && res.meta) {
+        setStudents(res.data);
+        setTotalCount(res.meta.total);
+        setTotalPages(res.meta.totalPages);
+      } else if (Array.isArray(res)) {
+        setStudents(res);
+        setTotalCount(res.length);
+        setTotalPages(Math.ceil(res.length / pageSize) || 1);
+      }
       if (isManual) {
         showToast.success('Students directory refreshed', 'Synced');
       }
@@ -63,7 +77,7 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
 
   useEffect(() => {
     fetchStudentsList();
-  }, []);
+  }, [currentPage, pageSize, searchTerm]);
 
   const handleSort = (field: StudentSortField) => {
     if (sortField === field) {
@@ -74,34 +88,12 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
     }
   };
 
-  // 1. Filtered and Sorted Students
-  const filteredAndSortedStudents = useMemo(() => {
-    let result = students.filter((s) => {
-      const name = s.name || `${s.firstName || ''} ${s.lastName || ''}`.trim();
-      const email = s.email || '';
-      const phone = s.phoneNo || '';
-      const usn = s.usn || '';
-      const college = s.collegeName || '';
-      const branch = s.branch || '';
-
-      const query = searchTerm.toLowerCase().trim();
-      const matchesSearch =
-        !query ||
-        name.toLowerCase().includes(query) ||
-        email.toLowerCase().includes(query) ||
-        phone.includes(query) ||
-        usn.toLowerCase().includes(query) ||
-        college.toLowerCase().includes(query) ||
-        branch.toLowerCase().includes(query);
-
-      const matchesStatus = statusFilter === 'all' || s.status === statusFilter;
-
-      return matchesSearch && matchesStatus;
-    });
-
-    result.sort((a, b) => {
-      let valA = a[sortField] ?? '';
-      let valB = b[sortField] ?? '';
+  // Sorted Students for the active page
+  const sortedStudents = useMemo(() => {
+    const list = [...students];
+    list.sort((a, b) => {
+      let valA: any = a[sortField] ?? '';
+      let valB: any = b[sortField] ?? '';
 
       if (typeof valA === 'string') valA = valA.toLowerCase();
       if (typeof valB === 'string') valB = valB.toLowerCase();
@@ -111,14 +103,8 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
       return 0;
     });
 
-    return result;
-  }, [students, searchTerm, statusFilter, sortField, sortOrder]);
-
-  // 2. Pagination Calculations
-  const totalEntries = filteredAndSortedStudents.length;
-  const totalPages = Math.ceil(totalEntries / pageSize) || 1;
-  const startIndex = (currentPage - 1) * pageSize;
-  const paginatedStudents = filteredAndSortedStudents.slice(startIndex, startIndex + pageSize);
+    return list;
+  }, [students, sortField, sortOrder]);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -126,26 +112,28 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
     }
   };
 
+  const startIndex = (currentPage - 1) * pageSize;
+
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header Banner */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-[24px] border border-borderLight shadow-xs">
         <div>
           <h1 className="text-xl font-black text-textPrimary flex items-center gap-2">
             <GraduationCap className="h-6 w-6 text-brand" />
-            Students Detailes
+            Students Directory & Dossier Registry
           </h1>
           <p className="text-xs text-textMuted mt-1">
-            Browse complete student cohorts, monitor academic tracks, and inspect 360-degree dossiers.
+            Browse enrolled student cohorts, inspect academic progression, review submission metrics, and verify awarded certificates.
           </p>
         </div>
 
         <button
           onClick={() => fetchStudentsList(true)}
-          disabled={refreshing}
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-borderLight text-xs font-bold text-textPrimary hover:bg-bgSoft transition cursor-pointer shadow-2xs"
+          disabled={refreshing || loading}
+          className="inline-flex items-center gap-2 rounded-xl border border-borderLight bg-bgSoft px-3.5 py-2 text-xs font-bold text-textPrimary hover:bg-borderLight hover:text-brand transition cursor-pointer disabled:opacity-50"
         >
-          <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin text-brand' : 'text-textMuted'}`} />
+          <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin text-brand' : ''}`} />
           <span>{refreshing ? 'Refreshing...' : 'Refresh Directory'}</span>
         </button>
       </div>
@@ -153,11 +141,11 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
       {/* Datatable Controls Bar */}
       <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-5 rounded-[20px] border border-borderLight shadow-xs">
         {/* Search Input */}
-        <div className="relative w-full md:w-80">
+        <div className="relative w-full md:w-96">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-textMuted" />
           <input
             type="text"
-            placeholder="Search student name, email, USN, college..."
+            placeholder="Search by name, email, USN, college, or branch..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -167,33 +155,13 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
           />
         </div>
 
-        {/* Filters & Rows per page */}
-        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-          <div className="flex items-center gap-1.5 overflow-x-auto">
-            <Filter className="h-4 w-4 text-textMuted shrink-0 mr-1" />
-            {['all', 'active', 'pending', 'disabled'].map((st) => (
-              <button
-                key={st}
-                onClick={() => {
-                  setStatusFilter(st);
-                  setCurrentPage(1);
-                }}
-                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold capitalize transition-all cursor-pointer ${
-                  statusFilter === st
-                    ? 'bg-brand text-white shadow-xs'
-                    : 'bg-bgSoft text-textPrimary hover:bg-borderLight'
-                }`}
-              >
-                {st}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-2 text-xs font-bold text-textMuted border-l border-borderLight pl-3">
-            <span>Rows:</span>
+        {/* Page Size Selector */}
+        <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+          <div className="flex items-center gap-2 text-xs font-bold text-textMuted pl-3">
+            <span>Rows per page:</span>
             <div className="w-20">
               <CustomDropdown
-                options={[10, 25, 50, 100]}
+                options={[10, 25, 50]}
                 value={pageSize}
                 onChange={(val) => {
                   setPageSize(Number(val));
@@ -205,118 +173,139 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
         </div>
       </div>
 
-      {/* Datatable Wrapper */}
+      {/* Students DataTable Container */}
       <div className="bg-white rounded-[24px] border border-borderLight shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-bgSoft/80 border-b border-borderLight text-[11px] font-extrabold uppercase tracking-wider text-textMuted select-none">
+              <tr className="border-b border-borderLight bg-bgSoft/60 text-[11px] font-extrabold uppercase tracking-wider text-textMuted">
                 <th
+                  className="py-4 px-6 cursor-pointer hover:text-brand transition"
                   onClick={() => handleSort('name')}
-                  className="py-4 px-5 cursor-pointer hover:text-brand transition-all"
                 >
                   <div className="flex items-center gap-1.5">
                     <span>Student Profile</span>
-                    <ArrowUpDown className="h-3 w-3 text-textMuted" />
+                    <ArrowUpDown className="h-3.5 w-3.5" />
                   </div>
                 </th>
                 <th
+                  className="py-4 px-6 cursor-pointer hover:text-brand transition"
                   onClick={() => handleSort('collegeName')}
-                  className="py-4 px-4 cursor-pointer hover:text-brand transition-all"
                 >
                   <div className="flex items-center gap-1.5">
-                    <span>College / Campus</span>
-                    <ArrowUpDown className="h-3 w-3 text-textMuted" />
+                    <span>Institution / Branch</span>
+                    <ArrowUpDown className="h-3.5 w-3.5" />
                   </div>
                 </th>
                 <th
-                  onClick={() => handleSort('enrollmentCount')}
-                  className="py-4 px-4 text-center cursor-pointer hover:text-brand transition-all"
+                  className="py-4 px-6 cursor-pointer hover:text-brand transition"
+                  onClick={() => handleSort('usn')}
                 >
-                  <div className="flex items-center justify-center gap-1.5">
-                    <span>Programs & Steps</span>
-                    <ArrowUpDown className="h-3 w-3 text-textMuted" />
+                  <div className="flex items-center gap-1.5">
+                    <span>USN / Cohort</span>
+                    <ArrowUpDown className="h-3.5 w-3.5" />
                   </div>
                 </th>
-                <th className="py-4 px-4">
-                  <span>Status</span>
+                <th
+                  className="py-4 px-6 cursor-pointer hover:text-brand transition"
+                  onClick={() => handleSort('enrollmentCount')}
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span>Tracks & Reviews</span>
+                    <ArrowUpDown className="h-3.5 w-3.5" />
+                  </div>
                 </th>
-                <th className="py-4 px-6 text-right whitespace-nowrap min-w-[80px]">Action</th>
+                <th className="py-4 px-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-borderLight/60 text-xs">
+            <tbody className="divide-y divide-borderLight/60 text-xs font-medium text-textPrimary">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-textMuted font-bold">
-                    <RefreshCw className="h-6 w-6 animate-spin text-brand mx-auto mb-2" />
-                    Loading student cohort directory...
+                  <td colSpan={5} className="py-20 text-center text-textMuted">
+                    <div className="flex flex-col items-center justify-center gap-3">
+                      <Loader2 className="h-8 w-8 animate-spin text-brand" />
+                      <span className="text-xs font-bold uppercase tracking-wider text-textMuted">
+                        Loading Students from Server...
+                      </span>
+                    </div>
                   </td>
                 </tr>
-              ) : paginatedStudents.length === 0 ? (
+              ) : sortedStudents.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-textMuted font-bold">
-                    No students found matching your search.
+                  <td colSpan={5} className="py-16 text-center text-textMuted">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <GraduationCap className="h-8 w-8 text-textMuted/40" />
+                      <span className="text-sm font-black text-textPrimary">No Students Found</span>
+                      <p className="text-xs text-textMuted">
+                        {searchTerm
+                          ? 'No student profiles matched your search keyword.'
+                          : 'No students registered in the platform database yet.'}
+                      </p>
+                    </div>
                   </td>
                 </tr>
               ) : (
-                paginatedStudents.map((s) => (
+                sortedStudents.map((s) => (
                   <tr
                     key={s.id}
-                    className="hover:bg-bgSoft/40 transition-all group cursor-pointer"
                     onClick={() => onSelectStudent(s.id)}
+                    className="hover:bg-bgSoft/40 transition-colors cursor-pointer group"
                   >
-                    {/* Student Info */}
-                    <td className="py-4 px-5">
-                      <div className="font-black text-textPrimary flex items-center gap-2">
-                        <span>{s.name || 'Student Intern'}</span>
-                        <span className="rounded-md bg-brand/10 px-1.5 py-0.5 text-[10px] font-mono font-bold text-brand">
-                          #ID-{s.id}
+                    {/* Student Profile (Avatar + Name + Email) */}
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand/10 text-brand font-black text-xs group-hover:bg-brand group-hover:text-white transition-all shadow-2xs">
+                          {(s.firstName?.[0] || s.email?.[0] || 'S').toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-black text-textPrimary text-sm group-hover:text-brand transition-colors">
+                            {s.name || `${s.firstName || ''} ${s.lastName || ''}`.trim() || 'Student'}
+                          </div>
+                          <div className="flex items-center gap-1.5 text-[11px] text-textMuted mt-0.5">
+                            <Mail className="h-3 w-3 shrink-0" />
+                            <span className="truncate">{s.email || 'N/A'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* College & Branch */}
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-textPrimary">
+                        <Building className="h-3.5 w-3.5 text-brand shrink-0" />
+                        <span className="truncate max-w-[200px]">{s.collegeName || 'Self-Enrolled / Direct'}</span>
+                      </div>
+                      {s.branch && (
+                        <div className="text-[11px] font-bold text-textMuted mt-0.5 pl-5">
+                          {s.branch} {s.graduationYear ? `• Class of ${s.graduationYear}` : ''}
+                        </div>
+                      )}
+                    </td>
+
+                    {/* USN / Cohort */}
+                    <td className="py-4 px-6">
+                      <div className="font-mono text-xs font-bold text-textPrimary">
+                        {s.usn || 'N/A'}
+                      </div>
+                      <div className="text-[10px] font-bold text-textMuted uppercase tracking-wider mt-0.5">
+                        {s.countryName || 'Global'}
+                      </div>
+                    </td>
+
+                    {/* Tracks & Reviews Badges */}
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[11px] font-bold text-blue-700 border border-blue-200">
+                          <BookOpen className="h-3 w-3 text-blue-500" />
+                          {s.enrollmentCount || 0} Tracks
                         </span>
+                        {s.certificateCount > 0 && (
+                          <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700 border border-emerald-200">
+                            <Award className="h-3 w-3 text-emerald-500" />
+                            {s.certificateCount} Certs
+                          </span>
+                        )}
                       </div>
-                      <div className="text-[11px] text-textMuted mt-0.5 flex items-center gap-1">
-                        <Mail className="h-3 w-3 shrink-0" />
-                        <span>{s.email}</span>
-                      </div>
-                    </td>
-
-                    {/* College */}
-                    <td className="py-4 px-4">
-                      <div className="font-extrabold text-textPrimary flex items-center gap-1">
-                        <Building className="h-3 w-3 text-brand shrink-0" />
-                        <span className="truncate max-w-[500px]">{s.collegeName || 'N/A'}</span>
-                      </div>
-                      <div className="text-[10px] text-textMuted mt-0.5">
-                        {s.countryName || 'India'}
-                      </div>
-                    </td>
-
-                    {/* Programs & Steps */}
-                    <td className="py-4 px-4 text-center">
-                      <div className="inline-flex items-center gap-3">
-                        <div className="flex items-center gap-1 font-black text-textPrimary" title="Enrolled Programs">
-                          <BookOpen className="h-3.5 w-3.5 text-brand" />
-                          <span>{s.enrollmentCount || 0}</span>
-                        </div>
-                        <div className="flex items-center gap-1 font-bold text-emerald-600" title="Submissions">
-                          <Award className="h-3.5 w-3.5 text-amber-500" />
-                          <span>{s.certificateCount || 0}</span>
-                        </div>
-                      </div>
-                    </td>
-
-                    {/* Status */}
-                    <td className="py-4 px-4">
-                      <span
-                        className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                          s.status === 'active'
-                            ? 'bg-statusPassedBg text-statusPassedText'
-                            : s.status === 'disabled'
-                            ? 'bg-statusErrorBg text-statusErrorText'
-                            : 'bg-statusEvaluatingBg text-statusEvaluatingText'
-                        }`}
-                      >
-                        {s.status}
-                      </span>
                     </td>
 
                     {/* Action */}
@@ -343,15 +332,15 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
         {/* Datatable Footer / Pagination Controls */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 bg-bgSoft/40 border-t border-borderLight text-xs font-bold text-textMuted">
           <div>
-            Showing <span className="text-textPrimary font-black">{totalEntries > 0 ? startIndex + 1 : 0}</span> to{' '}
-            <span className="text-textPrimary font-black">{Math.min(startIndex + pageSize, totalEntries)}</span> of{' '}
-            <span className="text-textPrimary font-black">{totalEntries}</span> students
+            Showing <span className="text-textPrimary font-black">{totalCount > 0 ? startIndex + 1 : 0}</span> to{' '}
+            <span className="text-textPrimary font-black">{Math.min(startIndex + pageSize, totalCount)}</span> of{' '}
+            <span className="text-textPrimary font-black">{totalCount}</span> students
           </div>
 
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => handlePageChange(1)}
-              disabled={currentPage === 1}
+              disabled={currentPage === 1 || loading}
               className="p-1.5 rounded-lg border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               title="First Page"
             >
@@ -359,7 +348,7 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
             </button>
             <button
               onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
+              disabled={currentPage === 1 || loading}
               className="p-1.5 rounded-lg border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               title="Previous Page"
             >
@@ -372,7 +361,7 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
 
             <button
               onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
+              disabled={currentPage === totalPages || loading}
               className="p-1.5 rounded-lg border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               title="Next Page"
             >
@@ -380,7 +369,7 @@ export const AdminStudentsListView: React.FC<AdminStudentsListViewProps> = ({
             </button>
             <button
               onClick={() => handlePageChange(totalPages)}
-              disabled={currentPage === totalPages}
+              disabled={currentPage === totalPages || loading}
               className="p-1.5 rounded-lg border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               title="Last Page"
             >
