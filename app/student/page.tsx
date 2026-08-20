@@ -131,6 +131,10 @@ const CollegeReportsView = dynamic(
   () => import('@/components/college/CollegeReportsView').then((m) => m.CollegeReportsView),
   { loading: ViewLoadingFallback }
 );
+const UserProfileView = dynamic(
+  () => import('@/components/profile/UserProfileView').then((m) => m.UserProfileView),
+  { loading: ViewLoadingFallback }
+);
 
 function DashboardContent() {
   const { user, roleName } = useAuth();
@@ -461,6 +465,10 @@ function DashboardContent() {
               {activeSlug === 'orders' && (
                 <AdminOrdersView />
               )}
+
+              {activeSlug === 'profile' && (
+                <UserProfileView />
+              )}
             </Suspense>
           ) : isCollege ? (
             /* B2B College Portal Views */
@@ -488,6 +496,10 @@ function DashboardContent() {
                 <CollegeReportsView
                   reportsData={collegeReports}
                 />
+              )}
+
+              {activeSlug === 'profile' && (
+                <UserProfileView />
               )}
             </Suspense>
           ) : (
@@ -533,6 +545,10 @@ function DashboardContent() {
                 <StudentCertificateView
                   onNavigateToProgram={() => handleNavigateSlug('program')}
                 />
+              )}
+
+              {activeSlug === 'profile' && (
+                <UserProfileView />
               )}
             </Suspense>
           )}

@@ -175,20 +175,42 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
               {profileDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 rounded-[20px] border border-borderLight bg-white p-2 shadow-lg z-50">
                   <Link
-                    href="/student"
+                    href={
+                      user.role === 'college'
+                        ? '/college'
+                        : user.role === 'admin' || user.role === 'super_admin'
+                        ? '/admin'
+                        : '/student'
+                    }
                     onClick={() => setProfileDropdownOpen(false)}
-                    className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold text-textPrimary hover:bg-bgSoft hover:text-brand transition-all text-left"
+                    className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-textPrimary hover:bg-bgSoft hover:text-brand transition-all text-left"
                   >
                     <User className="h-4 w-4" />
                     <span>Go to Dashboard</span>
                   </Link>
+
+                  <Link
+                    href={
+                      user.role === 'college'
+                        ? '/college?tab=profile'
+                        : user.role === 'admin' || user.role === 'super_admin'
+                        ? '/admin?tab=profile'
+                        : '/student?tab=profile'
+                    }
+                    onClick={() => setProfileDropdownOpen(false)}
+                    className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-textPrimary hover:bg-bgSoft hover:text-brand transition-all text-left"
+                  >
+                    <User className="h-4 w-4 text-brand" />
+                    <span>My Profile</span>
+                  </Link>
+
                   <button
                     type="button"
                     onClick={() => {
                       setProfileDropdownOpen(false);
                       logout();
                     }}
-                    className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-bold text-danger hover:bg-dangerLight transition-all text-left cursor-pointer"
+                    className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-bold text-danger hover:bg-dangerLight transition-all text-left cursor-pointer border-t border-borderLight mt-1"
                   >
                     <LogOut className="h-4 w-4" />
                     <span>Logout</span>

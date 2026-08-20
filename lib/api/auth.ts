@@ -165,3 +165,60 @@ export async function refreshSession(refreshToken: string): Promise<AuthResponse
 
   return data;
 }
+
+import { apiClient } from './client';
+
+/**
+ * GET /auth/profile
+ * Fetch full profile for logged in user
+ */
+export async function getAuthProfile(): Promise<any> {
+  const res = await apiClient(`${BACKEND_URL}/auth/profile`, {
+    cache: 'no-store',
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || 'Failed to fetch user profile');
+  }
+
+  return await res.json();
+}
+
+/**
+ * PATCH /auth/profile
+ * Update profile details for logged in user
+ */
+export async function updateAuthProfile(payload: any): Promise<any> {
+  const res = await apiClient(`${BACKEND_URL}/auth/profile`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.message || 'Failed to update user profile');
+  }
+
+  return data;
+}
+
+/**
+ * POST /auth/change-password
+ * Change password for logged in user
+ */
+export async function changeAuthPassword(payload: { currentPassword: string; newPassword: string }): Promise<any> {
+  const res = await apiClient(`${BACKEND_URL}/auth/change-password`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.message || 'Failed to update password');
+  }
+
+  return data;
+}
