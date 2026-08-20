@@ -80,7 +80,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         {showPageSizeSelector && onPageSizeChange && pageSizeOptions.length > 0 && (
           <div className="flex items-center gap-2 border-l border-borderLight pl-4">
             <span>Per page:</span>
-            <div className="w-24 min-w-[88px]">
+            <div className="w-24 min-w-22">
               <CustomDropdown
                 options={pageSizeOptions}
                 value={pageSize}
@@ -129,11 +129,10 @@ export const Pagination: React.FC<PaginationProps> = ({
               key={`page-${page}`}
               onClick={() => onPageChange(page)}
               disabled={disabled}
-              className={`h-7 w-7 rounded-lg text-xs font-black transition cursor-pointer ${
-                isActive
+              className={`h-7 w-7 rounded-lg text-xs font-black transition cursor-pointer ${isActive
                   ? 'bg-brand text-white shadow-2xs'
                   : 'bg-white border border-borderLight text-textPrimary hover:bg-bgSoft'
-              }`}
+                }`}
             >
               {page}
             </button>

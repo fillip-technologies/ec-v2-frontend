@@ -45,7 +45,7 @@ export const CollegeOverview: React.FC<CollegeOverviewProps> = ({
   return (
     <div className="space-y-6">
       {/* 1. Header Banner */}
-      <div className="rounded-[24px] bg-gradient-to-r from-textPrimary via-gray-900 to-brand p-6 text-white shadow-md">
+      <div className="rounded-[24px] bg-linear-to-r from-textPrimary via-gray-900 to-brand p-6 text-white shadow-md">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <span className="relative flex h-2.5 w-2.5">
@@ -280,7 +280,7 @@ export const CollegeOverview: React.FC<CollegeOverviewProps> = ({
                         : `${s.completionPercentage}%`}
                     </td>
                     <td className="py-3.5">
-                      <div className="flex items-center gap-2 max-w-[120px]">
+                      <div className="flex items-center gap-2 max-w-30">
                         <div className="h-1.5 flex-1 rounded-full bg-bgSoft overflow-hidden border border-borderLight">
                           <div
                             className="h-full rounded-full bg-brand"
