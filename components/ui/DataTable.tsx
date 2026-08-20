@@ -5,6 +5,7 @@ import { Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { Pagination } from './Pagination';
 import { EmptyState } from './EmptyState';
 import { Spinner } from './Spinner';
+import { CustomDropdown } from '@/components/shared/CustomDropdown';
 
 export interface ColumnDef<T> {
   key: string;
@@ -81,7 +82,8 @@ export function DataTable<T>({
     }
   };
 
-  const hasHeader = title || subtitle || onSearchChange || headerActions;
+  const hasPageSizeInHeader = Boolean(pagination?.onPageSizeChange && pagination?.pageSizeOptions && pagination.pageSizeOptions.length > 0);
+  const hasHeader = title || subtitle || onSearchChange || headerActions || hasPageSizeInHeader;
 
   return (
     <div
@@ -89,38 +91,57 @@ export function DataTable<T>({
     >
       {/* Header Toolbar */}
       {hasHeader && (
-        <div className="p-6 border-b border-borderLight flex flex-col md:flex-row justify-between md:items-center gap-4">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
-            {(title || subtitle) && (
-              <div className="shrink-0 mr-2">
-                {title && (
-                  <h3 className="text-base font-black text-textPrimary tracking-tight">
-                    {title}
-                  </h3>
-                )}
-                {subtitle && (
-                  <p className="text-xs text-textMuted mt-0.5">{subtitle}</p>
-                )}
-              </div>
-            )}
+        <div className="p-6 border-b border-borderLight flex flex-col gap-4">
+          {(title || subtitle) && (
+            <div>
+              {title && (
+                <h3 className="text-base font-black text-textPrimary tracking-tight">
+                  {title}
+                </h3>
+              )}
+              {subtitle && (
+                <p className="text-xs text-textMuted mt-0.5">{subtitle}</p>
+              )}
+            </div>
+          )}
 
-            {onSearchChange && (
-              <div className="relative w-full sm:w-80 md:w-96">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-textMuted" />
-                <input
-                  type="text"
-                  placeholder={searchPlaceholder}
-                  value={searchValue || ''}
-                  onChange={(e) => onSearchChange(e.target.value)}
-                  className="w-full rounded-xl bg-bgSoft pl-9 pr-3 py-2 text-xs font-bold text-textPrimary placeholder:text-textMuted border border-borderLight focus:outline-none focus:border-brand"
-                />
-              </div>
-            )}
-          </div>
+          {(onSearchChange || headerActions || hasPageSizeInHeader) && (
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+              {onSearchChange ? (
+                <div className="relative w-full sm:w-80 md:w-96">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-textMuted" />
+                  <input
+                    type="text"
+                    placeholder={searchPlaceholder}
+                    value={searchValue || ''}
+                    onChange={(e) => onSearchChange(e.target.value)}
+                    className="w-full rounded-xl bg-bgSoft pl-9 pr-3 py-2 text-xs font-bold text-textPrimary placeholder:text-textMuted border border-borderLight focus:outline-none focus:border-brand"
+                  />
+                </div>
+              ) : (
+                <div />
+              )}
 
-          {headerActions && (
-            <div className="flex flex-wrap items-center gap-3 shrink-0">
-              {headerActions}
+              {/* Top Right Controls: Rows Selector & Actions */}
+              <div className="flex flex-wrap items-center gap-3 shrink-0 self-start sm:self-auto">
+                {hasPageSizeInHeader && (
+                  <div className="flex items-center gap-2 text-xs font-bold text-textMuted">
+                    <span>Rows:</span>
+                    <div className="w-24 min-w-[88px]">
+                      <CustomDropdown
+                        options={pagination!.pageSizeOptions!}
+                        value={pagination!.pageSize}
+                        onChange={(val) => {
+                          pagination!.onPageSizeChange!(Number(val));
+                          pagination!.onPageChange(1);
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {headerActions}
+              </div>
             </div>
           )}
         </div>
@@ -244,6 +265,7 @@ export function DataTable<T>({
           pageSizeOptions={pagination.pageSizeOptions}
           onPageChange={pagination.onPageChange}
           onPageSizeChange={pagination.onPageSizeChange}
+          showPageSizeSelector={false}
           itemLabel={pagination.itemLabel}
           disabled={loading}
         />

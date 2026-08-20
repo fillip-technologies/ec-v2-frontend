@@ -511,6 +511,8 @@ function DashboardContent() {
                   profile={profileData}
                   programs={programsData}
                   projects={projects}
+                  onNavigateSlug={handleNavigateSlug}
+                  onSelectSlug={handleNavigateSlug}
                   onOpenSubmitModal={handleOpenSubmissionModal}
                 />
               )}

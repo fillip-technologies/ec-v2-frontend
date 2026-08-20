@@ -104,13 +104,12 @@ export const AdminCollegeBenchmarksTable: React.FC = () => {
       sortable: true,
       render: (c) => (
         <span
-          className={`inline-flex items-center px-2 py-0.5 rounded-md font-extrabold text-[11px] ${
-            c.seatUtilizationPct >= 75
-              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-              : c.seatUtilizationPct >= 50
+          className={`inline-flex items-center px-2 py-0.5 rounded-md font-extrabold text-[11px] ${c.seatUtilizationPct >= 75
+            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+            : c.seatUtilizationPct >= 50
               ? 'bg-blue-50 text-blue-700 border border-blue-200'
               : 'bg-amber-50 text-amber-700 border border-amber-200'
-          }`}
+            }`}
         >
           {c.seatUtilizationPct}%
         </span>
@@ -152,7 +151,6 @@ export const AdminCollegeBenchmarksTable: React.FC = () => {
       columns={columns}
       keyExtractor={(c) => c.id}
       title="5. B2B Institutional Cohort Benchmarks"
-      subtitle="Partner college performance audit, seat utilization, and certificate output"
       searchPlaceholder="Search partner college..."
       searchValue={searchTerm}
       onSearchChange={(val) => {

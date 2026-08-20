@@ -3,7 +3,19 @@
 import React, { useState, useEffect } from 'react';
 import { Project } from '@/types/catalog';
 import { useAuth } from '@/context/AuthContext';
-import { Clock, FolderKanban, Award, Send, ArrowRight, ShieldCheck, Sparkles, BookOpen } from 'lucide-react';
+import {
+  Clock,
+  FolderKanban,
+  Award,
+  Send,
+  ArrowRight,
+  ShieldCheck,
+  Sparkles,
+  GitBranch,
+  CheckCircle2,
+  ExternalLink,
+} from 'lucide-react';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 
 interface StudentOverviewProps {
   projects?: Project[];
@@ -25,6 +37,7 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
   overviewData: overviewDataProp,
   onSelectSlug,
   onNavigateSlug,
+  onOpenSubmitModal,
 }) => {
   const effectiveOverview = overview || overviewDataProp;
   const { user } = useAuth();
@@ -34,7 +47,18 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
     setMounted(true);
   }, []);
 
-  const navigateFn = onSelectSlug || onNavigateSlug || (() => {});
+  const navigateFn = (slug: string) => {
+    if (typeof onNavigateSlug === 'function') {
+      onNavigateSlug(slug);
+    } else if (typeof onSelectSlug === 'function') {
+      onSelectSlug(slug);
+    } else if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', slug);
+      window.history.pushState({}, '', url.toString());
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }
+  };
 
   const metrics = effectiveOverview?.metrics || {
     hoursLogged: 0,
@@ -47,17 +71,15 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
     grade: 'N/A',
     totalSubmissions: 0,
     gradedSubmissions: 0,
+    totalTasks: 9,
+    passedTasks: 0,
+    certificateStatus: 'IN_PROGRESS',
+    certificateUrl: null,
   };
 
   const recentAiReview = effectiveOverview?.recentAiReview || null;
+  const currentActiveTask = effectiveOverview?.currentActiveTask || null;
   const title = effectiveOverview?.programTitle || programTitle;
-
-  const projectTracks: any[] =
-    effectiveOverview?.projects && Array.isArray(effectiveOverview.projects)
-      ? effectiveOverview.projects
-      : Array.isArray(projects)
-      ? projects
-      : [];
 
   const firstName = mounted
     ? effectiveOverview?.firstName ||
@@ -68,246 +90,199 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
       'Learner'
     : 'Learner';
 
+  const totalTasks = metrics.totalTasks || 9;
+  const passedTasks = metrics.passedTasks || 0;
+  const currentMilestoneIndex = Math.min(totalTasks, passedTasks + 1);
+
   return (
     <div className="space-y-6">
-      {/* Welcome Banner */}
-      <div className="rounded-[28px] bg-gradient-to-r from-brand to-brandDark p-6 text-white shadow-md">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <div className="text-xs font-bold uppercase tracking-wider text-white/80" suppressHydrationWarning>
-              {title}
-            </div>
-            <h2 className="mt-1 text-2xl font-black text-white" suppressHydrationWarning>
-              Hi {firstName}
-            </h2>
-            <p className="mt-1 text-xs text-white/90" suppressHydrationWarning>
-              {metrics.hoursLogged > 0
-                ? `You have logged ${metrics.hoursLogged} hours out of ${metrics.totalHours} total curriculum hours.`
-                : 'Welcome to your workspace. Start working on your capstone projects to log hours and build your verified portfolio.'}
-            </p>
-          </div>
-
-          {/* Progress Ring Indicator */}
-          <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-secondary bg-white/10 backdrop-blur-md">
-            <span className="text-sm font-black text-white" suppressHydrationWarning>
-              {metrics.completionPercentage}%
+      {/* 1. Header Banner */}
+      <div className="rounded-[24px] bg-gradient-to-r from-textPrimary via-gray-900 to-brand p-6 text-white shadow-md">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-success"></span>
+            </span>
+            <span className="text-xs font-black uppercase tracking-[0.18em] text-white/90" suppressHydrationWarning>
+              Student Workspace Active
             </span>
           </div>
+          <span className="text-[11px] font-black uppercase tracking-widest text-brandPastel sm:self-center" suppressHydrationWarning>
+            {title}
+          </span>
+        </div>
+        <div className="mt-4 pt-3 border-t border-white/10">
+          <p className="text-xs font-medium text-white/80 leading-relaxed" suppressHydrationWarning>
+            Welcome back, {firstName} — Milestone {currentMilestoneIndex} of {totalTasks} in progress ({metrics.completionPercentage}% completed, {metrics.hoursLogged} of {metrics.totalHours} hours logged).
+          </p>
         </div>
       </div>
 
-      {/* 4 Stat Metric Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-[20px] border border-borderLight bg-white p-4 shadow-xs">
-          <div className="flex items-center gap-2 text-xs font-bold text-textMuted">
+      {/* 2. Four Minimal KPI Stat Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {/* Hours Logged */}
+        <div
+          onClick={() => navigateFn('program')}
+          className="rounded-[24px] border border-borderLight bg-white p-5 shadow-xs hover:border-brand/40 transition-all cursor-pointer"
+        >
+          <div className="flex items-center justify-between text-textMuted mb-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider">Hours Logged</span>
             <Clock className="h-4 w-4 text-brand" />
-            <span>Hours Logged</span>
           </div>
-          <div className="mt-2 text-xl font-black text-textPrimary" suppressHydrationWarning>
-            {metrics.hoursLogged} <span className="text-xs font-semibold text-textMuted">/ {metrics.totalHours} Hours</span>
+          <div className="text-2xl font-black text-textPrimary" suppressHydrationWarning>
+            {metrics.hoursLogged} <span className="text-xs font-bold text-textMuted">/ {metrics.totalHours} Hrs</span>
+          </div>
+          <div className="text-[10px] font-semibold text-textMuted mt-1">
+            {metrics.completionPercentage}% of Total Curriculum
           </div>
         </div>
 
-        <div className="rounded-[20px] border border-borderLight bg-white p-4 shadow-xs">
-          <div className="flex items-center gap-2 text-xs font-bold text-textMuted">
+        {/* Capstones Done */}
+        <div
+          onClick={() => navigateFn('program')}
+          className="rounded-[24px] border border-borderLight bg-white p-5 shadow-xs hover:border-brand/40 transition-all cursor-pointer"
+        >
+          <div className="flex items-center justify-between text-textMuted mb-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider">Projects Done</span>
             <FolderKanban className="h-4 w-4 text-brand" />
-            <span>Projects Done</span>
           </div>
-          <div className="mt-2 text-xl font-black text-textPrimary" suppressHydrationWarning>
-            {metrics.projectsDone} <span className="text-xs font-semibold text-textMuted">/ {metrics.totalProjects || 3} Projects</span>
+          <div className="text-2xl font-black text-textPrimary" suppressHydrationWarning>
+            {metrics.projectsDone} <span className="text-xs font-bold text-textMuted">/ {metrics.totalProjects || 3} Capstones</span>
+          </div>
+          <div className="text-[10px] font-semibold text-textMuted mt-1">
+            {(metrics.totalProjects || 3) - metrics.projectsDone > 0
+              ? `${(metrics.totalProjects || 3) - metrics.projectsDone} Project(s) Remaining`
+              : 'All Capstones Completed'}
           </div>
         </div>
 
-        <div className="rounded-[20px] border border-borderLight bg-white p-4 shadow-xs">
-          <div className="flex items-center gap-2 text-xs font-bold text-textMuted">
+        {/* AI Rubric Average Score */}
+        <div
+          onClick={() => navigateFn('submissions')}
+          className="rounded-[24px] border border-borderLight bg-white p-5 shadow-xs hover:border-emerald-300 transition-all cursor-pointer"
+        >
+          <div className="flex items-center justify-between text-textMuted mb-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider">AI Avg Score</span>
             <Award className="h-4 w-4 text-emerald-600" />
-            <span>Current Score</span>
           </div>
-          <div className="mt-2 text-xl font-black text-emerald-600" suppressHydrationWarning>
-            {metrics.currentScore} / {metrics.maxScore || 100}{' '}
-            <span className="text-xs font-bold text-textMuted">(Grade {metrics.grade})</span>
+          <div className="text-2xl font-black text-emerald-600" suppressHydrationWarning>
+            {metrics.currentScore > 0 ? `${metrics.currentScore} / 100` : 'N/A'}
+          </div>
+          <div className="text-[10px] font-bold text-emerald-700 mt-1">
+            {metrics.grade && metrics.grade !== 'N/A' ? `Grade: ${metrics.grade} (Passed)` : 'Awaiting Review'}
           </div>
         </div>
 
-        <div className="rounded-[20px] border border-borderLight bg-white p-4 shadow-xs">
-          <div className="flex items-center gap-2 text-xs font-bold text-textMuted">
-            <Send className="h-4 w-4 text-brand" />
-            <span>Submissions</span>
+        {/* Certificate Status */}
+        <div
+          onClick={() => navigateFn('certificate')}
+          className="rounded-[24px] border border-borderLight bg-white p-5 shadow-xs hover:border-brand/40 transition-all cursor-pointer"
+        >
+          <div className="flex items-center justify-between text-textMuted mb-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider">Certificate</span>
+            <CheckCircle2 className="h-4 w-4 text-brand" />
           </div>
-          <div className="mt-2 text-xl font-black text-textPrimary" suppressHydrationWarning>
-            {metrics.totalSubmissions}{' '}
-            <span className="text-xs font-semibold text-textMuted">({metrics.gradedSubmissions} Graded)</span>
+          <div className="text-base font-black text-textPrimary mt-1" suppressHydrationWarning>
+            <StatusBadge status={metrics.certificateStatus || 'IN_PROGRESS'} size="sm" />
+          </div>
+          <div className="text-[10px] font-semibold text-textMuted mt-1">
+            {metrics.certificateStatus === 'ISSUED'
+              ? 'Verified & Downloadable'
+              : metrics.certificateStatus === 'ELIGIBLE'
+              ? 'Eligible for Issuance'
+              : 'Unlocks upon 100% Completion'}
           </div>
         </div>
       </div>
 
-      {/* Main Overview Grid: Projects Track + AI Review Box */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* Left Column: Program Projects Track (7 cols) */}
-        <div className="lg:col-span-7 space-y-4 rounded-[24px] border border-borderLight bg-white p-6 shadow-xs">
-          <div className="flex items-center justify-between border-b border-borderLight pb-3">
-            <h3 className="text-sm font-bold text-textPrimary">Program Projects</h3>
-            <button
-              onClick={() => navigateFn('program')}
-              className="inline-flex items-center gap-1 text-xs font-bold text-brand hover:underline cursor-pointer"
-            >
-              <span>View All</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </button>
-          </div>
-
+      {/* 3. Two Minimal Operational Cards (Current Active Task & Latest AI Feedback) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Left Card: Current Active Task */}
+        <div
+          onClick={() => navigateFn('program')}
+          className="rounded-[28px] border border-borderLight bg-white p-6 sm:p-7 shadow-xs space-y-4 cursor-pointer hover:border-brand/40 transition-all"
+        >
           <div className="space-y-3">
-            {projectTracks.length === 0 ? (
-              <div className="text-xs text-textMuted py-8 text-center space-y-2">
-                <BookOpen className="h-8 w-8 text-textMuted/40 mx-auto" />
-                <p className="font-bold">No active capstone projects enrolled yet.</p>
-                <button
-                  onClick={() => navigateFn('program')}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-brand text-white text-xs font-bold shadow-xs hover:bg-brandHover transition cursor-pointer"
-                >
-                  <span>Explore Programme Tracks</span>
-                  <ArrowRight className="h-3.5 w-3.5" />
-                </button>
+            <div className="flex items-center justify-between border-b border-borderLight pb-3">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 rounded-full bg-brand animate-pulse" />
+                <h2 className="text-sm font-black text-textPrimary">Current Active Task</h2>
+              </div>
+              {currentActiveTask?.status && (
+                <StatusBadge status={currentActiveTask.status} size="sm" />
+              )}
+            </div>
+
+            {currentActiveTask ? (
+              <div className="space-y-2.5">
+                <div>
+                  <div className="text-[11px] font-extrabold uppercase text-brand tracking-wider">
+                    {currentActiveTask.projectTitle}
+                  </div>
+                  <h3 className="text-base font-extrabold text-textPrimary mt-0.5">
+                    Task #{currentActiveTask.orderIndex}: {currentActiveTask.taskTitle}
+                  </h3>
+                </div>
+
+                {currentActiveTask.repoUrl && (
+                  <div className="flex items-center gap-2 rounded-xl bg-bgSoft px-3 py-2 text-xs font-bold text-textSecondary truncate">
+                    <GitBranch className="h-3.5 w-3.5 text-textMuted shrink-0" />
+                    <span className="truncate">{currentActiveTask.repoUrl}</span>
+                  </div>
+                )}
               </div>
             ) : (
-              projectTracks.slice(0, 3).map((project: any, idx: number) => {
-                const steps = project.workspaceTemplate?.steps || project.workspaceTemplate?.tasks || [];
-                let calculatedStatus = project.status;
-
-                if (!calculatedStatus) {
-                  if (steps.length > 0) {
-                    const allCompleted = steps.every(
-                      (s: any) =>
-                        s.status === 'COMPLETED' ||
-                        s.status === 'completed' ||
-                        s.status === 'PASSED' ||
-                        s.status === 'passed'
-                    );
-                    const anyStarted = steps.some(
-                      (s: any) =>
-                        s.status === 'COMPLETED' ||
-                        s.status === 'completed' ||
-                        s.status === 'IN_PROGRESS' ||
-                        s.status === 'in_progress' ||
-                        s.status === 'PASSED' ||
-                        s.status === 'passed'
-                    );
-
-                    if (allCompleted) {
-                      calculatedStatus = 'Done';
-                    } else if (anyStarted) {
-                      calculatedStatus = 'Active';
-                    } else {
-                      calculatedStatus = idx === 0 ? 'Active' : 'Locked';
-                    }
-                  } else {
-                    calculatedStatus = idx === 0 ? 'Active' : 'Locked';
-                  }
-                }
-
-                return (
-                  <div
-                    key={project.id || idx}
-                    onClick={() => navigateFn('program')}
-                    className="flex items-center justify-between rounded-[16px] border border-borderLight/80 bg-bgSoft/60 p-3.5 text-xs hover:border-brand/40 hover:bg-white transition-all cursor-pointer"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
-                          calculatedStatus === 'Done'
-                            ? 'bg-emerald-100 text-emerald-700'
-                            : calculatedStatus === 'Active'
-                            ? 'bg-brand/10 text-brand'
-                            : 'bg-gray-200 text-gray-500'
-                        }`}
-                      >
-                        {calculatedStatus === 'Done' ? '✓' : idx + 1}
-                      </span>
-                      <div>
-                        <div className="font-bold text-textPrimary">{project.title}</div>
-                        <div className="text-[11px] text-textMuted">Capstone Project #{idx + 1}</div>
-                      </div>
-                    </div>
-
-                    <span
-                      className={`rounded-full px-3 py-1 text-[10px] font-extrabold uppercase ${
-                        calculatedStatus === 'Done'
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : calculatedStatus === 'Active'
-                          ? 'bg-brand text-white'
-                          : 'bg-gray-100 text-gray-600'
-                      }`}
-                    >
-                      {calculatedStatus}
-                    </span>
-                  </div>
-                );
-              })
+              <div className="py-4 text-xs font-bold text-textMuted text-center">
+                All milestone deliverables are currently up to date!
+              </div>
             )}
           </div>
         </div>
 
-        {/* Right Column: Recent AI Rubric Evaluation Review (5 cols) */}
-        <div className="lg:col-span-5 space-y-4 rounded-[24px] border border-borderLight bg-white p-6 shadow-xs">
-          <div className="flex items-center gap-2 border-b border-borderLight pb-3 text-sm font-bold text-textPrimary">
-            <ShieldCheck className="h-4 w-4 text-emerald-600" />
-            <span>Recent AI Rubric Review</span>
-          </div>
-
-          {recentAiReview ? (
-            <div className="rounded-[18px] border border-emerald-200 bg-emerald-50/50 p-4 space-y-3">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-emerald-900">{recentAiReview?.stepTitle || 'Milestone Task Review'}</span>
-                <span className="rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10px] font-bold text-white uppercase">
-                  {recentAiReview?.status || 'GRADED'}
-                </span>
+        {/* Right Card: Latest AI Evaluation Review */}
+        <div
+          onClick={() => navigateFn('submissions')}
+          className="rounded-[28px] border border-borderLight bg-white p-6 sm:p-7 shadow-xs space-y-4 cursor-pointer hover:border-emerald-300 transition-all"
+        >
+          <div className="space-y-3">
+            <div className="flex items-center justify-between border-b border-borderLight pb-3">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                <h2 className="text-sm font-black text-textPrimary">Latest AI Evaluation</h2>
               </div>
-
-              <div className="text-xl font-black text-emerald-900">
-                Score: {recentAiReview?.score ?? 0} / {recentAiReview?.maxScore ?? 100}
-              </div>
-
-              <div className="space-y-1 text-xs text-textPrimary">
-                {Array.isArray(recentAiReview?.breakdown) &&
-                  recentAiReview.breakdown.map((item: any, bIdx: number) => (
-                    <div key={bIdx} className="flex justify-between">
-                      <span>{item.criterion}:</span>
-                      <span className="font-bold text-emerald-800">
-                        {item.score} / {item.maxScore}
-                      </span>
-                    </div>
-                  ))}
-              </div>
-
-              {recentAiReview?.feedback && (
-                <div className="border-t border-emerald-200/80 pt-2 text-[11px] font-medium text-emerald-900 italic">
-                  &quot;{recentAiReview.feedback}&quot;
-                </div>
+              {recentAiReview?.status && (
+                <StatusBadge status={recentAiReview.status} size="sm" />
               )}
+            </div>
 
-              <button
-                onClick={() => navigateFn('submissions')}
-                className="w-full rounded-xl bg-emerald-600 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all cursor-pointer shadow-2xs"
-              >
-                View Submission Scores
-              </button>
-            </div>
-          ) : (
-            <div className="rounded-[18px] border border-dashed border-borderLight bg-bgSoft/40 p-6 text-center space-y-3">
-              <Sparkles className="h-7 w-7 text-textMuted/40 mx-auto" />
-              <div className="text-xs font-bold text-textPrimary">No AI Reviews Yet</div>
-              <p className="text-[11px] text-textMuted leading-relaxed">
-                Submit task deliverables with your commit hash or live URL in the Program workspace to receive automated AI rubric evaluations.
-              </p>
-              <button
-                onClick={() => navigateFn('program')}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-borderLight bg-white text-xs font-bold text-textPrimary hover:bg-bgSoft transition cursor-pointer shadow-2xs"
-              >
-                <span>Go to Program Deliverables</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </button>
-            </div>
-          )}
+            {recentAiReview ? (
+              <div className="space-y-2.5">
+                <div className="flex items-baseline justify-between">
+                  <h3 className="text-xs font-extrabold text-textPrimary truncate">
+                    {recentAiReview.taskTitle || recentAiReview.stepTitle}
+                  </h3>
+                  <span className="text-base font-black text-emerald-600 shrink-0">
+                    {recentAiReview.score} / {recentAiReview.maxScore || 100}
+                  </span>
+                </div>
+
+                {recentAiReview.feedback && (
+                  <div className="rounded-xl border border-emerald-200/60 bg-emerald-50/50 p-3 text-xs text-emerald-950 italic leading-relaxed">
+                    &quot;{recentAiReview.feedback}&quot;
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="py-4 text-center space-y-1.5">
+                <Sparkles className="h-6 w-6 text-textMuted/40 mx-auto" />
+                <div className="text-xs font-bold text-textPrimary">No AI Evaluation Yet</div>
+                <p className="text-[11px] text-textMuted">
+                  Submit code deliverables to receive automated AI rubric evaluations and feedback.
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

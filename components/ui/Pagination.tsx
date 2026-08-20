@@ -17,6 +17,7 @@ export interface PaginationProps {
   pageSizeOptions?: number[];
   onPageChange: (page: number) => void;
   onPageSizeChange?: (size: number) => void;
+  showPageSizeSelector?: boolean;
   itemLabel?: string;
   className?: string;
   disabled?: boolean;
@@ -30,6 +31,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   pageSizeOptions = [10, 25, 50],
   onPageChange,
   onPageSizeChange,
+  showPageSizeSelector = false,
   itemLabel = 'items',
   className = '',
   disabled = false,
@@ -64,7 +66,7 @@ export const Pagination: React.FC<PaginationProps> = ({
     <div
       className={`flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 bg-bgSoft/40 border-t border-borderLight text-xs font-bold text-textMuted ${className}`}
     >
-      {/* Left: Summary and Page Size */}
+      {/* Left: Summary and Optional Page Size */}
       <div className="flex flex-wrap items-center gap-4">
         <div>
           Showing{' '}
@@ -75,7 +77,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           <span className="text-textPrimary font-black">{totalCount}</span> {itemLabel}
         </div>
 
-        {onPageSizeChange && pageSizeOptions.length > 0 && (
+        {showPageSizeSelector && onPageSizeChange && pageSizeOptions.length > 0 && (
           <div className="flex items-center gap-2 border-l border-borderLight pl-4">
             <span>Per page:</span>
             <div className="w-24 min-w-[88px]">
