@@ -5,17 +5,15 @@ import {
   School,
   CheckCircle2,
   XCircle,
-  Clock,
-  Search,
-  Filter,
-  ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
   Eye,
+  Building,
+  MapPin,
+  Users,
+  Filter,
+  RefreshCw,
 } from 'lucide-react';
-import { CustomDropdown } from '@/components/shared/CustomDropdown';
+import { DataTable, ColumnDef } from '@/components/ui/DataTable';
+import { StatusBadge } from '@/components/ui/StatusBadge';
 
 interface AdminCollegesViewProps {
   colleges: any[];
@@ -28,7 +26,7 @@ type SortField = 'name' | 'address' | 'countryName' | 'status' | 'studentCount' 
 type SortOrder = 'asc' | 'desc';
 
 export const AdminCollegesView: React.FC<AdminCollegesViewProps> = ({
-  colleges,
+  colleges = [],
   onApproveCollege,
   onRejectCollege,
   onSelectCollege,
@@ -42,24 +40,25 @@ export const AdminCollegesView: React.FC<AdminCollegesViewProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
+  const handleSort = (field: string) => {
+    const sField = field as SortField;
+    if (sortField === sField) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
-      setSortField(field);
+      setSortField(sField);
       setSortOrder('asc');
     }
   };
 
-  // 1. Filtered and Sorted Data
+  // Filtered and Sorted Data
   const filteredAndSortedColleges = useMemo(() => {
     let result = colleges.filter((c) => {
       const matchesSearch =
-        c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.countryName.toLowerCase().includes(searchTerm.toLowerCase());
+        (c.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (c.address || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (c.countryName || '').toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
+      const matchesStatus = statusFilter === 'all' || (c.status || '').toLowerCase() === statusFilter.toLowerCase();
 
       return matchesSearch && matchesStatus;
     });
@@ -79,25 +78,108 @@ export const AdminCollegesView: React.FC<AdminCollegesViewProps> = ({
     return result;
   }, [colleges, searchTerm, statusFilter, sortField, sortOrder]);
 
-  // 2. Pagination Calculations
   const totalEntries = filteredAndSortedColleges.length;
   const totalPages = Math.ceil(totalEntries / pageSize) || 1;
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedColleges = filteredAndSortedColleges.slice(startIndex, startIndex + pageSize);
 
-  const handlePageChange = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
-  };
+  const columns: ColumnDef<any>[] = [
+    {
+      key: 'name',
+      header: 'College / University',
+      sortable: true,
+      render: (c) => (
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-600 border border-amber-200 font-black text-xs">
+            <School className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="font-bold text-textPrimary text-xs">{c.name}</div>
+            <div className="flex items-center gap-1 text-[11px] text-textMuted mt-0.5">
+              <MapPin className="h-3 w-3 shrink-0" />
+              <span className="truncate max-w-[200px]">{c.address || 'Address not specified'}</span>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      key: 'countryName',
+      header: 'Country / Region',
+      sortable: true,
+      render: (c) => (
+        <span className="text-xs font-bold text-textPrimary">
+          {c.countryName || 'Global'}
+        </span>
+      ),
+    },
+    {
+      key: 'studentCount',
+      header: 'Enrolled Cohort',
+      sortable: true,
+      align: 'center',
+      render: (c) => (
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-extrabold text-[11px] border border-blue-200">
+          <Users className="h-3 w-3" />
+          {c.studentCount ?? c.students?.length ?? 0}
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Vetting Status',
+      sortable: true,
+      align: 'center',
+      render: (c) => <StatusBadge status={c.status || 'PENDING'} size="sm" />,
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      align: 'right',
+      render: (c) => (
+        <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+          {c.status === 'PENDING' && (
+            <>
+              <button
+                onClick={() => onApproveCollege(c.id)}
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-600 hover:text-white border border-emerald-200 text-xs font-bold transition cursor-pointer shadow-2xs"
+                title="Approve institution"
+              >
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                <span>Approve</span>
+              </button>
+              <button
+                onClick={() => onRejectCollege(c.id)}
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-50 text-rose-700 hover:bg-rose-600 hover:text-white border border-rose-200 text-xs font-bold transition cursor-pointer shadow-2xs"
+                title="Reject application"
+              >
+                <XCircle className="h-3.5 w-3.5" />
+                <span>Reject</span>
+              </button>
+            </>
+          )}
+
+          {onSelectCollege && (
+            <button
+              onClick={() => onSelectCollege(c.id)}
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl border border-borderLight bg-white text-xs font-bold text-textPrimary hover:bg-brand hover:text-white hover:border-brand shadow-2xs transition cursor-pointer"
+            >
+              <Eye className="h-3.5 w-3.5" />
+              <span>Dossier</span>
+            </button>
+          )}
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header Banner */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-[24px] border border-borderLight shadow-xs">
         <div>
           <h1 className="text-xl font-black text-textPrimary flex items-center gap-2">
-            <School className="h-6 w-6 text-warning" />
+            <School className="h-6 w-6 text-brand" />
             B2B Colleges & Seats Administration
           </h1>
           <p className="text-xs text-textMuted mt-1">
@@ -106,25 +188,22 @@ export const AdminCollegesView: React.FC<AdminCollegesViewProps> = ({
         </div>
       </div>
 
-      {/* Datatable Controls Bar */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-5 rounded-[20px] border border-borderLight shadow-xs">
-        {/* Search Input */}
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-textMuted" />
-          <input
-            type="text"
-            placeholder="Search colleges, address, country..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="w-full rounded-xl bg-bgSoft pl-10 pr-4 py-2.5 text-xs font-bold text-textPrimary placeholder:text-textMuted border border-borderLight/60 focus:outline-none focus:border-brand"
-          />
-        </div>
-
-        {/* Filters & Page Size Selector */}
-        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+      {/* Main DataTable with Search on the Left and Filter Buttons on the Right */}
+      <DataTable
+        data={paginatedColleges}
+        columns={columns}
+        keyExtractor={(c) => c.id}
+        searchPlaceholder="Search colleges, address, country..."
+        searchValue={searchTerm}
+        onSearchChange={(val) => {
+          setSearchTerm(val);
+          setCurrentPage(1);
+        }}
+        sortField={sortField}
+        sortOrder={sortOrder}
+        onSortChange={handleSort}
+        onRowClick={(c) => onSelectCollege && onSelectCollege(c.id)}
+        headerActions={
           <div className="flex items-center gap-1.5 overflow-x-auto">
             <Filter className="h-4 w-4 text-textMuted shrink-0 mr-1" />
             {['all', 'pending', 'approved', 'rejected'].map((status) => (
@@ -136,7 +215,7 @@ export const AdminCollegesView: React.FC<AdminCollegesViewProps> = ({
                 }}
                 className={`px-3 py-1.5 rounded-xl text-xs font-extrabold capitalize transition-all cursor-pointer ${
                   statusFilter === status
-                    ? 'bg-brand text-white shadow-xs'
+                    ? 'bg-brand text-white shadow-2xs'
                     : 'bg-bgSoft text-textPrimary hover:bg-borderLight'
                 }`}
               >
@@ -144,214 +223,28 @@ export const AdminCollegesView: React.FC<AdminCollegesViewProps> = ({
               </button>
             ))}
           </div>
-
-          <div className="flex items-center gap-2 text-xs font-bold text-textMuted border-l border-borderLight pl-3">
-            <span>Rows:</span>
-            <div className="w-20">
-              <CustomDropdown
-                options={[10, 25, 50]}
-                value={pageSize}
-                onChange={(val) => {
-                  setPageSize(Number(val));
-                  setCurrentPage(1);
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Datatable Wrapper */}
-      <div className="bg-white rounded-[24px] border border-borderLight shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-bgSoft/80 border-b border-borderLight text-[11px] font-extrabold uppercase tracking-wider text-textMuted select-none">
-                <th
-                  onClick={() => handleSort('name')}
-                  className="py-4 px-5 cursor-pointer hover:text-brand transition-all"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span>Institution Name</span>
-                    <ArrowUpDown className="h-3 w-3 text-textMuted" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('address')}
-                  className="py-4 px-4 cursor-pointer hover:text-brand transition-all"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span>Location & Country</span>
-                    <ArrowUpDown className="h-3 w-3 text-textMuted" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('status')}
-                  className="py-4 px-4 cursor-pointer hover:text-brand transition-all"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <span>Status</span>
-                    <ArrowUpDown className="h-3 w-3 text-textMuted" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('studentCount')}
-                  className="py-4 px-4 text-center cursor-pointer hover:text-brand transition-all"
-                >
-                  <div className="flex items-center justify-center gap-1.5">
-                    <span>Enrolled Students</span>
-                    <ArrowUpDown className="h-3 w-3 text-textMuted" />
-                  </div>
-                </th>
-                <th
-                  onClick={() => handleSort('memberCount')}
-                  className="py-4 px-4 text-center cursor-pointer hover:text-brand transition-all"
-                >
-                  <div className="flex items-center justify-center gap-1.5">
-                    <span>Admin Members</span>
-                    <ArrowUpDown className="h-3 w-3 text-textMuted" />
-                  </div>
-                </th>
-                <th className="py-4 px-5 text-right whitespace-nowrap min-w-[110px]">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-borderLight/60 text-xs">
-              {paginatedColleges.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-textMuted font-bold">
-                    No colleges found matching criteria.
-                  </td>
-                </tr>
-              ) : (
-                paginatedColleges.map((c) => (
-                  <tr
-                    key={c.id}
-                    className="hover:bg-bgSoft/40 transition-all cursor-pointer group"
-                    onClick={() => onSelectCollege && onSelectCollege(c.id)}
-                  >
-                    <td className="py-4 px-5">
-                      <div className="font-black text-textPrimary group-hover:text-brand transition-colors">
-                        {c.name}
-                      </div>
-                      <div className="text-[10px] text-textMuted">ID: #{c.id}</div>
-                    </td>
-                    <td className="py-4 px-4 font-medium text-textPrimary">
-                      {c.address}
-                      <div className="text-[10px] text-textMuted font-bold">{c.countryName}</div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <span
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                          c.status === 'approved'
-                            ? 'bg-statusPassedBg text-statusPassedText'
-                            : c.status === 'pending'
-                            ? 'bg-statusEvaluatingBg text-statusEvaluatingText'
-                            : 'bg-statusErrorBg text-statusErrorText'
-                        }`}
-                      >
-                        {c.status === 'approved' && <CheckCircle2 className="h-3 w-3" />}
-                        {c.status === 'pending' && <Clock className="h-3 w-3" />}
-                        {c.status === 'rejected' && <XCircle className="h-3 w-3" />}
-                        {c.status}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4 text-center font-black text-textPrimary">
-                      {c.studentCount || 0}
-                    </td>
-                    <td className="py-4 px-4 text-center font-black text-textPrimary">
-                      {c.memberCount || 0}
-                    </td>
-                    <td
-                      className="py-4 px-5 text-right whitespace-nowrap min-w-[110px]"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <div className="inline-flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => onSelectCollege && onSelectCollege(c.id)}
-                          className="inline-flex items-center justify-center h-8 w-8 rounded-xl bg-brand/10 text-brand hover:bg-brand hover:text-white transition-all cursor-pointer shadow-2xs shrink-0"
-                          title="View College Dossier"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        {c.status !== 'approved' && (
-                          <button
-                            type="button"
-                            onClick={() => onApproveCollege(c.id)}
-                            className="inline-flex items-center justify-center h-8 w-8 rounded-xl bg-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white transition-all cursor-pointer shadow-2xs shrink-0"
-                            title="Approve College"
-                          >
-                            <CheckCircle2 className="h-4 w-4" />
-                          </button>
-                        )}
-                        {c.status !== 'rejected' && (
-                          <button
-                            type="button"
-                            onClick={() => onRejectCollege(c.id)}
-                            className="inline-flex items-center justify-center h-8 w-8 rounded-xl bg-rose-100 text-rose-700 hover:bg-rose-600 hover:text-white transition-all cursor-pointer shadow-2xs shrink-0"
-                            title="Reject College"
-                          >
-                            <XCircle className="h-4 w-4" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Datatable Footer / Pagination Controls */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 bg-bgSoft/40 border-t border-borderLight text-xs font-bold text-textMuted">
-          <div>
-            Showing <span className="text-textPrimary font-black">{totalEntries > 0 ? startIndex + 1 : 0}</span> to{' '}
-            <span className="text-textPrimary font-black">{Math.min(startIndex + pageSize, totalEntries)}</span> of{' '}
-            <span className="text-textPrimary font-black">{totalEntries}</span> entries
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => handlePageChange(1)}
-              disabled={currentPage === 1}
-              className="p-1.5 rounded-lg border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              title="First Page"
-            >
-              <ChevronsLeft className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="p-1.5 rounded-lg border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              title="Previous Page"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-
-            <span className="px-3 text-xs font-black text-textPrimary">
-              Page {currentPage} of {totalPages}
-            </span>
-
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="p-1.5 rounded-lg border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              title="Next Page"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-            <button
-              onClick={() => handlePageChange(totalPages)}
-              disabled={currentPage === totalPages}
-              className="p-1.5 rounded-lg border border-borderLight bg-white text-textPrimary hover:bg-bgSoft disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-              title="Last Page"
-            >
-              <ChevronsRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </div>
+        }
+        pagination={{
+          currentPage,
+          totalPages,
+          totalCount: totalEntries,
+          pageSize,
+          pageSizeOptions: [10, 25, 50],
+          onPageChange: setCurrentPage,
+          onPageSizeChange: (newSize) => {
+            setPageSize(newSize);
+            setCurrentPage(1);
+          },
+          itemLabel: 'registered colleges',
+        }}
+        emptyTitle="No Colleges Found"
+        emptyDescription={
+          searchTerm || statusFilter !== 'all'
+            ? 'No partner colleges match your filter keyword.'
+            : 'No college institutions registered yet.'
+        }
+        emptyIcon={<School className="h-7 w-7 text-textMuted/40" />}
+      />
     </div>
   );
 };

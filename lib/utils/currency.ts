@@ -55,7 +55,8 @@ export function formatPrice(amount?: number | null, currencyCode = "INR"): strin
   }
 
   try {
-    return new Intl.NumberFormat("en-US", {
+    const locale = currencyCode.toUpperCase() === 'INR' ? 'en-IN' : 'en-US';
+    return new Intl.NumberFormat(locale, {
       style: "currency",
       currency: currencyCode.toUpperCase(),
       maximumFractionDigits: 0,
@@ -63,6 +64,13 @@ export function formatPrice(amount?: number | null, currencyCode = "INR"): strin
   } catch {
     return `${getCurrencySymbol(currencyCode)}${amount.toLocaleString()}`;
   }
+}
+
+/**
+ * Standard alias for formatPrice (e.g. ₹48,25,000)
+ */
+export function formatCurrency(amount?: number | null, currencyCode = "INR"): string {
+  return formatPrice(amount, currencyCode);
 }
 
 /**

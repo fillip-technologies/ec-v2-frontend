@@ -477,23 +477,18 @@ function DashboardContent() {
               {activeSlug === 'students' && (
                 <CollegeStudentsView
                   students={collegeStudents}
-                  programs={catalogPrograms}
-                  onRefresh={() => getCollegeStudents().then((s) => setCollegeStudents(s))}
                 />
               )}
 
               {activeSlug === 'coupons' && (
                 <CollegeCouponsView
                   coupons={collegeCoupons}
-                  programs={catalogPrograms}
-                  onRefresh={() => getCollegeCoupons().then((c) => setCollegeCoupons(c))}
                 />
               )}
 
               {activeSlug === 'reports' && (
                 <CollegeReportsView
-                  reports={collegeReports}
-                  programs={catalogPrograms}
+                  reportsData={collegeReports}
                 />
               )}
             </Suspense>
@@ -522,14 +517,13 @@ function DashboardContent() {
               {activeSlug === 'submissions' && (
                 <StudentSubmissionsView
                   submissions={submissionsList}
-                  onOpenSubmitModal={handleOpenSubmissionModal}
+                  onNavigateProgram={() => handleNavigateSlug('program')}
                 />
               )}
 
               {activeSlug === 'rubrics' && (
                 <StudentRubricsView
                   rubrics={rubricsList}
-                  onOpenSubmitModal={handleOpenSubmissionModal}
                 />
               )}
 
@@ -552,8 +546,12 @@ function DashboardContent() {
         <TaskSubmissionModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          task={selectedTask}
-          onSuccess={handleSubmissionSuccess}
+          taskId={selectedTask.id}
+          taskTitle={selectedTask.title}
+          repoUrl={selectedTask.repoUrl}
+          workspaceId={selectedTask.workspaceId}
+          onSubmitSuccess={handleSubmissionSuccess}
+          submitFn={submitStudentTask}
         />
       )}
     </div>
