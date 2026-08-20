@@ -54,6 +54,7 @@
         "label": "CATALOGUE MANAGEMENT",
         "items": [
           { "id": "overview", "label": "Overview", "slug": "overview", "enabled": true },
+          { "id": "analytics", "label": "Analytics & Intelligence", "slug": "analytics", "enabled": true },
           { "id": "programs", "label": "Manage Programs", "slug": "programs", "enabled": true }
         ]
       },
@@ -79,6 +80,7 @@
         "label": "CATALOGUE MANAGEMENT",
         "items": [
           { "id": "overview", "label": "Overview", "slug": "overview", "enabled": true },
+          { "id": "analytics", "label": "Analytics & Intelligence", "slug": "analytics", "enabled": true },
           { "id": "programs", "label": "Manage Programs", "slug": "programs", "enabled": true }
         ]
       },

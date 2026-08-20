@@ -75,6 +75,10 @@ const AdminOverview = dynamic(
   () => import('@/components/admin/AdminOverview').then((m) => m.AdminOverview),
   { loading: ViewLoadingFallback }
 );
+const AdminAnalyticsView = dynamic(
+  () => import('@/components/admin/AdminAnalyticsView').then((m) => m.AdminAnalyticsView),
+  { loading: ViewLoadingFallback }
+);
 const AdminCollegesView = dynamic(
   () => import('@/components/admin/AdminCollegesView').then((m) => m.AdminCollegesView),
   { loading: ViewLoadingFallback }
@@ -399,6 +403,10 @@ function DashboardContent() {
                   onRejectCollege={handleRejectCollege}
                   onNavigateSlug={handleNavigateSlug}
                 />
+              )}
+
+              {activeSlug === 'analytics' && (
+                <AdminAnalyticsView />
               )}
 
               {activeSlug === 'students' && (

@@ -347,3 +347,111 @@ export async function getAdminStudentDetail(id: number) {
     throw error;
   }
 }
+
+/**
+ * GET /admin/analytics/overview
+ * Fetch fast executive KPIs, revenue trends, 4-stage funnel, and score distribution
+ */
+export async function getAdminAnalyticsOverview() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/admin/analytics/overview`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return null;
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("API getAdminAnalyticsOverview error:", error);
+    return null;
+  }
+}
+
+/**
+ * GET /admin/analytics/colleges
+ * Fetch paginated and searchable B2B institutional cohort benchmarks
+ */
+export async function getAdminAnalyticsColleges(params?: { page?: number; limit?: number; search?: string }) {
+  try {
+    const searchParams = new URLSearchParams();
+    if (params?.page !== undefined) searchParams.append("page", String(params.page));
+    if (params?.limit !== undefined) searchParams.append("limit", String(params.limit));
+    if (params?.search) searchParams.append("search", params.search);
+
+    const qs = searchParams.toString();
+    const url = qs ? `${BACKEND_URL}/admin/analytics/colleges?${qs}` : `${BACKEND_URL}/admin/analytics/colleges`;
+
+    const res = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return { data: [], meta: { total: 0, page: 1, limit: 10, totalPages: 1, hasNextPage: false, hasPrevPage: false } };
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("API getAdminAnalyticsColleges error:", error);
+    return { data: [], meta: { total: 0, page: 1, limit: 10, totalPages: 1, hasNextPage: false, hasPrevPage: false } };
+  }
+}
+
+/**
+ * GET /admin/analytics/geographic
+ * Fetch global student and visitor geographic distribution
+ */
+export async function getAdminAnalyticsGeographic() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/admin/analytics/geographic`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return [];
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("API getAdminAnalyticsGeographic error:", error);
+    return [];
+  }
+}
+
+/**
+ * GET /admin/analytics
+ * Fetch full platform telemetry
+ */
+export async function getAdminAnalytics() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/admin/analytics`, {
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader(),
+      },
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      return null;
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("API getAdminAnalytics error:", error);
+    return null;
+  }
+}

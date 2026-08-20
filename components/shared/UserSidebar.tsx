@@ -78,6 +78,8 @@ export const UserSidebar: React.FC<UserSidebarProps> = ({
     switch (slug) {
       case 'overview':
         return <LayoutDashboard className={iconClass} />;
+      case 'analytics':
+        return <BarChart3 className={iconClass} />;
       case 'projects':
       case 'programs':
       case 'program':
