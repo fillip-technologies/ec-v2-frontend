@@ -1,171 +1,104 @@
-# 🎓 Engineers Clinic — Frontend Web Application
+# Engineers Clinic — Frontend Application
 
-The frontend client portal for the **Engineers Clinic Platform** — an AI-evaluated, NEP-2020 aligned internship delivery platform for engineering, management, and tech students.
-
-Built with **Next.js (App Router)**, **TypeScript**, **Tailwind CSS**, and **Lucide React**, providing a role-aware multi-portal web application with responsive layouts across Desktop, Tablet, and Mobile.
+> Modern, high-performance web platform and unified multi-role operating system built with **Next.js 16 (App Router & Turbopack)**, **Tailwind CSS**, and **Lucide React**.
 
 ---
 
-## 🏗️ Architecture & Portals Overview
-
-The application is structured into role-aware, responsive dashboards and public funnels:
-
-```
-                              ┌───────────────────────────────────┐
-                              │     Engineers Clinic Web App      │
-                              └─────────────────┬─────────────────┘
-                                                │
-         ┌──────────────────┬───────────────────┼───────────────────┬──────────────────┐
-         │                  │                   │                   │                  │
-         ▼                  ▼                   ▼                   ▼                  ▼
-┌─────────────────┐ ┌───────────────┐ ┌───────────────────┐ ┌───────────────┐ ┌────────────────┐
-│  Public Portal  │ │ Student Portal│ │  College Portal   │ │ Admin Console │ │ Super Admin    │
-│  - Catalog      │ │ - Workspaces  │ │  - Seat Allocation│ │ - Curriculums │ │ - Full Telemetry│
-│  - Checkout     │ │ - AI Reviews  │ │  - Coupon Batches │ │ - Approvals   │ │ - Dossiers     │
-│  - Verify Certs │ │ - Certificates│ │  - Student Audit  │ │ - Operations  │ │ - RBAC Control │
-└─────────────────┘ └───────────────┘ └───────────────────┘ └───────────────┘ └────────────────┘
-```
-
-### 1. 🌐 Public Portal & Enrollment Funnel
-- **Catalogue Explorer**: Filter internships by discipline stream, technology clusters, duration, and price.
-- **Interactive Syllabus & Projects**: Preview 3 capstone projects and step-by-step deliverable templates.
-- **Payment & Coupon Checkout**: Integrated Razorpay/Stripe checkout and zero-cost institutional coupon code redemption.
-- **Public Certificate Verification**: QR-code enabled verification landing page resolving issued certificates and transcripts.
-
-### 2. 👩‍🎓 Student Dashboard (`/student`)
-- **Active Program Workspaces**: Guided step-by-step deliverable workspace for 3 capstone projects.
-- **Asynchronous AI Evaluation Feedback**: Real-time rubric grading, evaluation scores, and feedback logs.
-- **Task Submission Modal**: File upload / link submission system.
-- **Certificates & Transcripts**: Completion badge, dynamic percentage trackers, and verifiable certificate generation.
-- **Order & Invoice Receipts**: History of enrolled programs and institutional sponsorships.
-
-### 3. 🏫 B2B College Institution Portal (`/college` & Admin Tab)
-- **Institutional Seat Allocations**: Request bulk internship seat allocations per program with auto-calculated PO amounts.
-- **Coupon Batches & Distribution**: Generate and export zero-cost student coupon batches (`CSV` export).
-- **Student Redemption Audit**: Real-time ledger tracking student redemption dates, university USN, branch, and progress.
-- **Cohort Reports & Analytics**: Department-level completion metrics and certificate issuance breakdown.
-
-### 4. 🛡️ Admin & Super Admin Console (`/admin`)
-- **Executive Telemetry**: Overview KPI metrics (active vs completed cohorts, B2B revenue, seat utilization rate).
-- **College Approval Management**: Review, approve, and reject onboarding college institution requests.
-- **360° Institutional Dossier (`/admin/collegedetail/:id`)**: Comprehensive institutional view including MoU specs, admin coordinators, seat purchase history, coupon batches, affiliated student cohort, and issued certificates.
-- **360° Student Dossier (`/admin/studentdetail/:id`)**: Full learner audit including academic profile, enrollment tracks, project workspace steps, AI rubric evaluation submissions, and certificates.
-- **Program & Step Curriculum Builder**: Author stream tracks, capstone project pools, workspace step blueprints, tasks, and rubric criteria.
-- **Platform Users Directory (`/admin?tab=users`)**: Manage student, college coordinator, admin, and super-admin accounts with direct one-click dossier inspection.
+## 📑 Table of Contents
+- [Project Overview](#-project-overview)
+- [Tech Stack](#-tech-stack)
+- [Local Quick Start](#-local-quick-start)
+- [Key Portals & Features](#-key-portals--features)
+- [Architecture & Deep Documentation](#-architecture--deep-documentation)
+- [Building for Production](#-building-for-production)
 
 ---
 
-## 📱 Responsive Collapsible Sidebar System
-
-The `UserSidebar` component dynamically adapts to all viewports:
-
-| Device Viewport | Sidebar Behavior | Key Interactions |
-| :--- | :--- | :--- |
-| **Desktop (`>= 1024px`)** | **Full Expanded (`w-64`)** | Full logo, category group labels, icon + text navigation items, bottom user card, and bottom **Collapse** toggle button. |
-| **Tablet (`768px – 1023px`)** | **Auto-Collapsed Rail (`w-20`)** | Monogram badge, centered icon-only buttons with hover tooltips, and bottom **Expand** toggle button. |
-| **Mobile (`< 768px`)** | **Slide-In Overlay Drawer** | Off-canvas sidebar with floating hamburger trigger, backdrop blur, and auto-closing navigation on selection. |
+## 🌟 Project Overview
+The **Engineers Clinic Frontend** serves as both the public web presence and the interactive dashboard engine for the entire platform:
+1. **Public Marketing & Catalog**: Multi-currency checkout, dynamic cluster/topic exploration, institutional tie-up showcases, and FAQ sections.
+2. **Unified Multi-Role Dashboard (`/student`, `/college`, `/admin`)**: Single reactive dashboard shell that dynamically transforms into the Student Workspace, B2B College Portal, or Super Admin Console based on authenticated credentials.
+3. **Interactive Milestone Workspace**: Integrated GitHub repository linking, task submission modals, AI evaluation feedback displays, and QR-verifiable certificate viewer.
 
 ---
 
-## 📂 Project Directory Structure
+## 🚀 Tech Stack
 
-```text
-engineers-clinic-frontend/
-├── app/                               # 🚀 Next.js App Router Pages
-│   ├── page.tsx                       # Public Home & Course Catalog Landing Page
-│   ├── student/                       # Dynamic Role-Aware Dashboard Router
-│   │   └── page.tsx                   # (Students, Colleges, Admins, Super Admins)
-│   ├── admin/
-│   │   ├── program/                   # Program Authoring & Curriculum Management
-│   │   ├── studentdetail/[id]/        # Standalone Student 360° Dossier Route
-│   │   └── collegedetail/[id]/        # Standalone College 360° Dossier Route
-│   ├── checkout/                      # Cart & Order Payment Funnel
-│   ├── verify/[id]/                   # Public Certificate QR Verification Page
-│   ├── layout.tsx                     # Root HTML & Global Providers
-│   └── globals.css                    # Design Tokens & Global CSS Variables
-│
-├── components/                        # 🧱 Modular UI Components
-│   ├── shared/                        # Shared Cross-Portal Components
-│   │   ├── UserSidebar.tsx            # Responsive Collapsible Navigation Sidebar
-│   │   ├── SearchableSelect.tsx       # Searchable Custom Select Dropdowns
-│   │   ├── CustomDropdown.tsx         # Accessible Custom Select Control
-│   │   ├── CouponBatchInspector.tsx   # Detailed Coupon & Student Ledger Inspector
-│   │   └── Navbar.tsx                 # Public Header & Navigation
-│   ├── student/                       # Student Workspace Views & Submissions
-│   ├── college/                       # College Seat Management & Coupon Batches
-│   └── admin/                         # Admin Telemetry, Dossiers & Curriculums
-│       ├── AdminOverview.tsx
-│       ├── AdminCollegesView.tsx      # Colleges Directory Table with Quick Dossier Link
-│       ├── AdminCollegeDetailView.tsx # 360° College Dossier View (5 Tabs)
-│       ├── AdminStudentsListView.tsx  # Students Directory Table with Quick Dossier Link
-│       ├── AdminStudentDetailView.tsx # 360° Student Dossier View (4 Tabs)
-│       ├── AdminUsersView.tsx         # Platform Users Management
-│       └── AdminProgramsView.tsx      # Programs Authoring View
-│
-├── lib/
-│   ├── api/                           # 🔌 Modular Backend API Client Services
-│   │   ├── auth.ts                    # Login, Register, Session Validation
-│   │   ├── catalog.ts                 # Programs, Clusters, Topics, Technologies
-│   │   ├── student.ts                 # Student Workspace, Submissions, AI Rubrics
-│   │   ├── college.ts                 # College Overview, Batches, Students
-│   │   ├── admin.ts                   # Admin Telemetry, Colleges, Students, Users
-│   │   └── payment.ts                 # Seat Orders, Razorpay Checkout, Coupons
-│   ├── toast.ts                       # Toast Notifications Engine
-│   └── utils/                         # Currency formatting, Dates, Sanitization
-│
-├── context/
-│   └── AuthContext.tsx                # JWT Session State & Role-Based Access
-│
-├── config/
-│   ├── roleSidebarConfig.json         # Dynamic Role-Based Sidebar Navigation Matrix
-│   └── internshipTopics.ts            # Public Catalogue Topic Clusters
-│
-└── public/
-    └── images/                        # Brand Assets, Logos, and Badges
-```
+| Layer | Technology |
+| :--- | :--- |
+| **Framework** | [Next.js 16](https://nextjs.org/) (App Router, Turbopack, React 19) |
+| **Styling** | [Tailwind CSS](https://tailwindcss.com/) with Custom Glassmorphism Design Tokens |
+| **Icons** | [Lucide React](https://lucide.dev/) |
+| **State & Auth** | React Context (`AuthContext`), Local Storage Token Sync, URL Search Params |
+| **HTTP Client** | Modular Fetch Interceptor with Automatic Token Refresh (`lib/api/client.ts`) |
 
 ---
 
-## ⚙️ Environment Configuration (`.env.local`)
+## ⚡ Local Quick Start
 
-Create a `.env.local` file in the frontend root directory:
+### 1. Prerequisites
+- **Node.js**: `v20.x` or `v22.x` (LTS recommended)
+- **Engineers Clinic Backend**: Running on `http://localhost:5000`
 
-```env
-# URL pointing to the NestJS backend API
-NEXT_PUBLIC_BACKEND_URL="http://localhost:4000"
-```
-
----
-
-## 🚀 Getting Started
-
-### 1. Install Dependencies
+### 2. Install Dependencies
 ```bash
+cd engineers-clinic-frontend
 npm install
 ```
 
-### 2. Run Development Server
+### 3. Configure Environment Variables
+Create a `.env.local` file in the root directory:
+```bash
+cp .env.example .env.local
+```
+Configure backend API URL:
+```env
+NEXT_PUBLIC_BACKEND_URL="http://localhost:5000/api"
+NEXT_PUBLIC_RAZORPAY_KEY_ID="rzp_test_placeholder"
+```
+
+### 4. Start Development Server
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) with your browser.
+The application will launch on `http://localhost:3000`.
 
-### 3. Production Build & Start
+---
+
+## 🧭 Key Portals & Features
+
+| Route | Role / Audience | Features |
+| :--- | :--- | :--- |
+| **`/`** | Public Visitors | Dynamic landing page, statistics, testimonials, lead capture modal. |
+| **`/catalog`** | Prospective Learners | Multi-cluster catalog filtering, 120-hr program details, currency switcher. |
+| **`/catalog/[slug]`** | Prospective Learners | Detailed curriculum syllabus, 3 capstone breakdown, pricing checkout. |
+| **`/student`** | Students | Milestone task board, GitHub submission modal, AI rubric feedback, certificate. |
+| **`/college`** | College Partners | Campus seat allocation, active coupon batch cards, cohort completion reports. |
+| **`/admin`** | Super Admins | Telemetry, 12-month rolling revenue bar chart, college vetting, user status. |
+
+---
+
+## 📚 Architecture & Deep Documentation
+
+Detailed documentation is available in the [`docs/`](./docs) directory:
+
+- 🏗️ **[docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md)** — App Router tree, layout system, and HTTP client interceptor with auto-refresh.
+- 🧭 **[docs/ROUTING_AND_ROLES.md](./docs/ROUTING_AND_ROLES.md)** — Dynamic tab routing (`?tab=...`), role switching, and sidebar configuration.
+- 🧩 **[docs/COMPONENTS.md](./docs/COMPONENTS.md)** — Design tokens, glassmorphism UI guidelines, and shared widget catalog.
+- 🚀 **[docs/DEPLOYMENT.md](./docs/DEPLOYMENT.md)** — Production build optimization, caching rules, and deployment guides.
+
+---
+
+## 🚢 Building for Production
+
+To create an optimized production build:
 ```bash
+# Typecheck & Next.js production build
 npm run build
-npm start
+
+# Start production server
+npm run start
 ```
 
 ---
-
-## 🔑 User Roles & Route Redirection Matrix
-
-| Role | Default Dashboard Route | Capabilities |
-| :--- | :--- | :--- |
-| **`student`** | `/student?tab=overview` | Enrolled programs, step tasks, AI rubric review grading, project certificates. |
-| **`college`** | `/student?tab=overview` | Bulk seat orders, coupon batch issuance, student redemption audit trail. |
-| **`admin`** | `/student?tab=overview` | Program authoring, college approvals, student & college dossiers. |
-| **`super_admin`** | `/student?tab=overview` | Global telemetry KPIs, all dossiers, user account status controls, full RBAC. |
-
----
-
+*Developed by the Engineers Clinic Core Engineering Team.*
