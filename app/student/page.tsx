@@ -3,14 +3,13 @@
 import React, { useState, useEffect, Suspense, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
-import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { UserSidebar } from '@/components/shared/UserSidebar';
 import { TaskSubmissionModal } from '@/components/student/TaskSubmissionModal';
 import { Project } from '@/types/catalog';
 import { getProgramByIdOrSlug, getPrograms } from '@/lib/api/catalog';
 import {
   getStudentOverview,
-  getStudentProfile,
   getStudentWorkspace,
   getStudentPrograms,
   getStudentSubmissions,
@@ -30,7 +29,6 @@ import {
   getCollegeCoupons,
   getCollegeReports,
 } from '@/lib/api/college';
-import studentData from '@/config/studentData.json';
 import { showToast } from '@/lib/toast';
 import { School, Shield, Loader2, Award, CreditCard } from 'lucide-react';
 
@@ -321,12 +319,12 @@ function DashboardContent() {
               if (Array.isArray(wsProjects) && wsProjects.length > 0) {
                 setProjects(wsProjects);
               } else {
-                getProgramByIdOrSlug(studentData.defaultProgramSlug)
+                getProgramByIdOrSlug('fullstack-web-engineering-mern-nextjs')
                   .then((data) => { if (data?.projects) setProjects(data.projects); });
               }
             })
             .catch(() => {
-              getProgramByIdOrSlug(studentData.defaultProgramSlug)
+              getProgramByIdOrSlug('fullstack-web-engineering-mern-nextjs')
                 .then((data) => { if (data?.projects) setProjects(data.projects); });
             });
         }
@@ -572,9 +570,7 @@ export default function StudentPage() {
         </div>
       }
     >
-      <AuthProvider>
-        <DashboardContent />
-      </AuthProvider>
+      <DashboardContent />
     </Suspense>
   );
 }

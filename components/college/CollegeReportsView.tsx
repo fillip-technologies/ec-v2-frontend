@@ -10,9 +10,9 @@ import {
   Search,
   ShieldCheck,
   GraduationCap,
-  Calendar,
 } from 'lucide-react';
 import { showToast } from '@/lib/toast';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 interface CollegeReportsViewProps {
   reportsData: any;
@@ -21,40 +21,9 @@ interface CollegeReportsViewProps {
 export const CollegeReportsView: React.FC<CollegeReportsViewProps> = ({ reportsData }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const cohortData = reportsData?.cohortSummary || [
-    {
-      id: 1,
-      programTitle: 'Full Stack Web Engineering (MERN & Next.js)',
-      enrolledCount: 18,
-      completedCount: 14,
-      avgScore: '89.4%',
-      status: 'ACTIVE',
-    },
-    {
-      id: 2,
-      programTitle: 'Cloud Native & Kubernetes DevOps',
-      enrolledCount: 12,
-      completedCount: 10,
-      avgScore: '92.1%',
-      status: 'ACTIVE',
-    },
-    {
-      id: 3,
-      programTitle: 'Cybersecurity Incident Response',
-      enrolledCount: 8,
-      completedCount: 6,
-      avgScore: '87.8%',
-      status: 'ACTIVE',
-    },
-    {
-      id: 4,
-      programTitle: 'Embedded Systems & IoT Firmware',
-      enrolledCount: 10,
-      completedCount: 9,
-      avgScore: '94.0%',
-      status: 'ACTIVE',
-    },
-  ];
+  const cohortData: any[] = Array.isArray(reportsData?.cohortSummary)
+    ? reportsData.cohortSummary
+    : [];
 
   const filteredCohort = useMemo(() => {
     return cohortData.filter((item: any) =>
@@ -63,6 +32,11 @@ export const CollegeReportsView: React.FC<CollegeReportsViewProps> = ({ reportsD
   }, [cohortData, searchQuery]);
 
   const handleExportSummaryCSV = () => {
+    if (cohortData.length === 0) {
+      showToast.error('No report data available to export', 'Export Error');
+      return;
+    }
+
     const csvContent =
       'data:text/csv;charset=utf-8,' +
       ['Program Track,Enrolled Count,Completed Count,Average Score,Status']
@@ -77,12 +51,17 @@ export const CollegeReportsView: React.FC<CollegeReportsViewProps> = ({ reportsD
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'Institutional_Completion_Report.csv');
+    link.setAttribute('download', `${reportsData?.institutionName || 'College'}_Completion_Report.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     showToast.success('Exported completion summary as CSV!', 'Export Complete');
   };
+
+  const totalEnrolled = reportsData?.totalEnrolledCohort || 0;
+  const completedCount = reportsData?.completedInternships || 0;
+  const certsCount = reportsData?.certificatesIssued || 0;
+  const completionRate = reportsData?.completionRatePercentage || 0;
 
   return (
     <div className="space-y-6">
@@ -97,14 +76,15 @@ export const CollegeReportsView: React.FC<CollegeReportsViewProps> = ({ reportsD
             Institutional Completion & Verification Reports
           </h1>
           <p className="text-xs text-textMuted mt-1">
-            Scored outcomes, completion analytics, and QR certificate verification summary for {reportsData?.institutionName || 'your campus'}.
+            Scored outcomes, completion analytics, and QR certificate verification summary for{' '}
+            <span className="font-bold text-textPrimary">{reportsData?.institutionName || 'your campus'}</span>.
           </p>
         </div>
 
         <button
           type="button"
           onClick={handleExportSummaryCSV}
-          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-bgSoft hover:bg-borderLight text-textPrimary font-extrabold text-xs transition cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-bgSoft hover:bg-borderLight text-textPrimary font-extrabold text-xs transition cursor-pointer shadow-2xs"
         >
           <Download className="h-4 w-4" />
           <span>Export Report CSV</span>
@@ -119,7 +99,7 @@ export const CollegeReportsView: React.FC<CollegeReportsViewProps> = ({ reportsD
             <Users className="h-4 w-4 text-brand" />
           </div>
           <div className="text-3xl font-black text-textPrimary">
-            {reportsData?.totalEnrolledCohort || 48}
+            {totalEnrolled}
           </div>
           <div className="text-xs text-textMuted">Registered campus learners</div>
         </div>
@@ -130,10 +110,10 @@ export const CollegeReportsView: React.FC<CollegeReportsViewProps> = ({ reportsD
             <CheckCircle2 className="h-4 w-4 text-emerald-600" />
           </div>
           <div className="text-3xl font-black text-emerald-600">
-            {reportsData?.completedInternships || 39}
+            {completedCount}
           </div>
           <div className="text-xs text-emerald-700 font-semibold">
-            {reportsData?.completionRatePercentage || 81.25}% Overall Completion Rate
+            {completionRate}% Overall Completion Rate
           </div>
         </div>
 
@@ -143,7 +123,7 @@ export const CollegeReportsView: React.FC<CollegeReportsViewProps> = ({ reportsD
             <Award className="h-4 w-4 text-brand" />
           </div>
           <div className="text-3xl font-black text-brand">
-            {reportsData?.certificatesIssued || 39}
+            {certsCount}
           </div>
           <div className="text-xs text-brand font-semibold">Verified QR Credentials</div>
         </div>
@@ -164,69 +144,87 @@ export const CollegeReportsView: React.FC<CollegeReportsViewProps> = ({ reportsD
               placeholder="Search program track..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-xs font-bold rounded-xl border border-borderLight bg-white text-textPrimary placeholder:text-textMuted focus:border-brand focus:outline-hidden focus:ring-2 focus:ring-brand/20 transition"
+              className="w-full pl-9 pr-4 py-2 text-xs font-bold rounded-xl border border-borderLight bg-white text-textPrimary placeholder:text-textMuted focus:border-brand focus:outline-none transition"
             />
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-borderLight bg-bgBody/50 text-[11px] font-black uppercase tracking-wider text-textMuted">
-                <th className="py-3.5 px-4 sm:px-6">Program Track</th>
-                <th className="py-3.5 px-4">Cohort Enrolled</th>
-                <th className="py-3.5 px-4">Completion Progress</th>
-                <th className="py-3.5 px-4">Average Evaluation Score</th>
-                <th className="py-3.5 px-4 sm:px-6 text-right">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-borderLight text-xs font-medium">
-              {filteredCohort.map((item: any) => {
-                const completionPct = Math.round((item.completedCount / item.enrolledCount) * 100);
+        {filteredCohort.length === 0 ? (
+          <div className="p-10 text-center">
+            <EmptyState
+              variant="inline"
+              title={searchQuery ? 'No Matching Programs' : 'No Enrolled Cohorts Found'}
+              description={
+                searchQuery
+                  ? 'No program tracks matched your search keyword.'
+                  : 'Students from your institution have not enrolled in any program tracks yet.'
+              }
+              icon={<GraduationCap className="h-7 w-7 text-textMuted/40" />}
+            />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-borderLight bg-bgBody/50 text-[11px] font-black uppercase tracking-wider text-textMuted">
+                  <th className="py-3.5 px-4 sm:px-6">Program Track</th>
+                  <th className="py-3.5 px-4">Cohort Enrolled</th>
+                  <th className="py-3.5 px-4">Completion Progress</th>
+                  <th className="py-3.5 px-4">Average Evaluation Score</th>
+                  <th className="py-3.5 px-4 sm:px-6 text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-borderLight text-xs font-medium">
+                {filteredCohort.map((item: any) => {
+                  const completionPct =
+                    item.enrolledCount > 0
+                      ? Math.round((item.completedCount / item.enrolledCount) * 100)
+                      : 0;
 
-                return (
-                  <tr key={item.id} className="hover:bg-bgSoft/40 transition-colors">
-                    <td className="py-4 px-4 sm:px-6 font-extrabold text-textPrimary">
-                      {item.programTitle}
-                    </td>
+                  return (
+                    <tr key={item.id} className="hover:bg-bgSoft/40 transition-colors">
+                      <td className="py-4 px-4 sm:px-6 font-extrabold text-textPrimary">
+                        {item.programTitle}
+                      </td>
 
-                    <td className="py-4 px-4 font-black text-textPrimary">
-                      {item.enrolledCount} Students
-                    </td>
+                      <td className="py-4 px-4 font-black text-textPrimary">
+                        {item.enrolledCount} Students
+                      </td>
 
-                    <td className="py-4 px-4 whitespace-nowrap">
-                      <div className="flex items-center gap-2">
-                        <span className="font-black text-textPrimary">
-                          {item.completedCount} / {item.enrolledCount}
+                      <td className="py-4 px-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <span className="font-black text-textPrimary">
+                            {item.completedCount} / {item.enrolledCount}
+                          </span>
+                          <span className="text-[10px] text-textMuted font-bold">
+                            ({completionPct}%)
+                          </span>
+                        </div>
+                        <div className="mt-1.5 h-1.5 w-28 rounded-full bg-bgSoft overflow-hidden">
+                          <div
+                            className="h-full rounded-full bg-emerald-500 transition-all"
+                            style={{ width: `${completionPct}%` }}
+                          />
+                        </div>
+                      </td>
+
+                      <td className="py-4 px-4 whitespace-nowrap font-black text-emerald-700">
+                        {item.avgScore}
+                      </td>
+
+                      <td className="py-4 px-4 sm:px-6 whitespace-nowrap text-right">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-800">
+                          <ShieldCheck className="h-3 w-3" />
+                          <span>Verified</span>
                         </span>
-                        <span className="text-[10px] text-textMuted font-bold">
-                          ({completionPct}%)
-                        </span>
-                      </div>
-                      <div className="mt-1.5 h-1.5 w-28 rounded-full bg-bgSoft overflow-hidden">
-                        <div
-                          className="h-full rounded-full bg-emerald-500 transition-all"
-                          style={{ width: `${completionPct}%` }}
-                        />
-                      </div>
-                    </td>
-
-                    <td className="py-4 px-4 whitespace-nowrap font-black text-emerald-700">
-                      {item.avgScore}
-                    </td>
-
-                    <td className="py-4 px-4 sm:px-6 whitespace-nowrap text-right">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-800">
-                        <ShieldCheck className="h-3 w-3" />
-                        <span>Verified</span>
-                      </span>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

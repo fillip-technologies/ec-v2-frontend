@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import DashboardPage from '../student/page';
 import Link from 'next/link';
 import { School, ArrowRight } from 'lucide-react';
@@ -38,9 +38,5 @@ function CollegePageContent() {
 }
 
 export default function CollegePage() {
-  return (
-    <AuthProvider>
-      <CollegePageContent />
-    </AuthProvider>
-  );
+  return <CollegePageContent />;
 }

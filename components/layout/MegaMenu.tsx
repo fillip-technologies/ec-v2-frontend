@@ -126,10 +126,10 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({ mobile = false, onSelect }) 
         onClick={() => setOpen(!open)}
         className={`nav-link flex items-center gap-1 cursor-pointer ${open ? "nav-link-active" : ""}`}
       >
-        Internships
+        <span>Internships</span>
         <ChevronDown
-          className={`h-3.5 w-3.5 transition duration-200 ${
-            open ? "rotate-180 text-brand" : ""
+          className={`h-3.5 w-3.5 transition-transform duration-200 ${
+            open ? "rotate-180 text-white" : "text-current"
           }`}
         />
       </button>

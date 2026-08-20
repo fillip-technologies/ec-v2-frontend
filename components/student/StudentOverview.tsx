@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Project } from '@/types/catalog';
-import studentData from '@/config/studentData.json';
 import { useAuth } from '@/context/AuthContext';
-import { Clock, FolderKanban, Award, Send, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Clock, FolderKanban, Award, Send, ArrowRight, ShieldCheck, Sparkles, BookOpen } from 'lucide-react';
 
 interface StudentOverviewProps {
   projects?: Project[];
@@ -21,14 +20,11 @@ interface StudentOverviewProps {
 
 export const StudentOverview: React.FC<StudentOverviewProps> = ({
   projects = [],
-  programTitle = 'Full Stack Web Engineering (MERN & Next.js)',
+  programTitle = 'Enrolled Internship Track',
   overview,
   overviewData: overviewDataProp,
-  programs,
-  programsData,
   onSelectSlug,
   onNavigateSlug,
-  onOpenSubmitModal,
 }) => {
   const effectiveOverview = overview || overviewDataProp;
   const { user } = useAuth();
@@ -39,24 +35,36 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
   }, []);
 
   const navigateFn = onSelectSlug || onNavigateSlug || (() => {});
-  const metrics = effectiveOverview?.metrics || studentData.metrics;
-  const recentAiReview = effectiveOverview?.recentAiReview || studentData.recentAiReview;
+
+  const metrics = effectiveOverview?.metrics || {
+    hoursLogged: 0,
+    totalHours: 120,
+    completionPercentage: 0,
+    projectsDone: 0,
+    totalProjects: 3,
+    currentScore: 0,
+    maxScore: 100,
+    grade: 'N/A',
+    totalSubmissions: 0,
+    gradedSubmissions: 0,
+  };
+
+  const recentAiReview = effectiveOverview?.recentAiReview || null;
   const title = effectiveOverview?.programTitle || programTitle;
 
-  const rawProjects =
-    effectiveOverview?.projects && Array.isArray(effectiveOverview.projects) && effectiveOverview.projects.length > 0
+  const projectTracks: any[] =
+    effectiveOverview?.projects && Array.isArray(effectiveOverview.projects)
       ? effectiveOverview.projects
-      : Array.isArray(projects) && projects.length > 0
+      : Array.isArray(projects)
       ? projects
-      : (studentData as any)?.defaultProgramProjects || [];
-
-  const projectTracks: any[] = Array.isArray(rawProjects) ? rawProjects : [];
+      : [];
 
   const firstName = mounted
     ? effectiveOverview?.firstName ||
       (user as any)?.student?.firstName ||
       user?.firstName ||
       (user as any)?.displayName ||
+      user?.email?.split('@')[0] ||
       'Learner'
     : 'Learner';
 
@@ -73,13 +81,17 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
               Hi {firstName}
             </h2>
             <p className="mt-1 text-xs text-white/90" suppressHydrationWarning>
-              You are {metrics.hoursLogged} hours through your {metrics.totalHours} hours. Next up: Step 2 in Project #2.
+              {metrics.hoursLogged > 0
+                ? `You have logged ${metrics.hoursLogged} hours out of ${metrics.totalHours} total curriculum hours.`
+                : 'Welcome to your workspace. Start working on your capstone projects to log hours and build your verified portfolio.'}
             </p>
           </div>
 
           {/* Progress Ring Indicator */}
           <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-secondary bg-white/10 backdrop-blur-md">
-            <span className="text-sm font-black text-white" suppressHydrationWarning>{metrics.completionPercentage}%</span>
+            <span className="text-sm font-black text-white" suppressHydrationWarning>
+              {metrics.completionPercentage}%
+            </span>
           </div>
         </div>
       </div>
@@ -102,17 +114,18 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
             <span>Projects Done</span>
           </div>
           <div className="mt-2 text-xl font-black text-textPrimary" suppressHydrationWarning>
-            {metrics.projectsDone} <span className="text-xs font-semibold text-textMuted">/ {metrics.totalProjects} Projects</span>
+            {metrics.projectsDone} <span className="text-xs font-semibold text-textMuted">/ {metrics.totalProjects || 3} Projects</span>
           </div>
         </div>
 
         <div className="rounded-[20px] border border-borderLight bg-white p-4 shadow-xs">
           <div className="flex items-center gap-2 text-xs font-bold text-textMuted">
-            <Award className="h-4 w-4 text-success" />
+            <Award className="h-4 w-4 text-emerald-600" />
             <span>Current Score</span>
           </div>
-          <div className="mt-2 text-xl font-black text-success" suppressHydrationWarning>
-            {metrics.currentScore} / {metrics.maxScore} <span className="text-xs font-bold text-textMuted">(Grade {metrics.grade})</span>
+          <div className="mt-2 text-xl font-black text-emerald-600" suppressHydrationWarning>
+            {metrics.currentScore} / {metrics.maxScore || 100}{' '}
+            <span className="text-xs font-bold text-textMuted">(Grade {metrics.grade})</span>
           </div>
         </div>
 
@@ -122,7 +135,8 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
             <span>Submissions</span>
           </div>
           <div className="mt-2 text-xl font-black text-textPrimary" suppressHydrationWarning>
-            {metrics.totalSubmissions} <span className="text-xs font-semibold text-textMuted">({metrics.gradedSubmissions} Graded)</span>
+            {metrics.totalSubmissions}{' '}
+            <span className="text-xs font-semibold text-textMuted">({metrics.gradedSubmissions} Graded)</span>
           </div>
         </div>
       </div>
@@ -144,8 +158,16 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
 
           <div className="space-y-3">
             {projectTracks.length === 0 ? (
-              <div className="text-xs text-textMuted py-4 text-center font-bold">
-                No active capstone projects enrolled.
+              <div className="text-xs text-textMuted py-8 text-center space-y-2">
+                <BookOpen className="h-8 w-8 text-textMuted/40 mx-auto" />
+                <p className="font-bold">No active capstone projects enrolled yet.</p>
+                <button
+                  onClick={() => navigateFn('program')}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-brand text-white text-xs font-bold shadow-xs hover:bg-brandHover transition cursor-pointer"
+                >
+                  <span>Explore Programme Tracks</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
               </div>
             ) : (
               projectTracks.slice(0, 3).map((project: any, idx: number) => {
@@ -154,9 +176,23 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
 
                 if (!calculatedStatus) {
                   if (steps.length > 0) {
-                    const allCompleted = steps.every((s: any) => s.status === 'COMPLETED' || s.status === 'completed' || s.status === 'PASSED' || s.status === 'passed');
-                    const anyStarted = steps.some((s: any) => s.status === 'COMPLETED' || s.status === 'completed' || s.status === 'IN_PROGRESS' || s.status === 'in_progress' || s.status === 'PASSED' || s.status === 'passed');
-                    
+                    const allCompleted = steps.every(
+                      (s: any) =>
+                        s.status === 'COMPLETED' ||
+                        s.status === 'completed' ||
+                        s.status === 'PASSED' ||
+                        s.status === 'passed'
+                    );
+                    const anyStarted = steps.some(
+                      (s: any) =>
+                        s.status === 'COMPLETED' ||
+                        s.status === 'completed' ||
+                        s.status === 'IN_PROGRESS' ||
+                        s.status === 'in_progress' ||
+                        s.status === 'PASSED' ||
+                        s.status === 'passed'
+                    );
+
                     if (allCompleted) {
                       calculatedStatus = 'Done';
                     } else if (anyStarted) {
@@ -179,7 +215,7 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
                       <span
                         className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
                           calculatedStatus === 'Done'
-                            ? 'bg-statusPassedBg text-statusPassedText'
+                            ? 'bg-emerald-100 text-emerald-700'
                             : calculatedStatus === 'Active'
                             ? 'bg-brand/10 text-brand'
                             : 'bg-gray-200 text-gray-500'
@@ -189,17 +225,17 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
                       </span>
                       <div>
                         <div className="font-bold text-textPrimary">{project.title}</div>
-                        <div className="text-[11px] text-textMuted">40 Hours • Capstone Project #{idx + 1}</div>
+                        <div className="text-[11px] text-textMuted">Capstone Project #{idx + 1}</div>
                       </div>
                     </div>
 
                     <span
                       className={`rounded-full px-3 py-1 text-[10px] font-extrabold uppercase ${
                         calculatedStatus === 'Done'
-                          ? 'bg-statusPassedBg text-statusPassedText'
+                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                           : calculatedStatus === 'Active'
                           ? 'bg-brand text-white'
-                          : 'bg-gray-200 text-gray-600'
+                          : 'bg-gray-100 text-gray-600'
                       }`}
                     >
                       {calculatedStatus}
@@ -214,44 +250,64 @@ export const StudentOverview: React.FC<StudentOverviewProps> = ({
         {/* Right Column: Recent AI Rubric Evaluation Review (5 cols) */}
         <div className="lg:col-span-5 space-y-4 rounded-[24px] border border-borderLight bg-white p-6 shadow-xs">
           <div className="flex items-center gap-2 border-b border-borderLight pb-3 text-sm font-bold text-textPrimary">
-            <ShieldCheck className="h-4 w-4 text-success" />
+            <ShieldCheck className="h-4 w-4 text-emerald-600" />
             <span>Recent AI Rubric Review</span>
           </div>
 
-          <div className="rounded-[18px] border border-successBorder bg-successLight/50 p-4 space-y-3">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-successDark">{recentAiReview?.stepTitle || 'Step Review'}</span>
-              <span className="rounded-full bg-success px-2.5 py-0.5 text-[10px] font-bold text-white uppercase">
-                {recentAiReview?.status || 'GRADED'}
-              </span>
-            </div>
-
-            <div className="text-xl font-black text-successDark">
-              Score: {recentAiReview?.score ?? 85} / {recentAiReview?.maxScore ?? 100}
-            </div>
-
-            <div className="space-y-1 text-xs text-textPrimary">
-              {Array.isArray(recentAiReview?.breakdown) && recentAiReview.breakdown.map((item: any, bIdx: number) => (
-                <div key={bIdx} className="flex justify-between">
-                  <span>{item.criterion}:</span>
-                  <span className="font-bold text-successDark">{item.score} / {item.maxScore}</span>
-                </div>
-              ))}
-            </div>
-
-            {recentAiReview?.feedback && (
-              <div className="border-t border-successBorder pt-2 text-[11px] font-medium text-successDark italic">
-                &quot;{recentAiReview.feedback}&quot;
+          {recentAiReview ? (
+            <div className="rounded-[18px] border border-emerald-200 bg-emerald-50/50 p-4 space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-emerald-900">{recentAiReview?.stepTitle || 'Milestone Task Review'}</span>
+                <span className="rounded-full bg-emerald-600 px-2.5 py-0.5 text-[10px] font-bold text-white uppercase">
+                  {recentAiReview?.status || 'GRADED'}
+                </span>
               </div>
-            )}
 
-            <button
-              onClick={() => navigateFn('submissions')}
-              className="w-full rounded-xl bg-success py-2 text-xs font-bold text-white hover:bg-successDark transition-all cursor-pointer"
-            >
-              View Submission Scores
-            </button>
-          </div>
+              <div className="text-xl font-black text-emerald-900">
+                Score: {recentAiReview?.score ?? 0} / {recentAiReview?.maxScore ?? 100}
+              </div>
+
+              <div className="space-y-1 text-xs text-textPrimary">
+                {Array.isArray(recentAiReview?.breakdown) &&
+                  recentAiReview.breakdown.map((item: any, bIdx: number) => (
+                    <div key={bIdx} className="flex justify-between">
+                      <span>{item.criterion}:</span>
+                      <span className="font-bold text-emerald-800">
+                        {item.score} / {item.maxScore}
+                      </span>
+                    </div>
+                  ))}
+              </div>
+
+              {recentAiReview?.feedback && (
+                <div className="border-t border-emerald-200/80 pt-2 text-[11px] font-medium text-emerald-900 italic">
+                  &quot;{recentAiReview.feedback}&quot;
+                </div>
+              )}
+
+              <button
+                onClick={() => navigateFn('submissions')}
+                className="w-full rounded-xl bg-emerald-600 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-all cursor-pointer shadow-2xs"
+              >
+                View Submission Scores
+              </button>
+            </div>
+          ) : (
+            <div className="rounded-[18px] border border-dashed border-borderLight bg-bgSoft/40 p-6 text-center space-y-3">
+              <Sparkles className="h-7 w-7 text-textMuted/40 mx-auto" />
+              <div className="text-xs font-bold text-textPrimary">No AI Reviews Yet</div>
+              <p className="text-[11px] text-textMuted leading-relaxed">
+                Submit task deliverables with your commit hash or live URL in the Program workspace to receive automated AI rubric evaluations.
+              </p>
+              <button
+                onClick={() => navigateFn('program')}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-borderLight bg-white text-xs font-bold text-textPrimary hover:bg-bgSoft transition cursor-pointer shadow-2xs"
+              >
+                <span>Go to Program Deliverables</span>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

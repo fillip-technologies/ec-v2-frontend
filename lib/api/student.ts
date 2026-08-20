@@ -1,5 +1,4 @@
 import { BACKEND_URL } from "@/config/api";
-import studentData from "@/config/studentData.json";
 import { apiClient as fetch } from "./client";
 
 function getAuthHeader(): Record<string, string> {
@@ -22,14 +21,13 @@ export async function getStudentOverview() {
     });
 
     if (!res.ok) {
-      console.warn(`GET /student/overview returned status ${res.status}. Falling back to studentData.json.`);
-      return studentData;
+      return null;
     }
 
     return await res.json();
   } catch (error) {
-    console.warn("API getStudentOverview error. Using studentData.json fallback:", error);
-    return studentData;
+    console.error("API getStudentOverview error:", error);
+    return null;
   }
 }
 
@@ -47,12 +45,13 @@ export async function getStudentProfile() {
     });
 
     if (!res.ok) {
-      return studentData.profile;
+      return null;
     }
 
     return await res.json();
   } catch (error) {
-    return studentData.profile;
+    console.error("API getStudentProfile error:", error);
+    return null;
   }
 }
 
@@ -94,6 +93,7 @@ export async function getStudentWorkspace() {
 
     return null;
   } catch (error) {
+    console.error("API getStudentWorkspace error:", error);
     return null;
   }
 }
@@ -117,6 +117,7 @@ export async function getStudentPrograms() {
 
     return await res.json();
   } catch (error) {
+    console.error("API getStudentPrograms error:", error);
     return [];
   }
 }
@@ -135,12 +136,13 @@ export async function getStudentSubmissions() {
     });
 
     if (!res.ok) {
-      return studentData.submissions;
+      return [];
     }
 
     return await res.json();
   } catch (error) {
-    return studentData.submissions;
+    console.error("API getStudentSubmissions error:", error);
+    return [];
   }
 }
 
@@ -210,12 +212,13 @@ export async function getStudentRubrics() {
     });
 
     if (!res.ok) {
-      return studentData.rubrics;
+      return [];
     }
 
     return await res.json();
   } catch (error) {
-    return studentData.rubrics;
+    console.error("API getStudentRubrics error:", error);
+    return [];
   }
 }
 
@@ -238,6 +241,7 @@ export async function getStudentCertificates() {
 
     return await res.json();
   } catch (error) {
+    console.error("API getStudentCertificates error:", error);
     return [];
   }
 }

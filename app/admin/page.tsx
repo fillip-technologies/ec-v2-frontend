@@ -2,7 +2,7 @@
 
 import React, { Suspense, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AuthProvider, useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import DashboardPage from '../student/page';
 import { Loader2 } from 'lucide-react';
 
@@ -42,16 +42,14 @@ function AdminPageContent() {
 
 export default function AdminPage() {
   return (
-    <AuthProvider>
-      <Suspense
-        fallback={
-          <div className="flex h-screen w-screen items-center justify-center bg-bgSoft">
-            <Loader2 className="h-8 w-8 animate-spin text-brand" />
-          </div>
-        }
-      >
-        <AdminPageContent />
-      </Suspense>
-    </AuthProvider>
+    <Suspense
+      fallback={
+        <div className="flex h-screen w-screen items-center justify-center bg-bgSoft">
+          <Loader2 className="h-8 w-8 animate-spin text-brand" />
+        </div>
+      }
+    >
+      <AdminPageContent />
+    </Suspense>
   );
 }

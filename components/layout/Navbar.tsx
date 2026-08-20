@@ -59,12 +59,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
                 setEnterpriseOpen(!enterpriseOpen);
                 setMoreOpen(false);
               }}
-              className="nav-link cursor-pointer"
+              className={`nav-link cursor-pointer ${enterpriseOpen ? "nav-link-active" : ""}`}
             >
-              For Enterprises & Employers
+              <span>For Enterprises & Employers</span>
               <ChevronDown
-                className={`h-4 w-4 transition duration-200 ${
-                  enterpriseOpen ? "rotate-180 text-brand" : ""
+                className={`h-4 w-4 transition-transform duration-200 ${
+                  enterpriseOpen ? "rotate-180 text-white" : "text-current"
                 }`}
               />
             </button>
@@ -121,12 +121,12 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenEnquiry }) => {
                 setMoreOpen(!moreOpen);
                 setEnterpriseOpen(false);
               }}
-              className="nav-link cursor-pointer"
+              className={`nav-link cursor-pointer ${moreOpen ? "nav-link-active" : ""}`}
             >
-              More
+              <span>More</span>
               <ChevronDown
-                className={`h-4 w-4 transition duration-200 ${
-                  moreOpen ? "rotate-180 text-brand" : ""
+                className={`h-4 w-4 transition-transform duration-200 ${
+                  moreOpen ? "rotate-180 text-white" : "text-current"
                 }`}
               />
             </button>

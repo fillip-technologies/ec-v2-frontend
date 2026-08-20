@@ -66,27 +66,30 @@ export const AdminGeographicReachCard: React.FC = () => {
       ) : (
         /* Scrollable container showing 6 items before scrolling */
         <div className="space-y-3 pt-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-          {countries.map((geo: any, idx: number) => (
-            <div key={idx} className="space-y-1.5 p-2 rounded-xl hover:bg-bgSoft/50 transition">
-              <div className="flex items-center justify-between text-xs font-bold">
-                <span className="text-textPrimary flex items-center gap-2">
-                  <span className="font-mono text-[10px] bg-bgSoft px-1.5 py-0.5 rounded border border-borderLight font-extrabold text-brand">
-                    {geo.isoCode || 'GL'}
+          {countries.map((geo: any, idx: number) => {
+            const cleanPct = Math.min(100, Math.max(0, Number(geo.sharePct) || 0));
+            return (
+              <div key={idx} className="space-y-1.5 p-2 rounded-xl hover:bg-bgSoft/50 transition">
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="text-textPrimary flex items-center gap-2">
+                    <span className="font-mono text-[10px] bg-bgSoft px-1.5 py-0.5 rounded border border-borderLight font-extrabold text-brand">
+                      {geo.isoCode || 'GL'}
+                    </span>
+                    <span>{geo.countryName}</span>
                   </span>
-                  <span>{geo.countryName}</span>
-                </span>
-                <span className="text-textMuted font-bold">
-                  {geo.studentCount} students ({geo.sharePct}%)
-                </span>
+                  <span className="text-textMuted font-bold">
+                    {geo.studentCount} students ({cleanPct}%)
+                  </span>
+                </div>
+                <div className="h-2.5 w-full rounded-full bg-bgSoft overflow-hidden border border-borderLight/60">
+                  <div
+                    className="h-full bg-brand rounded-full transition-all duration-500"
+                    style={{ width: `${Math.max(cleanPct, cleanPct > 0 ? 2 : 0)}%` }}
+                  />
+                </div>
               </div>
-              <div className="h-2.5 w-full rounded-full bg-bgSoft overflow-hidden border border-borderLight/60">
-                <div
-                  className="h-full bg-brand rounded-full transition-all duration-500"
-                  style={{ width: `${Math.max(geo.sharePct, 2)}%` }}
-                />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
