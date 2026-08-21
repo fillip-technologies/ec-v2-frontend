@@ -472,7 +472,7 @@ export const AdminStudentDetailView: React.FC<AdminStudentDetailViewProps> = ({
                           </span>
                         </div>
                         <div className="text-xs text-textMuted mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-                          <span>Duration: {enr.program?.durationHours || 120} Hours (NEP-2020)</span>
+                          <span>Duration: {enr.program?.durationHours || 120} Hours (Hands-on Track)</span>
                           <span>·</span>
                           <span>
                             Enrolled:{' '}

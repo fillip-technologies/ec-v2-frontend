@@ -1,29 +1,41 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { INTERNSHIP_DATA } from "@/config/internshipTopics";
+import { getClusters } from "@/lib/api/catalog";
+import { FALLBACK_CLUSTERS } from "@/config/catalogFallback";
 
 interface FooterProps {
   className?: string;
 }
 
 export const Footer: React.FC<FooterProps> = ({ className = "mt-16" }) => {
-  const levels = ["Beginner", "Intermediate", "Advanced"];
+  const [clusters, setClusters] = useState<any[]>(FALLBACK_CLUSTERS);
+
+  useEffect(() => {
+    getClusters()
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setClusters(data);
+        }
+      })
+      .catch((err) => console.warn("Using fallback clusters in footer:", err));
+  }, []);
 
   const mainLinks = [
     { label: "Home", href: "/" },
+    { label: "Academic Catalog", href: "/catalog" },
     { label: "College Tie-ups", href: "/college-tieup" },
     { label: "Company Branding", href: "/company-branding" },
     { label: "About Us", href: "/about" },
-    { label: "Login", href: "/login" },
+    { label: "Portal Login", href: "/login" },
   ];
 
   return (
     <footer className={`bg-surfaceDark text-white ${className}`}>
       <div className="container-main py-14 sm:py-16">
-        <div className="grid gap-10 lg:grid-cols-[1.05fr_2.1fr_0.9fr]">
+        <div className="grid gap-10 lg:grid-cols-[1.1fr_2fr_0.9fr]">
           {/* Column 1: Brand & Contact Info */}
           <div>
             <Image
@@ -35,7 +47,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "mt-16" }) => {
             />
 
             <p className="mt-5 max-w-sm text-sm leading-7 text-bgSoft/80">
-              A practical internship operating system for students, colleges, and career-focused learning teams.
+              The project-based internship operating system for engineering learners, accredited universities, and recruiter verification.
             </p>
 
             <div className="mt-6 space-y-3 text-sm text-bgSoft/75">
@@ -98,92 +110,75 @@ export const Footer: React.FC<FooterProps> = ({ className = "mt-16" }) => {
             </div>
           </div>
 
-          {/* Column 2: Internship Tracks Grid */}
+          {/* Column 2: Dynamic Academic Clusters & Topics Grid */}
           <div>
             <h3 className="text-xs font-black uppercase tracking-[0.16em] text-brandLight">
-              Internship Tracks
+              Academic Clusters & Tracks
             </h3>
 
-            <div className="mt-5 grid gap-6 md:grid-cols-3">
-              {levels.map((level) => {
-                const levelData = INTERNSHIP_DATA[level];
-                const topTopics = levelData.categories
-                  .flatMap((c) => c.topics)
-                  .slice(0, 6);
+            <div className="mt-5 grid gap-6 sm:grid-cols-2 md:grid-cols-3">
+              {clusters.slice(0, 3).map((cluster) => {
+                const topicList = cluster.topics || [];
 
                 return (
-                  <div key={level}>
-                    <p className="text-sm font-bold text-white">{level} Level</p>
+                  <div key={cluster.id || cluster.slug}>
+                    <p className="text-sm font-bold text-white line-clamp-1">{cluster.name}</p>
                     <div className="mt-3 space-y-2">
-                      {topTopics.map((topic) => (
-                        <a
-                          key={topic.slug}
-                          href="#courses"
-                          className="block text-sm leading-6 text-bgSoft/75 transition hover:text-secondary"
+                      {topicList.slice(0, 5).map((topic: any) => (
+                        <Link
+                          key={topic.id || topic.slug}
+                          href={`/catalog`}
+                          className="block text-xs leading-5 text-bgSoft/75 transition hover:text-secondary"
                         >
-                          {topic.title}
-                        </a>
+                          {topic.name}
+                        </Link>
                       ))}
                     </div>
                   </div>
                 );
               })}
             </div>
+
+            <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-bgSoft/70">
+              <span>Industry-Standard Practical Curriculums</span>
+              <Link href="/catalog" className="text-brandLight hover:underline font-bold">
+                View All Clusters →
+              </Link>
+            </div>
           </div>
 
-          {/* Column 3: Platform Links & Contact */}
+          {/* Column 3: Quick Links & Legal */}
           <div>
             <h3 className="text-xs font-black uppercase tracking-[0.16em] text-brandLight">
-              Platform
+              Platform Navigation
             </h3>
-            <ul className="mt-5 space-y-2">
-              {mainLinks.map((link, idx) => (
-                <li key={idx}>
-                  <a
-                    href={link.href}
-                    className="text-sm text-bgSoft/75 transition hover:text-secondary"
-                  >
+            <ul className="mt-5 space-y-3 text-sm text-bgSoft/75">
+              {mainLinks.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className="transition hover:text-secondary">
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
 
-            <a
-              href="mailto:info@engineersclinic.com"
-              className="mt-7 inline-flex min-h-12 items-center justify-center rounded-2xl bg-white/10 px-5 py-3 text-sm font-bold text-white transition hover:bg-white/20 hover:text-secondary"
-            >
-              Contact Us
-            </a>
+            <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-4 text-xs text-bgSoft/70 space-y-1.5">
+              <div className="font-bold text-white">Institutional B2B Inquiries</div>
+              <p className="text-[11px] leading-relaxed">
+                Empower your campus cohort with bulk seat coupon allocations and real-time completion telemetry.
+              </p>
+              <Link href="/college-tieup" className="inline-block pt-1 text-brandLight font-extrabold hover:underline">
+                Partner with Us →
+              </Link>
+            </div>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 text-center text-sm text-bgSoft/65 md:flex-row md:text-left">
-          <p className="text-white">
-            &copy; {new Date().getFullYear()} Engineers Clinic. All rights reserved.
-          </p>
-          <div className="flex items-center gap-6">
-            <a href="#privacy" className="transition hover:text-secondary">
-              Privacy
-            </a>
-            <a href="#refund" className="transition hover:text-secondary">
-              Refund Policy
-            </a>
-          </div>
+        {/* Bottom copyright line */}
+        <div className="mt-12 border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-bgSoft/60">
+          <p>© {new Date().getFullYear()} Engineers Clinic. All rights reserved.</p>
+          <p>ISO-9001:2015 Certified Practical Internship Engine</p>
         </div>
-
-        <p className="mt-5 text-center text-sm text-white">
-          Designed and Developed By{" "}
-          <a
-            href="https://filliptechnologies.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-bold underline decoration-brandLight underline-offset-4 hover:text-secondary"
-          >
-            Fillip Technologies
-          </a>
-        </p>
       </div>
     </footer>
   );

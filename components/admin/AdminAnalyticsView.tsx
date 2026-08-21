@@ -327,22 +327,28 @@ export const AdminAnalyticsView: React.FC = () => {
       </div>
 
       {/* Row 3: Program Popularity & AI Rubric Quality */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Row 3: Program Popularity & AI Rubric Quality */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
         {/* Section 3: Program Popularity */}
-        <div className="rounded-[28px] border border-borderLight bg-white p-6 shadow-xs space-y-4">
+        <div className="rounded-[28px] border border-borderLight bg-white p-6 shadow-xs space-y-4 flex flex-col justify-between">
           <div>
-            <h3 className="text-base font-black text-textPrimary">3. Top Program Popularity & Enrollments</h3>
-            <p className="text-xs text-textMuted">Student distribution across published industry tracks</p>
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-black text-textPrimary">3. Top Program Popularity & Enrollments</h3>
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-brand bg-brand/10 px-2 py-0.5 rounded-md">
+                {programPopularity.length} Tracks
+              </span>
+            </div>
+            <p className="text-xs text-textMuted mt-0.5">Student distribution across published industry tracks</p>
           </div>
 
-          <div className="space-y-3 pt-2">
+          <div className="space-y-3 pt-2 max-h-[220px] overflow-y-auto pr-2 [scrollbar-width:thin] scrollbar-thin scrollbar-thumb-borderLight hover:scrollbar-thumb-brand/40 flex-1">
             {programPopularity.map((prog: any, idx: number) => (
               <div key={prog.id} className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs font-bold">
-                  <span className="text-textPrimary truncate max-w-[280px]">
+                  <span className="text-textPrimary truncate max-w-[260px] sm:max-w-[280px]" title={prog.title}>
                     {idx + 1}. {prog.title}
                   </span>
-                  <span className="text-brand font-black shrink-0">
+                  <span className="text-brand font-black shrink-0 text-[11px]">
                     {prog.enrolledCount} enrolled ({prog.sharePct}%)
                   </span>
                 </div>
@@ -358,26 +364,26 @@ export const AdminAnalyticsView: React.FC = () => {
         </div>
 
         {/* Section 4: AI Rubric Score Distribution */}
-        <div className="rounded-[28px] border border-borderLight bg-white p-6 shadow-xs space-y-4">
+        <div className="rounded-[28px] border border-borderLight bg-white p-6 shadow-xs space-y-4 flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-base font-black text-textPrimary">4. AI Rubric Evaluation Quality & Score Spread</h3>
-              <p className="text-xs text-textMuted">Score distribution curve ({aiRubricQuality.totalEvaluated} reviews)</p>
+              <p className="text-xs text-textMuted mt-0.5">Score distribution curve ({aiRubricQuality.totalEvaluated} reviews)</p>
             </div>
-            <div className="rounded-xl bg-purple-50 border border-purple-200 px-3 py-1 text-center">
+            <div className="rounded-xl bg-purple-50 border border-purple-200 px-3 py-1 text-center shrink-0">
               <div className="text-[9px] font-black uppercase tracking-wider text-purple-700">AVG SCORE</div>
               <div className="text-sm font-black text-purple-900">{aiRubricQuality.avgScore} / 100</div>
             </div>
           </div>
 
-          <div className="space-y-3 pt-2">
+          <div className="space-y-3 pt-2 max-h-[220px] overflow-y-auto pr-1 flex-1">
             {aiRubricQuality.distribution.map((bucket: any, idx: number) => {
               const barColors = ['bg-emerald-500', 'bg-blue-500', 'bg-amber-500', 'bg-rose-500'];
               return (
                 <div key={idx} className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs font-bold">
                     <span className="text-textPrimary">{bucket.label}</span>
-                    <span className="text-textMuted font-bold">
+                    <span className="text-textMuted font-bold text-[11px]">
                       {bucket.count} submissions ({bucket.pct}%)
                     </span>
                   </div>

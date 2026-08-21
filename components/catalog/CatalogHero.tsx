@@ -86,7 +86,7 @@ export const CatalogHero: React.FC<CatalogHeroProps> = ({
             </div>
 
             <p className="mt-3 text-xs font-semibold text-textMuted">
-              120-hour programme tier
+              Industry-graded career tracks
             </p>
           </div>
         </div>

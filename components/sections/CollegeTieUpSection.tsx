@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 
 interface CollegeTieUpSectionProps {
   onOpenEnquiry?: () => void;
@@ -33,19 +34,18 @@ export const CollegeTieUpSection: React.FC<CollegeTieUpSectionProps> = ({ onOpen
               We partner with institutions to run structured project workspaces, GitHub submissions, mentor reviews, certificates, and placement-ready progress reports.
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={onOpenEnquiry}
+              <Link
+                href="/signup?role=college"
                 className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-brand px-5 py-3 text-sm font-black text-white shadow-lg shadow-brand/25 transition hover:-translate-y-1 hover:bg-brandHover cursor-pointer"
               >
                 Request College Tie-up
-              </button>
-              <a
-                href="#college-benefits"
-                className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-borderSoft bg-white px-5 py-3 text-sm font-black text-textPrimary transition hover:-translate-y-1 hover:bg-bgSoft hover:text-textPrimary"
+              </Link>
+              <Link
+                href="/college-tieup"
+                className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-borderSoft bg-white px-5 py-3 text-sm font-black text-textPrimary transition hover:-translate-y-1 hover:bg-bgSoft hover:text-textPrimary cursor-pointer"
               >
                 View Benefits
-              </a>
+              </Link>
             </div>
           </div>
 

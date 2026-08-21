@@ -3,49 +3,49 @@
 import React from "react";
 import { Container } from "../ui/Container";
 import { Badge } from "../ui/Badge";
-import { FolderGit2, Layout, GitBranch, Sparkles, Award, ShieldAlert } from "lucide-react";
+import { Layers, Layout, GitBranch, Sparkles, Award, ShieldCheck } from "lucide-react";
 
 export const WhyChooseUsSection: React.FC = () => {
   const features = [
     {
-      icon: <FolderGit2 className="h-6 w-6 text-brand" />,
-      title: "Level-Based Projects",
-      desc: "Choose beginner (45d), intermediate (75d), or advanced (90d) tracks tailored to your skills.",
+      icon: <Layers className="h-6 w-6 text-brand" />,
+      title: "5 Academic Clusters",
+      desc: "Comprehensive practical curriculums spanning Full Stack, AI & Data, Cloud DevOps, Cybersecurity, and Embedded IoT.",
       glow: "rgba(124, 92, 252, 0.18)",
       bg: "from-surface to-white",
     },
     {
       icon: <Layout className="h-6 w-6 text-info" />,
       title: "Personal Workspace",
-      desc: "Track milestones, task requirements, submissions, and feedback in a dedicated workspace.",
+      desc: "Kanban milestone board, clear step-by-step deliverable requirements, and real-time progress telemetry in a dedicated workspace.",
       glow: "rgba(14, 165, 233, 0.18)",
       bg: "from-infoLight to-white",
     },
     {
       icon: <GitBranch className="h-6 w-6 text-success" />,
-      title: "GitHub Workflow",
-      desc: "Build professional software habits with real commits, repositories, and visible code proof.",
+      title: "GitHub Workflow Verification",
+      desc: "Build professional software habits with real git commits, public pull requests, and recruiter-inspectable repository proof.",
       glow: "rgba(34, 197, 94, 0.18)",
       bg: "from-successLight to-white",
     },
     {
       icon: <Sparkles className="h-6 w-6 text-warningMuted" />,
-      title: "AI Rubric Review",
-      desc: "Submit deliverables for instant rubric evaluation with score breakdowns and improvements.",
+      title: "Automated BullMQ AI Rubrics",
+      desc: "Submit deliverables for instant 100-point rubric evaluation assessing architecture, code quality, functionality, and security.",
       glow: "rgba(234, 179, 8, 0.18)",
       bg: "from-warningLight to-white",
     },
     {
       icon: <Award className="h-6 w-6 text-brandLight" />,
-      title: "Verifiable Certificate",
-      desc: "Earn a QR-verified certificate with public verification URL and LinkedIn credential sharing.",
+      title: "ISO QR-Verified Credential",
+      desc: "Earn an industry credential featuring a tamper-proof QR code resolving to a public verification URL with 1-click LinkedIn sharing.",
       glow: "rgba(167, 139, 250, 0.18)",
       bg: "from-surface to-white",
     },
     {
-      icon: <ShieldAlert className="h-6 w-6 text-brand" />,
-      title: "Career & Recruiter Proof",
-      desc: "Use verified project deliverables, GitHub links, and scores to stand out in interviews.",
+      icon: <ShieldCheck className="h-6 w-6 text-brand" />,
+      title: "University & Recruiter Alignment",
+      desc: "Meets university academic internship standards with structured grading logs universities and recruiters can trust.",
       glow: "rgba(124, 92, 252, 0.18)",
       bg: "from-surface to-white",
     },
@@ -55,12 +55,12 @@ export const WhyChooseUsSection: React.FC = () => {
     <section className="relative isolate overflow-hidden bg-white py-16 sm:py-20 lg:py-24">
       <Container size="wide">
         <div className="mx-auto mb-12 max-w-3xl text-center">
-          <Badge variant="brand">Why Choose Us</Badge>
+          <Badge variant="brand">Platform Architecture</Badge>
           <h2 className="mt-5 text-3xl font-black leading-tight text-textPrimary sm:text-4xl lg:text-5xl">
             Everything students need to turn learning into proof.
           </h2>
           <p className="mt-4 text-base leading-8 text-textGray">
-            A premium project-based system designed around outcomes recruiters can inspect.
+            A premium project-based system designed around tangible outcomes recruiters and universities can inspect.
           </p>
         </div>
 

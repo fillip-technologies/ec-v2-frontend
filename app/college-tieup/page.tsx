@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { CollegeHero } from "@/components/college-tieup/CollegeHero";
@@ -12,18 +12,15 @@ import { CollegeFeatures } from "@/components/college-tieup/CollegeFeatures";
 import { CollegeTestimonials } from "@/components/college-tieup/CollegeTestimonials";
 import { CollegeFaq } from "@/components/college-tieup/CollegeFaq";
 import { CollegeCta } from "@/components/college-tieup/CollegeCta";
-import { EnquiryModal } from "@/components/ui/EnquiryModal";
 
 export default function CollegeTieupPage() {
-  const [modalOpen, setModalOpen] = useState(false);
-
   return (
     <div className="min-h-screen flex flex-col bg-bgBody text-textPrimary antialiased selection:bg-brand selection:text-white">
-      <Navbar onOpenEnquiry={() => setModalOpen(true)} />
+      <Navbar />
 
       <main className="flex-grow">
         {/* 1. Hero */}
-        <CollegeHero onOpenEnquiry={() => setModalOpen(true)} />
+        <CollegeHero />
 
         {/* 2. Stats */}
         <CollegeStats />
@@ -47,12 +44,10 @@ export default function CollegeTieupPage() {
         <CollegeFaq />
 
         {/* 9. CTA Banner */}
-        <CollegeCta onOpenEnquiry={() => setModalOpen(true)} />
+        <CollegeCta />
       </main>
 
       <Footer />
-
-      <EnquiryModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );
 }

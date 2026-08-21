@@ -50,7 +50,7 @@ export default function HomePage() {
         <ModulesSection onOpenEnquiry={() => handleOpenModal()} />
 
         {/* 6. College Tie-Up Program */}
-        <CollegeTieUpSection onOpenEnquiry={() => handleOpenModal("College Tie-up")} />
+        <CollegeTieUpSection />
 
         {/* 7. How It Works Pipeline */}
         <HowWorkSection />

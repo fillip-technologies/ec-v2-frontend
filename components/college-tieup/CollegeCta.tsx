@@ -26,18 +26,11 @@ export const CollegeCta: React.FC<CollegeCtaProps> = ({ onOpenEnquiry }) => {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
-              <button
-                type="button"
-                onClick={onOpenEnquiry}
-                className="inline-flex items-center justify-center rounded-2xl bg-secondary px-6 py-3.5 text-sm font-extrabold text-textPrimary transition hover:bg-white cursor-pointer"
-              >
-                Request discussion
-              </button>
               <Link
                 href="/signup?role=college"
-                className="inline-flex items-center justify-center rounded-2xl border border-white/20 px-6 py-3.5 text-sm font-extrabold text-white transition hover:bg-white/10 cursor-pointer"
+                className="inline-flex items-center justify-center rounded-2xl bg-secondary px-6 py-3.5 text-sm font-extrabold text-textPrimary transition hover:bg-white cursor-pointer shadow-md"
               >
-                Register college account
+                Register College Account
               </Link>
               <a
                 href="tel:+917545999990"

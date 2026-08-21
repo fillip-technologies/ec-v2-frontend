@@ -310,7 +310,7 @@ export const CollegeStudentsView: React.FC<CollegeStudentsViewProps> = ({ studen
                           {student.programTitle || 'Internship Program Track'}
                         </div>
                         <div className="text-[10px] text-textMuted">
-                          120-Hour NEP-2020 Track
+                          Hands-on Capstone Track
                         </div>
                       </td>
 

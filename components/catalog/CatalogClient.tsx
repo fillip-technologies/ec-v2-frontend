@@ -102,7 +102,32 @@ function CatalogClientContent({
         }
       });
     }
+
+    // Listen to location changes dispatched by Navbar or other components
+    const handleLocationChanged = (e: any) => {
+      if (e.detail?.countryCode) {
+        setSelectedCountryCode(e.detail.countryCode);
+      }
+    };
+    window.addEventListener("location:changed", handleLocationChanged);
+    return () => window.removeEventListener("location:changed", handleLocationChanged);
   }, [initialCountries, searchParams]);
+
+  const handleCountryChange = (isoCode: string) => {
+    setSelectedCountryCode(isoCode);
+    if (typeof document !== "undefined") {
+      const match = initialCountries.find(
+        (c) => c.isoCode.toUpperCase() === isoCode.toUpperCase()
+      );
+      const payload = {
+        countryCode: isoCode,
+        currency: match?.currencyCode || "INR",
+        countryName: match?.name || "India",
+      };
+      document.cookie = `user_geo_data=${encodeURIComponent(JSON.stringify(payload))};path=/;max-age=${30 * 24 * 60 * 60}`;
+      window.dispatchEvent(new CustomEvent("location:changed", { detail: payload }));
+    }
+  };
 
   // Find currently selected country object directly from initialCountries array
   const activeCountry = useMemo(() => {
@@ -229,7 +254,7 @@ function CatalogClientContent({
         topicCount={initialTopics.length}
         countries={initialCountries}
         selectedCountryCode={selectedCountryCode}
-        onCountryChange={setSelectedCountryCode}
+        onCountryChange={handleCountryChange}
       />
 
       {/* Main Content Layout with Sidebar & Program Grid */}

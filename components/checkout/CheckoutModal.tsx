@@ -275,10 +275,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <div className="rounded-2xl border border-borderLight bg-bgBody/60 p-4 space-y-2.5">
               <div className="flex items-center gap-2">
                 <span className="inline-flex items-center gap-1 rounded-full bg-brandSoft px-2.5 py-0.5 text-[10px] font-extrabold text-brand uppercase tracking-wider">
-                  <Award className="h-3 w-3" /> NEP-2020 Aligned
+                  <Award className="h-3 w-3" /> Industry Certified
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200/60 px-2.5 py-0.5 text-[10px] font-extrabold text-emerald-800 uppercase tracking-wider">
-                  <Clock className="h-3 w-3" /> 120 Hours
+                  <Clock className="h-3 w-3" /> {program.durationHours || 120} Hours
                 </span>
               </div>
 

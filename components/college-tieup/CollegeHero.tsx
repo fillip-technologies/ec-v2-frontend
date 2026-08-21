@@ -30,13 +30,12 @@ export const CollegeHero: React.FC<CollegeHeroProps> = ({ onOpenEnquiry }) => {
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <button
-              type="button"
-              onClick={onOpenEnquiry}
+            <Link
+              href="/signup?role=college"
               className="inline-flex items-center justify-center rounded-2xl bg-brand px-6 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-brand/20 transition hover:bg-brandHover cursor-pointer"
             >
-              Request Partnership Discussion
-            </button>
+              Register College Account
+            </Link>
             <a
               href="#how-it-works"
               className="inline-flex items-center justify-center rounded-2xl border border-borderLight bg-white px-6 py-3.5 text-sm font-extrabold text-textPrimary transition hover:border-brand hover:text-brand"

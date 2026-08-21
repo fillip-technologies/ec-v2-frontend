@@ -23,6 +23,7 @@ export interface CustomDropdownProps {
   required?: boolean;
   disabled?: boolean;
   className?: string;
+  popoverMaxHeight?: string;
 }
 
 export const CustomDropdown: React.FC<CustomDropdownProps> = ({
@@ -35,6 +36,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
   required = false,
   disabled = false,
   className = '',
+  popoverMaxHeight = 'max-h-[380px]',
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -117,7 +119,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
       {/* Dropdown Popover */}
       {isOpen && (
-        <div className="absolute left-0 right-0 top-full mt-1.5 z-[100] rounded-2xl border border-borderLight bg-white p-1.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150 max-h-60 overflow-y-auto space-y-1">
+        <div className={`absolute left-0 right-0 top-full mt-1.5 z-[100] rounded-2xl border border-borderLight bg-white p-1.5 shadow-2xl animate-in fade-in zoom-in-95 duration-150 ${popoverMaxHeight} overflow-y-auto space-y-1 [scrollbar-width:thin] scrollbar-thin`}>
           {normalizedOptions.length === 0 ? (
             <div className="p-3 text-center text-xs font-bold text-textMuted">
               No options available

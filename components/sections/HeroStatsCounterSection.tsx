@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { Users, FolderOpen, BadgeCheck, BarChart3 } from "lucide-react";
+import { Users, Layers, BadgeCheck, FolderGit2 } from "lucide-react";
 
 export const HeroStatsCounterSection: React.FC = () => {
   const stats = [
@@ -9,29 +9,29 @@ export const HeroStatsCounterSection: React.FC = () => {
       icon: <Users className="h-5 w-5" />,
       value: 6000,
       suffix: "+",
-      label: "Students",
-      note: "Building portfolio projects",
+      label: "Learners Enrolled",
+      note: "Building verifiable capstones",
     },
     {
-      icon: <FolderOpen className="h-5 w-5" />,
-      value: 320,
+      icon: <Layers className="h-5 w-5" />,
+      value: 5,
+      suffix: " Clusters",
+      label: "Engineering Domains",
+      note: "Software, AI, Cloud, Cyber, IoT",
+    },
+    {
+      icon: <FolderGit2 className="h-5 w-5" />,
+      value: 30,
       suffix: "+",
-      label: "Projects",
-      note: "Across beginner to advanced",
+      label: "Production Projects",
+      note: "Step-by-step milestone specs",
     },
     {
       icon: <BadgeCheck className="h-5 w-5" />,
-      value: 4100,
-      suffix: "+",
-      label: "Certificates",
-      note: "Issued after review",
-    },
-    {
-      icon: <BarChart3 className="h-5 w-5" />,
-      value: 98,
+      value: 100,
       suffix: "%",
-      label: "Completion Rate",
-      note: "With milestone guidance",
+      label: "AI & QR-Verified",
+      note: "Automated BullMQ Rubrics",
     },
   ];
 
@@ -85,7 +85,7 @@ export const HeroStatsCounterSection: React.FC = () => {
                 <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-bgSoft text-xl text-brand transition duration-300 group-hover:scale-105 group-hover:bg-bgSoft group-hover:text-brandHover">
                   {stat.icon}
                 </span>
-                <span className="rounded-full bg-success/10 px-2.5 py-1 text-[11px] font-black text-success">
+                <span className="rounded-full bg-success/10 px-2.5 py-1 text-[11px] font-black text-success border border-success/20">
                   Verified
                 </span>
               </div>
@@ -94,7 +94,7 @@ export const HeroStatsCounterSection: React.FC = () => {
                 {stat.suffix}
               </p>
               <p className="mt-2 text-sm font-black text-textPrimary">{stat.label}</p>
-              <p className="mt-1 text-sm leading-6 text-textGray">{stat.note}</p>
+              <p className="mt-1 text-xs leading-5 text-textGray">{stat.note}</p>
             </div>
           ))}
         </div>

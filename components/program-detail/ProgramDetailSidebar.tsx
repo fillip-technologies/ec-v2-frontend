@@ -483,10 +483,10 @@ export const ProgramDetailSidebar: React.FC<ProgramDetailSidebarProps> = ({
           <div className="rounded-2xl border border-borderLight bg-bgBody/70 p-3 space-y-1.5">
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1 rounded-md bg-brandSoft px-2 py-0.5 text-[10px] font-extrabold text-brand uppercase tracking-wider">
-                <Award className="h-3 w-3" /> NEP-2020
+                <Award className="h-3 w-3" /> Verified Track
               </span>
               <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 text-[10px] font-extrabold text-emerald-800 uppercase tracking-wider">
-                <Clock className="h-3 w-3" /> 120 Hours
+                <Clock className="h-3 w-3" /> {program.durationHours || 120} Hours
               </span>
             </div>
             <h4 className="text-xs font-black text-textPrimary leading-snug line-clamp-1">

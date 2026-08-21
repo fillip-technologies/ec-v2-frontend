@@ -5,17 +5,17 @@ import { X, Check } from "lucide-react";
 
 export const AboutNewSection: React.FC = () => {
   const problems = [
-    { title: "Watching tutorials only", desc: "Passive learning feels productive but leaves no proof." },
-    { title: "No finished projects", desc: "Half-built demos do not show ownership." },
-    { title: "Empty GitHub profile", desc: "Recruiters cannot see your workflow." },
-    { title: "No practical experience", desc: "Interview answers stay theoretical." },
+    { title: "Watching tutorials only", desc: "Passive video watching feels productive but leaves zero recruiter-verifiable proof." },
+    { title: "No finished capstones", desc: "Incomplete tutorial clones fail to demonstrate full-lifecycle engineering ownership." },
+    { title: "Empty GitHub repositories", desc: "Recruiters cannot verify your real commit habits, clean architecture, or debugging flow." },
+    { title: "No practical experience", desc: "Interview answers remain theoretical without production deployment evidence." },
   ];
 
   const solutions = [
-    { step: "01", title: "Level-based projects", desc: "Beginner, intermediate, and advanced projects match your current skills." },
-    { step: "02", title: "Personal workspace", desc: "Every student gets a clear project board with milestones and tasks." },
-    { step: "03", title: "GitHub + review", desc: "Submit working code, receive review, and improve your portfolio." },
-    { step: "04", title: "Industry certificate", desc: "Earn a certificate only after completing and submitting the project." },
+    { step: "01", title: "Hands-On Academic Curriculum", desc: "Sequential production capstones aligned with university internship standards and industry requirements." },
+    { step: "02", title: "Personal Milestone Workspace", desc: "Every student gets a structured Kanban board with clear task specs and GitHub syncing." },
+    { step: "03", title: "Automated BullMQ AI Review", desc: "Submit code to receive instant, objective 100-point rubric evaluations and constructive feedback." },
+    { step: "04", title: "ISO QR-Verified Credential", desc: "Unlock industry certificates featuring unique verification IDs and LinkedIn 1-click sharing." },
   ];
 
   return (
@@ -26,17 +26,17 @@ export const AboutNewSection: React.FC = () => {
       <div className="container-main">
         <div className="grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:gap-14">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-borderSoft bg-bgBody px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-brand">
+            <span className="inline-flex items-center gap-2 rounded-full border border-borderSoft bg-bgBody px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-brand shadow-xs">
               Why Students Struggle
             </span>
             <h2 className="mt-5 max-w-2xl text-3xl font-black leading-tight tracking-tight text-textPrimary sm:text-4xl lg:text-5xl">
-              Tutorials do not get you selected.{" "}
+              Tutorials do not get you hired.{" "}
               <span className="block bg-gradient-to-r from-brand to-brandLight bg-clip-text text-transparent">
                 Proof of work does.
               </span>
             </h2>
             <p className="mt-5 max-w-xl text-base leading-8 text-textGray">
-              Most students know concepts, but interviews ask for evidence: what you built, how you solved problems, and whether your GitHub shows consistent practical work.
+              Hiring managers don't evaluate how many videos you watched. They evaluate what you built, how you structured your backend, and whether your GitHub demonstrates real engineering competence.
             </p>
 
             <div className="mt-8 grid gap-3 sm:grid-cols-2">
@@ -49,7 +49,7 @@ export const AboutNewSection: React.FC = () => {
                     <X className="h-5 w-5" />
                   </div>
                   <h3 className="text-base font-black text-textPrimary">{problem.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-textGray">{problem.desc}</p>
+                  <p className="mt-2 text-xs leading-6 text-textGray">{problem.desc}</p>
                 </div>
               ))}
             </div>
@@ -63,7 +63,7 @@ export const AboutNewSection: React.FC = () => {
                     <p className="text-xs font-black uppercase tracking-[0.18em] text-brand">
                       Engineers Clinic Method
                     </p>
-                    <h3 className="mt-2 text-2xl font-black text-textPrimary">From learning to evidence</h3>
+                    <h3 className="mt-2 text-2xl font-black text-textPrimary">From passive learning to verified proof</h3>
                   </div>
                   <span className="grid h-12 w-12 place-items-center rounded-2xl bg-bgSoft text-brand backdrop-blur">
                     <Check className="h-6 w-6" />
@@ -81,7 +81,7 @@ export const AboutNewSection: React.FC = () => {
                       </span>
                       <div>
                         <h4 className="font-black text-textPrimary">{solution.title}</h4>
-                        <p className="mt-1 text-sm leading-6 text-textGray">{solution.desc}</p>
+                        <p className="mt-1 text-xs leading-6 text-textGray">{solution.desc}</p>
                       </div>
                     </div>
                   ))}
