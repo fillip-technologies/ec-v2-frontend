@@ -24,20 +24,22 @@ export const HowWorkSection: React.FC = () => {
 
       <div className="container-main">
         {/* Header Block */}
-        <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <div className="max-w-3xl">
-            <div className="ec-pipeline-heading-card inline-flex items-center gap-3 rounded-2xl px-4 py-3">
-              <span className="ec-pipeline-heading-icon grid h-10 w-10 place-items-center rounded-xl text-lg">
-                <Zap className="h-5 w-5" />
-              </span>
-              <div>
-                <p className="ec-pipeline-label text-xs font-black uppercase tracking-[0.18em]">Automated Pipeline</p>
-                <h2 className="mt-1 text-2xl font-black leading-tight text-textPrimary sm:text-3xl lg:text-4xl">
+        <div className="mx-auto flex max-w-4xl flex-col items-center text-center">
+          <div className="max-w-4xl">
+            <div className="ec-pipeline-heading-card inline-flex flex-col items-center gap-2 rounded-2xl px-6 py-4 shadow-sm">
+              <p className="ec-pipeline-label text-xs font-black uppercase tracking-[0.18em]">
+                Automated Pipeline
+              </p>
+              <div className="flex items-center justify-center gap-3.5">
+                <span className="ec-pipeline-heading-icon grid h-10 w-10 place-items-center rounded-xl text-lg shrink-0">
+                  <Zap className="h-5 w-5" />
+                </span>
+                <h2 className="text-2xl font-black leading-tight text-textPrimary sm:text-3xl lg:text-4xl whitespace-nowrap">
                   Project completion & evaluation lifecycle
                 </h2>
               </div>
             </div>
-            <p className="ec-pipeline-copy mt-5 max-w-2xl text-base leading-8 text-textGray">
+            <p className="ec-pipeline-copy mt-5 max-w-2xl mx-auto text-base leading-8 text-textGray">
               Move step-by-step from program selection to personal workspace snapshot, GitHub commit verification, BullMQ AI grading, and ISO-verified certificate issuance.
             </p>
           </div>
